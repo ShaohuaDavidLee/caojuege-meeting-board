@@ -1,0 +1,345 @@
+/* ============================================================
+ * 草诀歌 AI Labs — 会议问题白板
+ * Token 源头对齐《设计规范.md》：灰度、发丝线、绝对平面、衬线层级
+ * ============================================================ */
+
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Noto+Serif+SC:wght@400;600;700&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-serif: "Noto Serif SC", "Songti SC", serif;
+  --font-sans: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+
+  --color-c-bg: #e5e5e5;
+  --color-c-surface: #ffffff;
+  --color-c-ink: #1a1a1a;
+  --color-c-ink-pure: #000000;
+  --color-c-btn: #47494b;
+  --color-c-border: #575757;
+  --color-c-muted: #5c5e60;
+  --color-c-muted-alt: #8b949e;
+  --color-c-on-dark: #e5e5e5;
+}
+
+:root {
+  --c-bg: #e5e5e5;
+  --c-surface: #ffffff;
+  --c-surface-40: rgba(255, 255, 255, 0.4);
+  --c-ink: #1a1a1a;
+  --c-ink-pure: #000000;
+  --c-btn: #47494b;
+  --c-border: #575757;
+  --c-border-soft: rgba(71, 73, 75, 0.2);
+  --c-border-on-dark: rgba(255, 255, 255, 0.2);
+  --c-muted: #5c5e60;
+  --c-muted-alt: #8b949e;
+  --c-on-dark: #e5e5e5;
+  --c-watermark: rgba(0, 0, 0, 0.05);
+
+  --font-serif: "Noto Serif SC", "Songti SC", serif;
+  --font-sans: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
+
+  --fs-display-m: clamp(28px, 4vw, 40px);
+  --fs-lg: 20px;
+  --fs-base: 16px;
+  --fs-sm: 14px;
+  --fs-xs: 12px;
+
+  --ls-widest: 0.2em;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: var(--font-sans);
+  font-size: var(--fs-base);
+  color: var(--c-ink);
+  background: var(--c-bg);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--c-btn);
+  color: var(--c-on-dark);
+}
+
+/* ---------- 排版原子 ---------- */
+
+.font-serif {
+  font-family: var(--font-serif);
+}
+
+.font-sans {
+  font-family: var(--font-sans);
+}
+
+.eyebrow {
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: var(--ls-widest);
+  text-transform: uppercase;
+  color: var(--c-muted-alt);
+}
+
+.kicker {
+  font-family: var(--font-sans);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: var(--ls-widest);
+  text-transform: uppercase;
+  color: var(--c-muted);
+}
+
+.hairline {
+  border-color: var(--c-border-soft);
+}
+
+/* ---------- 按钮 ---------- */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.375rem;
+  font-family: var(--font-sans);
+  font-size: var(--fs-sm);
+  line-height: 1;
+  border-radius: 0;
+  border: 1px solid var(--c-border-soft);
+  cursor: pointer;
+  transition: color 0.35s var(--ease-out), background 0.35s var(--ease-out),
+    border-color 0.35s var(--ease-out);
+  user-select: none;
+}
+
+.btn-primary {
+  background: var(--c-btn);
+  color: var(--c-on-dark);
+  border-color: var(--c-btn);
+}
+
+.btn-primary:hover {
+  background: var(--c-ink-pure);
+  border-color: var(--c-ink-pure);
+  color: var(--c-on-dark);
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--c-ink);
+  border-color: var(--c-border-soft);
+}
+
+.btn-ghost:hover {
+  background: var(--c-btn);
+  color: var(--c-on-dark);
+  border-color: var(--c-btn);
+}
+
+.btn-ghost.is-active {
+  background: var(--c-btn);
+  color: var(--c-on-dark);
+  border-color: var(--c-btn);
+}
+
+.btn-icon {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  background: var(--c-surface);
+  color: var(--c-ink);
+  border: 1px solid var(--c-border-soft);
+}
+
+.btn-icon:hover {
+  background: var(--c-btn);
+  color: var(--c-on-dark);
+  border-color: var(--c-btn);
+}
+
+.btn-icon.is-active {
+  background: var(--c-btn);
+  color: var(--c-on-dark);
+  border-color: var(--c-btn);
+}
+
+/* ---------- 输入 ---------- */
+
+.field {
+  width: 100%;
+  font-family: var(--font-sans);
+  font-size: var(--fs-sm);
+  color: var(--c-ink);
+  background: var(--c-surface);
+  border: 1px solid var(--c-border-soft);
+  border-radius: 0;
+  padding: 0.625rem 0.75rem;
+  outline: none;
+  transition: border-color 0.3s var(--ease-out);
+  resize: none;
+}
+
+.field:focus {
+  border-color: var(--c-border);
+}
+
+.field::placeholder {
+  color: var(--c-muted-alt);
+}
+
+/* ---------- 面板 / 卡片 ---------- */
+
+.panel {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border-soft);
+  border-radius: 0;
+}
+
+.panel-soft {
+  background: var(--c-surface-40);
+  border: 1px solid var(--c-border-soft);
+  border-radius: 0;
+}
+
+.panel-dark {
+  background: var(--c-btn);
+  color: var(--c-on-dark);
+  border: 1px solid var(--c-border-on-dark);
+  border-radius: 0;
+}
+
+/* ---------- 便签 ---------- */
+
+.sticky-note {
+  background: var(--c-surface);
+  border: 1px solid var(--c-border-soft);
+  border-radius: 0;
+  transition: border-color 0.3s var(--ease-out), opacity 0.3s var(--ease-out);
+}
+
+.sticky-note:hover {
+  border-color: var(--c-border);
+  z-index: 30;
+}
+
+.sticky-note.is-dragging {
+  border-color: var(--c-ink);
+  border-style: dashed;
+  z-index: 40;
+}
+
+.sticky-note.is-answered {
+  opacity: 0.55;
+  background: var(--c-bg);
+}
+
+/* ---------- Toast ---------- */
+
+.toast {
+  background: var(--c-btn);
+  color: var(--c-on-dark);
+  border: 1px solid var(--c-border-on-dark);
+  border-radius: 0;
+  font-size: var(--fs-sm);
+}
+
+/* ---------- Modal 遮罩 ---------- */
+
+.modal-scrim {
+  background: rgba(26, 26, 26, 0.55);
+}
+
+/* ---------- 水印 ---------- */
+
+.canvas-watermark {
+  position: absolute;
+  right: -2%;
+  bottom: 8%;
+  font-family: var(--font-serif);
+  font-size: clamp(120px, 22vw, 280px);
+  line-height: 0.85;
+  letter-spacing: -0.04em;
+  color: var(--c-watermark);
+  pointer-events: none;
+  user-select: none;
+  white-space: nowrap;
+  z-index: 0;
+}
+
+/* ---------- 入场 ---------- */
+
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.rise {
+  animation: fade-in-up 800ms var(--ease-out) both;
+}
+
+.rise-d1 {
+  animation-delay: 100ms;
+}
+.rise-d2 {
+  animation-delay: 200ms;
+}
+.rise-d3 {
+  animation-delay: 300ms;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rise,
+  .rise-d1,
+  .rise-d2,
+  .rise-d3 {
+    animation: none;
+  }
+}
+
+/* ---------- 滚动条：发丝感 ---------- */
+
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--c-border-soft);
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--c-muted-alt);
+}
+
+/* 箭头微位移：规范唯一允许的 transform 交互 */
+.arrow-nudge {
+  transition: transform 0.3s var(--ease-out);
+}
+
+.group:hover .arrow-nudge {
+  transform: translateX(4px);
+}
