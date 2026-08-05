@@ -23,17 +23,28 @@ npm run build
 
 静态资源输出到 `dist/`；Cloudflare Pages Functions 位于 `functions/`，数据落在 KV。
 
+## 线上地址
+
+- **https://baiban.caojuege.com**
+- 备用：https://caojuege-meeting-board.pages.dev
+
 ## 部署（Cloudflare Pages）
 
-1. 推送到 GitHub 后，在 Cloudflare Dashboard 连接该仓库  
-2. Build command：`npm run build`  
-3. Build output directory：`dist`  
-4. 绑定 KV namespace：`BOARD_KV`  
-5. 或使用 CLI：
+推送到 `main` 将由 GitHub Actions 自动部署（需仓库 Secrets：`CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID`）。
+
+本地手动：
 
 ```bash
 npm run deploy
 ```
+
+DNS（`caojuege.com` zone）：
+
+| 类型 | 名称 | 目标 | 代理 |
+|---|---|---|---|
+| CNAME | `baiban` | `caojuege-meeting-board.pages.dev` | 已代理 |
+
+KV 绑定名：`BOARD_KV`（见 `wrangler.toml`）。
 
 ## 技术栈
 

@@ -3,9 +3,7 @@ name = "caojuege-meeting-board"
 compatibility_date = "2025-03-01"
 pages_build_output_dir = "dist"
 
-# 部署前执行: npx wrangler kv namespace create BOARD_KV
-# 将返回的 id 填入下方；Dashboard 连接 GitHub 时也可在设置里绑定同名 BOARD_KV
 [[kv_namespaces]]
 binding = "BOARD_KV"
-id = "REPLACE_WITH_KV_NAMESPACE_ID"
-preview_id = "REPLACE_WITH_KV_NAMESPACE_ID"
+id = "f94a8c57450b484a9b20f6a786a6203d"
+preview_id = "fdda8b6c1c8247749262509faffbaf4e"
