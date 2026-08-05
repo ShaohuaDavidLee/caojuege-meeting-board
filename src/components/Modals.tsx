@@ -33,10 +33,10 @@ export function NameModal({
 }) {
   return (
     <div className="fixed inset-0 modal-scrim flex items-center justify-center p-4 z-50">
-      <div className="panel w-full max-w-sm p-8 rise">
+      <div className="panel modal-sheet w-full max-w-sm p-6 sm:p-8 rise">
         <p className="eyebrow">Identity · 署名</p>
-        <h3 className="font-serif text-[28px] tracking-[-0.02em] text-[var(--c-ink)] mt-2 leading-tight">
-          你希望被怎样<em className="font-serif italic">称呼</em>？
+        <h3 className="font-serif font-normal text-[24px] sm:text-[28px] tracking-[-0.02em] text-[var(--c-ink)] mt-2 leading-snug">
+          你希望被怎样<em className="font-serif italic font-normal">称呼</em>？
         </h3>
         <p className="text-[var(--fs-sm)] text-[var(--c-muted)] mt-3 leading-relaxed">
           主持人或同伴回答时，能叫出你的名字。无需登录，只是一块纸上的署名。
@@ -91,12 +91,12 @@ export function RoomModal({
 }) {
   return (
     <div className="fixed inset-0 modal-scrim flex items-center justify-center p-4 z-50">
-      <div className="panel w-full max-w-lg rise">
-        <div className="px-8 pt-8 pb-5 border-b border-[var(--c-border-soft)] flex items-start justify-between">
+      <div className="panel modal-sheet w-full max-w-lg rise">
+        <div className="px-5 sm:px-8 pt-6 sm:pt-8 pb-5 border-b border-[var(--c-border-soft)] flex items-start justify-between">
           <div>
             <p className="eyebrow">Room · 雅间</p>
-            <h3 className="font-serif text-[28px] tracking-[-0.02em] mt-2 leading-tight">
-              换一间<em className="font-serif italic">诗意</em>的房间？
+            <h3 className="font-serif font-normal text-[24px] sm:text-[28px] tracking-[-0.02em] mt-2 leading-snug">
+              换一间<em className="font-serif italic font-normal">诗意</em>的房间？
             </h3>
             <p className="text-[var(--fs-xs)] text-[var(--c-muted-alt)] mt-2">
               当前：
@@ -108,7 +108,7 @@ export function RoomModal({
           </button>
         </div>
 
-        <div className="px-8 py-6">
+        <div className="px-5 sm:px-8 py-5 sm:py-6">
           <div className="panel-soft p-4 text-[var(--fs-xs)] text-[var(--c-muted)] leading-relaxed">
             <p className="kicker mb-2">How · 如何找回</p>
             <p className="mb-1.5">每一个雅间名对应一张独立看板。地址栏 <code className="font-serif text-[var(--c-ink)]">?room=房间名</code> 相同，即是同一间。</p>
@@ -138,7 +138,7 @@ export function RoomModal({
           </div>
 
           <p className="kicker mt-6 mb-2">Suggested · 推荐</p>
-          <div className="grid grid-cols-4 border-t border-l border-[var(--c-border-soft)]">
+          <div className="grid grid-cols-2 sm:grid-cols-4 border-t border-l border-[var(--c-border-soft)]">
             {SUGGESTED_ROOMS.map((name) => (
               <button
                 key={name}
@@ -152,11 +152,11 @@ export function RoomModal({
           </div>
         </div>
 
-        <div className="px-8 py-5 border-t border-[var(--c-border-soft)] flex gap-0">
+        <div className="px-5 sm:px-8 py-4 sm:py-5 border-t border-[var(--c-border-soft)] flex flex-col sm:flex-row gap-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
           <button type="button" onClick={onRandom} className="btn btn-ghost flex-1 h-11">
             随机开辟新雅间
           </button>
-          <button type="button" onClick={onClose} className="btn btn-ghost h-11 px-6 ml-0 border-l-0">
+          <button type="button" onClick={onClose} className="btn btn-ghost h-11 px-6 sm:border-l-0 border-t sm:border-t-0 border-[var(--c-border-soft)]">
             取消
           </button>
         </div>
@@ -194,14 +194,17 @@ export function AddNoteModal({
 }) {
   return (
     <div className="fixed inset-0 modal-scrim flex items-center justify-center p-4 z-50">
-      <form onSubmit={onSubmit} className="panel w-full max-w-md rise">
-        <div className="px-8 pt-8 pb-5 border-b border-[var(--c-border-soft)] flex items-start justify-between">
+      <form
+        onSubmit={onSubmit}
+        className="modal-sheet w-full max-w-md rise border border-[var(--c-border-soft)] bg-[var(--c-bg)]"
+      >
+        <div className="px-5 sm:px-8 pt-6 sm:pt-8 pb-5 border-b border-[var(--c-border-soft)] flex items-start justify-between bg-[var(--c-surface)]">
           <div>
             <p className="eyebrow">Question · 提问</p>
-            <h3 className="font-serif text-[28px] tracking-[-0.02em] mt-2 leading-tight">
-              写下你的<em className="font-serif italic">疑惑</em>
+            <h3 className="font-serif font-normal text-[22px] sm:text-[26px] tracking-[-0.02em] text-[var(--c-ink)] mt-2 leading-snug">
+              写下你的<em className="font-serif italic font-normal">疑惑</em>
             </h3>
-            <p className="text-[var(--fs-xs)] text-[var(--c-muted-alt)] mt-2">
+            <p className="font-sans text-[var(--fs-xs)] text-[var(--c-muted-alt)] mt-2">
               {noteCreationCoords
                 ? `落点 X ${Math.round(noteCreationCoords.x)} · Y ${Math.round(noteCreationCoords.y)}`
                 : "自动落在画布中央"}
@@ -212,16 +215,17 @@ export function AddNoteModal({
           </button>
         </div>
 
-        <div className="px-8 py-6 flex flex-col gap-5">
+        <div className="px-5 sm:px-8 py-5 sm:py-6 flex flex-col gap-5 bg-[var(--c-surface)]">
           <div>
-            <label className="block mb-1.5 text-[var(--fs-xs)] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
+            <label className="block mb-1.5 font-sans text-[var(--fs-xs)] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
               Ask · 正文（限 300 字）
             </label>
             <textarea
               placeholder="有什么不明白的？写下来，同伴可点赞，主持人能实时看到。"
               value={newNoteText}
               onChange={(e) => setNewNoteText(e.target.value)}
-              className="field h-32 leading-relaxed"
+              className="field h-28 sm:h-32 leading-relaxed font-sans"
+              style={{ backgroundColor: newNoteColor }}
               maxLength={300}
               required
               autoFocus
@@ -229,35 +233,47 @@ export function AddNoteModal({
           </div>
 
           <div>
-            <label className="block mb-1.5 text-[var(--fs-xs)] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
+            <label className="block mb-1.5 font-sans text-[var(--fs-xs)] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
               Sign · 署名
             </label>
-            <div className="grid grid-cols-2 border border-[var(--c-border-soft)]">
+            <div className="grid grid-cols-2 border border-[var(--c-border-soft)] bg-[var(--c-bg)]">
               <button
                 type="button"
                 onClick={() => setSubmitterNameType("self")}
-                className={`py-3 px-3 text-[var(--fs-xs)] transition-colors duration-300 border-r border-[var(--c-border-soft)] ${
+                className={`py-3 px-3 font-sans text-[var(--fs-xs)] transition-colors duration-300 border-r border-[var(--c-border-soft)] ${
                   submitterNameType === "self"
-                    ? "bg-[var(--c-btn)] text-[var(--c-on-dark)]"
-                    : "bg-transparent text-[var(--c-ink)] hover:bg-[var(--c-bg)]"
+                    ? "bg-[var(--c-surface)] text-[var(--c-ink)]"
+                    : "bg-transparent text-[var(--c-muted)] hover:text-[var(--c-ink)]"
                 }`}
               >
                 <span className="block">使用我自己</span>
-                <span className={`block mt-0.5 truncate ${submitterNameType === "self" ? "text-[var(--c-on-dark)] opacity-70" : "text-[var(--c-muted-alt)]"}`}>
+                <span
+                  className={`block mt-0.5 truncate font-serif ${
+                    submitterNameType === "self"
+                      ? "text-[var(--c-ink)]"
+                      : "text-[var(--c-muted-alt)]"
+                  }`}
+                >
                   {username ? username : "需先设昵称"}
                 </span>
               </button>
               <button
                 type="button"
                 onClick={() => setSubmitterNameType("anonymous")}
-                className={`py-3 px-3 text-[var(--fs-xs)] transition-colors duration-300 ${
+                className={`py-3 px-3 font-sans text-[var(--fs-xs)] transition-colors duration-300 ${
                   submitterNameType === "anonymous"
-                    ? "bg-[var(--c-btn)] text-[var(--c-on-dark)]"
-                    : "bg-transparent text-[var(--c-ink)] hover:bg-[var(--c-bg)]"
+                    ? "bg-[var(--c-surface)] text-[var(--c-ink)]"
+                    : "bg-transparent text-[var(--c-muted)] hover:text-[var(--c-ink)]"
                 }`}
               >
                 <span className="block">神秘听众</span>
-                <span className={`block mt-0.5 ${submitterNameType === "anonymous" ? "text-[var(--c-on-dark)] opacity-70" : "text-[var(--c-muted-alt)]"}`}>
+                <span
+                  className={`block mt-0.5 ${
+                    submitterNameType === "anonymous"
+                      ? "text-[var(--c-muted)]"
+                      : "text-[var(--c-muted-alt)]"
+                  }`}
+                >
                   匿名发表
                 </span>
               </button>
@@ -266,7 +282,7 @@ export function AddNoteModal({
               <button
                 type="button"
                 onClick={onOpenName}
-                className="mt-2 text-[var(--fs-xs)] text-[var(--c-muted-alt)] hover:text-[var(--c-btn)] transition-colors duration-300 bg-transparent border-0 cursor-pointer p-0"
+                className="mt-2 font-sans text-[var(--fs-xs)] text-[var(--c-muted-alt)] hover:text-[var(--c-ink)] transition-colors duration-300 bg-transparent border-0 cursor-pointer p-0"
               >
                 修改昵称
               </button>
@@ -274,7 +290,7 @@ export function AddNoteModal({
           </div>
 
           <div>
-            <label className="block mb-1.5 text-[var(--fs-xs)] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
+            <label className="block mb-1.5 font-sans text-[var(--fs-xs)] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
               Color · 底色
             </label>
             <div className="flex items-center gap-2">
@@ -296,11 +312,11 @@ export function AddNoteModal({
           </div>
         </div>
 
-        <div className="px-8 py-5 border-t border-[var(--c-border-soft)] flex">
-          <button type="button" onClick={onClose} className="btn btn-ghost flex-1 h-11">
+        <div className="px-5 sm:px-8 py-4 sm:py-5 border-t border-[var(--c-border-soft)] flex bg-[var(--c-surface)] pb-[max(1rem,env(safe-area-inset-bottom))]">
+          <button type="button" onClick={onClose} className="btn btn-ghost flex-1 h-11 font-sans">
             取消
           </button>
-          <button type="submit" className="btn btn-primary flex-1 h-11 border-l-0 group">
+          <button type="submit" className="btn btn-primary flex-1 h-11 border-l-0 group font-sans">
             发布到白板
             <ArrowRight className="w-3.5 h-3.5 arrow-nudge" />
           </button>
@@ -321,9 +337,9 @@ export function DeleteModal({
 }) {
   return (
     <div className="fixed inset-0 modal-scrim flex items-center justify-center p-4 z-[55]">
-      <div className="panel w-full max-w-sm p-8 rise">
+      <div className="panel modal-sheet w-full max-w-sm p-6 sm:p-8 rise">
         <p className="eyebrow">Delete · 删除</p>
-        <h3 className="font-serif text-[24px] tracking-[-0.02em] mt-2 flex items-center gap-2">
+        <h3 className="font-serif font-normal text-[22px] sm:text-[24px] tracking-[-0.02em] mt-2 flex items-center gap-2 leading-snug">
           <Trash2 className="w-5 h-5 shrink-0" />
           确认移除此便签？
         </h3>
@@ -376,11 +392,11 @@ export function HistoryModal({
 }) {
   return (
     <div className="fixed inset-0 modal-scrim flex items-center justify-center p-4 z-50">
-      <div className="panel w-full max-w-2xl flex flex-col h-[520px] rise">
-        <div className="px-6 py-4 border-b border-[var(--c-border-soft)] flex items-center justify-between">
+      <div className="panel modal-sheet w-full max-w-2xl flex flex-col h-[min(520px,90dvh)] rise">
+        <div className="px-5 sm:px-6 py-4 border-b border-[var(--c-border-soft)] flex items-center justify-between">
           <div>
             <p className="eyebrow">Archive · 归档</p>
-            <h3 className="font-serif text-[22px] tracking-[-0.02em] mt-1 flex items-center gap-2">
+            <h3 className="font-serif font-normal text-[20px] sm:text-[22px] tracking-[-0.02em] mt-1 flex items-center gap-2">
               <History className="w-5 h-5" />
               历史版本
             </h3>
@@ -390,8 +406,8 @@ export function HistoryModal({
           </button>
         </div>
 
-        <div className="flex-1 flex overflow-hidden">
-          <div className="w-64 border-r border-[var(--c-border-soft)] p-5 flex flex-col gap-3 bg-[var(--c-bg)]">
+        <div className="flex-1 flex flex-col md:flex-row overflow-hidden min-h-0">
+          <div className="md:w-64 shrink-0 border-b md:border-b-0 md:border-r border-[var(--c-border-soft)] p-4 sm:p-5 flex flex-col gap-3 bg-[var(--c-bg)]">
             <div className="flex items-center gap-1.5 kicker">
               <Save className="w-3.5 h-3.5" />
               <span>Save · 保存快照</span>

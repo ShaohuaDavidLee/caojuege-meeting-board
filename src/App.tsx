@@ -18,6 +18,7 @@ import {
   MoreHorizontal,
   History,
   Trash2,
+  Pencil,
   X,
 } from "lucide-react";
 import { StickyNote, BoardState, BoardHistoryItem } from "./types";
@@ -560,29 +561,31 @@ export default function App() {
     }
   };
 
-  const handleCanvasMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (e.button !== 0) return;
-    const target = e.target as HTMLElement;
+  const beginPan = (clientX: number, clientY: number, target: HTMLElement) => {
     // 点在便签/控件内时绝不能先关菜单，否则「删除」的 click 会丢
     if (
       target.closest(".sticky-note") ||
       target.closest("button") ||
       target.closest("input") ||
       target.closest("textarea") ||
-      target.closest(".nav-bar")
+      target.closest(".nav-bar") ||
+      target.closest(".mobile-toolbar") ||
+      target.closest(".zoom-bar")
     ) {
-      return;
+      return false;
     }
     setActiveMenuNoteId(null);
     setIsPanning(true);
-    panStart.current = { x: e.clientX - panOffset.x, y: e.clientY - panOffset.y };
+    panStart.current = { x: clientX - panOffset.x, y: clientY - panOffset.y };
+    return true;
   };
 
-  const handleNoteMouseDown = (
-    e: React.MouseEvent<HTMLDivElement>,
+  const beginNoteDrag = (
+    clientX: number,
+    clientY: number,
+    target: HTMLElement,
     note: StickyNote
   ) => {
-    const target = e.target as HTMLElement;
     if (
       target.closest("button") ||
       target.closest("input") ||
@@ -590,32 +593,66 @@ export default function App() {
       target.closest(".color-picker") ||
       editingNoteId === note.id
     ) {
+      return false;
+    }
+    setActiveMenuNoteId(null);
+    setActiveDragId(note.id);
+    dragStart.current = {
+      mouseX: clientX,
+      mouseY: clientY,
+      noteX: note.x,
+      noteY: note.y,
+    };
+    return true;
+  };
+
+  const handleCanvasMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (e.button !== 0) return;
+    beginPan(e.clientX, e.clientY, e.target as HTMLElement);
+  };
+
+  const handleCanvasTouchStart = (e: React.TouchEvent<HTMLDivElement>) => {
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    beginPan(t.clientX, t.clientY, e.target as HTMLElement);
+  };
+
+  const handleNoteMouseDown = (
+    e: React.MouseEvent<HTMLDivElement>,
+    note: StickyNote
+  ) => {
+    const target = e.target as HTMLElement;
+    if (!beginNoteDrag(e.clientX, e.clientY, target, note)) {
       e.stopPropagation();
       return;
     }
     e.preventDefault();
     e.stopPropagation();
-    setActiveMenuNoteId(null);
-    setActiveDragId(note.id);
-    dragStart.current = {
-      mouseX: e.clientX,
-      mouseY: e.clientY,
-      noteX: note.x,
-      noteY: note.y,
-    };
+  };
+
+  const handleNoteTouchStart = (
+    e: React.TouchEvent<HTMLDivElement>,
+    note: StickyNote
+  ) => {
+    if (e.touches.length !== 1) return;
+    const t = e.touches[0];
+    if (!beginNoteDrag(t.clientX, t.clientY, e.target as HTMLElement, note)) {
+      return;
+    }
+    e.stopPropagation();
   };
 
   useEffect(() => {
-    const handleGlobalMouseMove = (e: MouseEvent) => {
+    const applyPointerMove = (clientX: number, clientY: number) => {
       if (isPanning) {
         setPanOffset({
-          x: e.clientX - panStart.current.x,
-          y: e.clientY - panStart.current.y,
+          x: clientX - panStart.current.x,
+          y: clientY - panStart.current.y,
         });
       }
       if (activeDragId) {
-        const deltaX = (e.clientX - dragStart.current.mouseX) / zoomScale;
-        const deltaY = (e.clientY - dragStart.current.mouseY) / zoomScale;
+        const deltaX = (clientX - dragStart.current.mouseX) / zoomScale;
+        const deltaY = (clientY - dragStart.current.mouseY) / zoomScale;
         const nextX = dragStart.current.noteX + deltaX;
         const nextY = dragStart.current.noteY + deltaY;
         setNotes((prev) =>
@@ -624,18 +661,21 @@ export default function App() {
       }
     };
 
-    const handleGlobalMouseUp = async () => {
+    const endPointer = async () => {
       if (isPanning) setIsPanning(false);
       if (activeDragId) {
         const note = notes.find((n) => n.id === activeDragId);
         setActiveDragId(null);
         if (note) {
           try {
-            await fetch(`/api/board/${room}/note/${note.id}`, {
-              method: "PUT",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ x: note.x, y: note.y }),
-            });
+            await fetch(
+              `/api/board/${encodeURIComponent(room)}/note/${encodeURIComponent(note.id)}`,
+              {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ x: note.x, y: note.y }),
+              }
+            );
           } catch (err) {
             console.error("Failed to sync note coordinates: ", err);
           }
@@ -643,11 +683,25 @@ export default function App() {
       }
     };
 
+    const handleGlobalMouseMove = (e: MouseEvent) => applyPointerMove(e.clientX, e.clientY);
+    const handleGlobalTouchMove = (e: TouchEvent) => {
+      if (!isPanning && !activeDragId) return;
+      if (e.touches.length !== 1) return;
+      e.preventDefault();
+      applyPointerMove(e.touches[0].clientX, e.touches[0].clientY);
+    };
+
     window.addEventListener("mousemove", handleGlobalMouseMove);
-    window.addEventListener("mouseup", handleGlobalMouseUp);
+    window.addEventListener("mouseup", endPointer);
+    window.addEventListener("touchmove", handleGlobalTouchMove, { passive: false });
+    window.addEventListener("touchend", endPointer);
+    window.addEventListener("touchcancel", endPointer);
     return () => {
       window.removeEventListener("mousemove", handleGlobalMouseMove);
-      window.removeEventListener("mouseup", handleGlobalMouseUp);
+      window.removeEventListener("mouseup", endPointer);
+      window.removeEventListener("touchmove", handleGlobalTouchMove);
+      window.removeEventListener("touchend", endPointer);
+      window.removeEventListener("touchcancel", endPointer);
     };
   }, [isPanning, activeDragId, notes, room, zoomScale]);
 
@@ -707,15 +761,15 @@ export default function App() {
     <div className="relative h-screen w-screen overflow-hidden flex flex-col select-none bg-[var(--c-bg)] text-[var(--c-ink)] font-sans">
       {/* Toast */}
       {notification && (
-        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 toast px-5 py-3 rise">
+        <div className="fixed top-6 left-1/2 -translate-x-1/2 z-50 toast px-5 py-3 rise sm:left-1/2">
           {notification.message}
         </div>
       )}
 
       {/* Nav — 产品名即标题，只出现一次 */}
-      <header className="nav-bar shrink-0 h-20 px-4 md:px-8 flex items-center justify-between z-10 bg-[var(--c-bg)] border-b border-[var(--c-border-soft)]">
-        <div className="flex items-center gap-5 min-w-0">
-          <div className="flex flex-col min-w-0">
+      <header className="nav-bar shrink-0 h-20 px-3 sm:px-4 md:px-8 flex items-center justify-between z-10 bg-[var(--c-bg)] border-b border-[var(--c-border-soft)] gap-2">
+        <div className="flex items-center gap-2 sm:gap-5 min-w-0 flex-1">
+          <div className="flex flex-col min-w-0 flex-1">
             <p className="eyebrow">Board · 白板</p>
             {isEditingTitle ? (
               <div className="flex items-center gap-1 mt-0.5">
@@ -725,11 +779,11 @@ export default function App() {
                   onChange={(e) => setTitleInput(e.target.value)}
                   onBlur={saveTitle}
                   onKeyDown={(e) => e.key === "Enter" && saveTitle()}
-                  className="field py-0.5 px-1.5 text-[var(--fs-sm)] font-serif max-w-[280px]"
+                  className="field py-0.5 px-1.5 text-[var(--fs-sm)] font-serif w-full max-w-[280px]"
                   autoFocus
                   maxLength={40}
                 />
-                <button type="button" onClick={saveTitle} className="btn btn-icon w-7 h-7">
+                <button type="button" onClick={saveTitle} className="btn btn-icon w-7 h-7 shrink-0">
                   <Check className="w-3.5 h-3.5" />
                 </button>
               </div>
@@ -739,7 +793,7 @@ export default function App() {
                   setTitleInput(boardTitle);
                   setIsEditingTitle(true);
                 }}
-                className="font-serif text-[15px] md:text-lg tracking-[-0.02em] cursor-pointer truncate hover:text-[var(--c-btn)] transition-colors duration-300 mt-0.5"
+                className="font-serif text-[14px] sm:text-[15px] md:text-lg tracking-[-0.02em] cursor-pointer truncate hover:text-[var(--c-btn)] transition-colors duration-300 mt-0.5"
                 title="点击编辑标题"
               >
                 {boardTitle}
@@ -747,7 +801,19 @@ export default function App() {
             )}
           </div>
 
-          <div className="hidden sm:flex items-center border border-[var(--c-border-soft)] h-9">
+          <button
+            type="button"
+            onClick={() => {
+              setRoomInput(room);
+              setIsSwitchingRoom(true);
+            }}
+            className="sm:hidden btn btn-ghost h-9 px-2.5 text-[11px] shrink-0"
+            title={`雅间：${room}`}
+          >
+            <span className="font-serif">{room}</span>
+          </button>
+
+          <div className="hidden sm:flex items-center border border-[var(--c-border-soft)] h-9 shrink-0">
             <span className="px-2.5 text-[10px] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)] border-r border-[var(--c-border-soft)]">
               Room
             </span>
@@ -768,8 +834,7 @@ export default function App() {
             </button>
           </div>
 
-          {/* Filter */}
-          <div className="hidden md:flex items-stretch border border-[var(--c-border-soft)] h-9">
+          <div className="hidden md:flex items-stretch border border-[var(--c-border-soft)] h-9 shrink-0">
             {(
               [
                 ["all", "全部"],
@@ -795,26 +860,26 @@ export default function App() {
           </div>
         </div>
 
-        <div className="flex items-center gap-0 border border-[var(--c-border-soft)] h-9">
+        <div className="flex items-center gap-0 border border-[var(--c-border-soft)] h-9 shrink-0">
           <button
             type="button"
             onClick={() => {
               setProfileInput(username);
               setIsSettingName(true);
             }}
-            className="btn btn-ghost h-full px-3 text-[11px] border-0 border-r border-[var(--c-border-soft)]"
+            className="btn btn-ghost h-full px-2 sm:px-3 text-[11px] border-0 border-r border-[var(--c-border-soft)] max-w-[72px] sm:max-w-none truncate"
             title="修改昵称"
           >
-            {username || "设置昵称"}
+            <span className="truncate">{username || "昵称"}</span>
           </button>
           <button
             type="button"
             onClick={handleAutoAlign}
-            className="btn btn-ghost h-full px-3 text-[11px] border-0 border-r border-[var(--c-border-soft)]"
+            className="hidden sm:inline-flex btn btn-ghost h-full px-3 text-[11px] border-0 border-r border-[var(--c-border-soft)]"
             title="一键对齐"
           >
             <Grid className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">排序</span>
+            <span className="hidden md:inline">排序</span>
           </button>
           <button
             type="button"
@@ -822,51 +887,48 @@ export default function App() {
               setSnapshotCreator(username);
               setShowHistoryModal(true);
             }}
-            className="btn btn-ghost h-full px-3 text-[11px] border-0 border-r border-[var(--c-border-soft)]"
+            className="btn btn-ghost h-full px-2 sm:px-3 text-[11px] border-0 border-r border-[var(--c-border-soft)]"
             title="历史版本"
           >
             <History className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">历史</span>
           </button>
           <button
             type="button"
             onClick={() => setShowSidebar(!showSidebar)}
-            className={`btn h-full px-3 text-[11px] border-0 border-r border-[var(--c-border-soft)] ${
+            className={`btn h-full px-2 sm:px-3 text-[11px] border-0 border-r border-[var(--c-border-soft)] ${
               showSidebar ? "btn-primary" : "btn-ghost"
             }`}
             title={showSidebar ? "隐藏说明" : "白板说明"}
           >
             <Layers className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">{showSidebar ? "收起" : "说明"}</span>
           </button>
           <button
             type="button"
             onClick={handleCopyRoomLink}
-            className="btn btn-primary h-full px-3.5 text-[11px] border-0 group"
+            className="btn btn-primary h-full px-2.5 sm:px-3.5 text-[11px] border-0 group"
             title={`分享「${room}」`}
           >
             <Share2 className="w-3.5 h-3.5" />
-            <span className="hidden sm:inline">分享</span>
           </button>
         </div>
       </header>
 
       <div className="flex-1 flex overflow-hidden relative">
-        {/* 左侧工具条 */}
-        <div className="absolute top-4 left-4 z-10 panel flex flex-col rise">
+        {/* 左侧工具条：桌面完整 / 手机精简 */}
+        <div className="mobile-toolbar absolute top-3 left-3 sm:top-4 sm:left-4 z-10 panel flex flex-col rise">
           <button
             type="button"
             onClick={() => {
               setNoteCreationCoords(null);
               setShowAddModal(true);
             }}
-            className="btn btn-primary w-14 h-14 flex-col gap-1 border-0 group"
-            title="双击空白处或点此新建提问"
+            className="btn btn-primary w-12 h-12 sm:w-14 sm:h-14 flex-col gap-1 border-0 group"
+            title="点此新建提问"
           >
             <Plus className="w-5 h-5" />
             <span className="text-[9px] tracking-wide">提问</span>
           </button>
-          <div className="border-t border-[var(--c-border-soft)] px-2 py-2.5 flex flex-col items-center gap-1.5">
+          <div className="hidden sm:flex border-t border-[var(--c-border-soft)] px-2 py-2.5 flex-col items-center gap-1.5">
             <span className="text-[8px] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
               Color
             </span>
@@ -890,7 +952,7 @@ export default function App() {
               ))}
             </div>
           </div>
-          <div className="border-t border-[var(--c-border-soft)] px-2 py-2.5 flex flex-col items-center gap-1 text-center">
+          <div className="hidden sm:flex border-t border-[var(--c-border-soft)] px-2 py-2.5 flex-col items-center gap-1 text-center">
             <RefreshCw className="w-3 h-3 text-[var(--c-muted-alt)] animate-spin" style={{ animationDuration: "3s" }} />
             <span className="text-[8px] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)] leading-tight">
               Live
@@ -898,17 +960,40 @@ export default function App() {
           </div>
         </div>
 
+        {/* 手机筛选条 */}
+        <div className="md:hidden absolute top-3 right-3 z-10 panel flex items-stretch h-9 rise">
+          {(
+            [
+              ["all", "全部"],
+              ["unanswered", "未答"],
+              ["answered", "已答"],
+            ] as const
+          ).map(([key, label], i) => (
+            <button
+              key={key}
+              type="button"
+              onClick={() => setFilterType(key)}
+              className={`px-2.5 text-[11px] transition-colors duration-300 ${
+                i > 0 ? "border-l border-[var(--c-border-soft)]" : ""
+              } ${
+                filterType === key
+                  ? "bg-[var(--c-btn)] text-[var(--c-on-dark)]"
+                  : "text-[var(--c-muted)]"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+
         {/* 缩放条 */}
-        <div className="absolute bottom-4 left-4 z-10 panel flex items-center text-[10px] text-[var(--c-muted)] rise rise-d1">
-          <span className="px-3 py-2 border-r border-[var(--c-border-soft)] hidden sm:inline">
-            Pan {Math.round(panOffset.x)} · {Math.round(panOffset.y)}
-          </span>
+        <div className="zoom-bar absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 panel flex items-center text-[10px] text-[var(--c-muted)] rise rise-d1 mb-[env(safe-area-inset-bottom)]">
           <button
             type="button"
             onClick={() =>
               setZoomScale((prev) => Math.max(0.3, parseFloat((prev - 0.1).toFixed(1))))
             }
-            className="btn btn-ghost h-8 w-8 border-0 border-r border-[var(--c-border-soft)] text-[var(--fs-sm)]"
+            className="btn btn-ghost h-9 w-9 sm:h-8 sm:w-8 border-0 border-r border-[var(--c-border-soft)] text-[var(--fs-sm)]"
           >
             −
           </button>
@@ -920,7 +1005,7 @@ export default function App() {
             onClick={() =>
               setZoomScale((prev) => Math.min(2.0, parseFloat((prev + 0.1).toFixed(1))))
             }
-            className="btn btn-ghost h-8 w-8 border-0 border-l border-[var(--c-border-soft)] text-[var(--fs-sm)]"
+            className="btn btn-ghost h-9 w-9 sm:h-8 sm:w-8 border-0 border-l border-[var(--c-border-soft)] text-[var(--fs-sm)]"
           >
             +
           </button>
@@ -930,7 +1015,7 @@ export default function App() {
               setZoomScale(1.0);
               setPanOffset({ x: 0, y: 0 });
             }}
-            className="btn btn-ghost h-8 px-2.5 border-0 border-l border-[var(--c-border-soft)] text-[10px]"
+            className="btn btn-ghost h-9 sm:h-8 px-2.5 border-0 border-l border-[var(--c-border-soft)] text-[10px]"
           >
             重置
           </button>
@@ -940,6 +1025,7 @@ export default function App() {
         <div
           id="whiteboard-stage"
           onMouseDown={handleCanvasMouseDown}
+          onTouchStart={handleCanvasTouchStart}
           onDoubleClick={handleCanvasDoubleClick}
           onWheel={(e) => {
             if (e.ctrlKey || e.metaKey) {
@@ -968,19 +1054,19 @@ export default function App() {
             }}
           >
             {notes.length === 0 && !loading && (
-              <div className="absolute left-[280px] top-[160px] panel-soft p-10 max-w-md rise rise-d2">
+              <div className="absolute left-4 top-24 sm:left-[280px] sm:top-[160px] panel-soft p-6 sm:p-10 w-[min(340px,calc(100vw-2rem))] max-w-md rise rise-d2">
                 <p className="eyebrow">Empty · 空板</p>
-                <h3 className="font-serif text-[var(--fs-display-m)] tracking-[-0.02em] mt-2 leading-tight">
+                <h3 className="font-serif text-[24px] sm:text-[var(--fs-display-m)] tracking-[-0.02em] mt-2 leading-tight">
                   这间会议室还没有人<em className="font-serif italic">提问</em>
                 </h3>
                 <p className="mt-3 text-[var(--fs-sm)] text-[var(--c-muted)] leading-relaxed">
-                  点击左上角「提问」，或在空白处双击，即可落下一张便签。
+                  点击左上角「提问」，即可落下一张便签。手机上可单指拖动画布。
                 </p>
-                <div className="mt-6 flex border border-[var(--c-border-soft)]">
+                <div className="mt-6 flex flex-col sm:flex-row border border-[var(--c-border-soft)]">
                   <button
                     type="button"
                     onClick={() => {
-                      setNoteCreationCoords({ x: 350, y: 220 });
+                      setNoteCreationCoords({ x: 80, y: 120 });
                       setShowAddModal(true);
                     }}
                     className="btn btn-primary flex-1 h-11 border-0"
@@ -990,7 +1076,7 @@ export default function App() {
                   <button
                     type="button"
                     onClick={handleCopyRoomLink}
-                    className="btn btn-ghost flex-1 h-11 border-0 border-l border-[var(--c-border-soft)]"
+                    className="btn btn-ghost flex-1 h-11 border-0 sm:border-l border-t sm:border-t-0 border-[var(--c-border-soft)]"
                   >
                     <Share2 className="w-3.5 h-3.5" />
                     分享
@@ -1007,6 +1093,7 @@ export default function App() {
                 <div
                   key={note.id}
                   onMouseDown={(e) => handleNoteMouseDown(e, note)}
+                  onTouchStart={(e) => handleNoteTouchStart(e, note)}
                   className={`absolute sticky-note w-[280px] min-h-[168px] p-0 flex flex-col cursor-move ${
                     note.answered ? "is-answered" : ""
                   } ${isBeingDragged ? "is-dragging" : ""}`}
@@ -1052,13 +1139,13 @@ export default function App() {
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation();
-                          setDeleteConfirmNoteId(note.id);
+                          handleStartEditingNote(note);
                           setActiveMenuNoteId(null);
                         }}
                         className="btn btn-ghost h-7 w-7 border-0 border-l border-[var(--c-border-soft)] p-0"
-                        title="删除便签"
+                        title="编辑内容"
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Pencil className="w-3.5 h-3.5" />
                       </button>
                       <div className="relative border-l border-[var(--c-border-soft)]">
                         <button
@@ -1076,32 +1163,44 @@ export default function App() {
                         </button>
                         {activeMenuNoteId === note.id && (
                           <div
-                            className="color-picker absolute right-0 top-full mt-0 panel z-50 p-2"
+                            className="color-picker absolute right-0 top-full mt-0 panel z-50 min-w-[148px]"
                             onMouseDown={(e) => e.stopPropagation()}
                             onClick={(e) => e.stopPropagation()}
                           >
-                            <p className="text-[9px] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)] mb-1.5 px-0.5">
-                              Color
-                            </p>
-                            <div className="flex items-center gap-1">
-                              {COLOR_PALETTE.map((c) => (
-                                <button
-                                  key={c.value}
-                                  type="button"
-                                  onClick={() => {
-                                    handleChangeNoteColor(note.id, c.value);
-                                    setActiveMenuNoteId(null);
-                                  }}
-                                  className={`w-4 h-4 border ${
-                                    (note.color || NOTE_SURFACE) === c.value
-                                      ? "border-[var(--c-ink)]"
-                                      : "border-[var(--c-border-soft)]"
-                                  }`}
-                                  style={{ backgroundColor: c.value }}
-                                  title={c.name}
-                                />
-                              ))}
+                            <div className="px-2.5 pt-2.5 pb-2 border-b border-[var(--c-border-soft)]">
+                              <p className="text-[9px] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)] mb-1.5">
+                                Color · 底色
+                              </p>
+                              <div className="flex items-center gap-1">
+                                {COLOR_PALETTE.map((c) => (
+                                  <button
+                                    key={c.value}
+                                    type="button"
+                                    onClick={() => {
+                                      handleChangeNoteColor(note.id, c.value);
+                                    }}
+                                    className={`w-4 h-4 border ${
+                                      (note.color || NOTE_SURFACE) === c.value
+                                        ? "border-[var(--c-ink)]"
+                                        : "border-[var(--c-border-soft)]"
+                                    }`}
+                                    style={{ backgroundColor: c.value }}
+                                    title={c.name}
+                                  />
+                                ))}
+                              </div>
                             </div>
+                            <button
+                              type="button"
+                              onClick={() => {
+                                setDeleteConfirmNoteId(note.id);
+                                setActiveMenuNoteId(null);
+                              }}
+                              className="w-full text-left px-2.5 py-2 text-[11px] text-[var(--c-muted)] hover:bg-[var(--c-bg)] hover:text-[var(--c-ink)] transition-colors duration-300 flex items-center gap-1.5 bg-transparent border-0 cursor-pointer"
+                            >
+                              <Trash2 className="w-3 h-3 shrink-0" />
+                              删除便签
+                            </button>
                           </div>
                         )}
                       </div>
@@ -1176,68 +1275,76 @@ export default function App() {
           </div>
         </div>
 
-        {/* 侧栏 */}
+        {/* 侧栏：桌面贴右；手机底部浮层 */}
         {showSidebar && (
-          <aside className="w-80 shrink-0 z-10 flex flex-col border-l border-[var(--c-border-soft)] bg-[var(--c-bg)]">
-            <div className="px-6 pt-6 pb-4 border-b border-[var(--c-border-soft)] flex items-start justify-between">
-              <div>
-                <p className="eyebrow">Guide · 说明</p>
-                <h2 className="font-serif text-[22px] tracking-[-0.02em] mt-1 leading-tight">
-                  白板如何<em className="font-serif italic">工作</em>？
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={() => setShowSidebar(false)}
-                className="btn btn-icon"
-                title="收起"
-              >
-                <X className="w-4 h-4" />
-              </button>
-            </div>
-
-            <div className="px-6 py-5 text-[var(--fs-sm)] text-[var(--c-muted)] leading-relaxed border-b border-[var(--c-border-soft)]">
-              完全实时同步的会议收集板。开启同一链接的人，会看到你拖曳的每一次落点与每一次表态。
-            </div>
-
-            <div className="border-b border-[var(--c-border-soft)]">
-              {[
-                { k: "便签总计", v: `${notes.length}` },
-                { k: "未标记解答", v: `${unansweredCount}` },
-                { k: "赞数最高", v: `${maxVotes}` },
-              ].map((row, i) => (
-                <div
-                  key={row.k}
-                  className={`flex items-center justify-between px-6 py-3 text-[var(--fs-sm)] ${
-                    i > 0 ? "border-t border-[var(--c-border-soft)]" : ""
-                  }`}
+          <>
+            <button
+              type="button"
+              aria-label="关闭说明"
+              className="md:hidden fixed inset-0 z-20 bg-[rgba(26,26,26,0.45)] border-0 cursor-pointer"
+              onClick={() => setShowSidebar(false)}
+            />
+            <aside className="fixed md:static inset-x-0 bottom-0 md:inset-auto z-30 md:z-10 w-full md:w-80 max-h-[85dvh] md:max-h-none md:h-full shrink-0 flex flex-col border-t md:border-t-0 md:border-l border-[var(--c-border-soft)] bg-[var(--c-bg)] overflow-y-auto">
+              <div className="px-6 pt-6 pb-4 border-b border-[var(--c-border-soft)] flex items-start justify-between">
+                <div>
+                  <p className="eyebrow">Guide · 说明</p>
+                  <h2 className="font-serif text-[22px] tracking-[-0.02em] mt-1 leading-tight">
+                    白板如何<em className="font-serif italic">工作</em>？
+                  </h2>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => setShowSidebar(false)}
+                  className="btn btn-icon"
+                  title="收起"
                 >
-                  <span className="text-[var(--c-muted-alt)]">{row.k}</span>
-                  <span className="font-serif text-[var(--c-ink)]">{row.v}</span>
-                </div>
-              ))}
-            </div>
+                  <X className="w-4 h-4" />
+                </button>
+              </div>
 
-            <div className="px-6 py-5 flex-1 text-[var(--fs-xs)] text-[var(--c-muted)] space-y-3">
-              {[
-                "双击画布空白处：在落点放置新便签",
-                "拖拽空白处：平移整张画布",
-                "双击便签正文：重新编辑提问",
-                "顶栏「排序」：规整为网格",
-              ].map((tip, i) => (
-                <div key={tip} className="flex gap-3">
-                  <span className="font-serif text-[var(--c-muted-alt)] shrink-0">
-                    {String(i + 1).padStart(2, "0")}
-                  </span>
-                  <span className="leading-relaxed">{tip}</span>
-                </div>
-              ))}
-            </div>
+              <div className="px-6 py-5 text-[var(--fs-sm)] text-[var(--c-muted)] leading-relaxed border-b border-[var(--c-border-soft)]">
+                完全实时同步的会议收集板。开启同一链接的人，会看到你拖曳的每一次落点与每一次表态。
+              </div>
 
-            <div className="panel-dark px-6 py-5 text-[var(--fs-xs)] leading-relaxed">
-              无需登录。复制链接或扫码分享给参会者，大家就能一起写入。
-            </div>
-          </aside>
+              <div className="border-b border-[var(--c-border-soft)]">
+                {[
+                  { k: "便签总计", v: `${notes.length}` },
+                  { k: "未标记解答", v: `${unansweredCount}` },
+                  { k: "赞数最高", v: `${maxVotes}` },
+                ].map((row, i) => (
+                  <div
+                    key={row.k}
+                    className={`flex items-center justify-between px-6 py-3 text-[var(--fs-sm)] ${
+                      i > 0 ? "border-t border-[var(--c-border-soft)]" : ""
+                    }`}
+                  >
+                    <span className="text-[var(--c-muted-alt)]">{row.k}</span>
+                    <span className="font-serif text-[var(--c-ink)]">{row.v}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="px-6 py-5 flex-1 text-[var(--fs-xs)] text-[var(--c-muted)] space-y-3">
+                {[
+                  "点左上角「提问」：新建便签",
+                  "单指拖空白处：平移画布",
+                  "点铅笔图标：编辑提问",
+                  "「更多」里可改色或删除",
+                ].map((tip, i) => (
+                  <div key={tip} className="flex gap-3">
+                    <span className="font-serif text-[var(--c-muted-alt)] shrink-0">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="leading-relaxed">{tip}</span>
+                  </div>
+                ))}
+              </div>
+
+              <div className="panel-dark px-6 py-5 text-[var(--fs-xs)] leading-relaxed pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+                无需登录。复制链接分享给参会者，大家就能一起写入。
+              </div>
+            </aside>
+          </>
         )}
       </div>
 
