@@ -1,5 +1,5 @@
 /**
- * 白板浮层 —— 署名 / 换房 / 提问 / 删除 / 历史版本
+ * 白板浮层 —— 署名 / 提问 / 删除 / 历史版本
  * 视觉：直角、发丝线、深色主按钮，无阴影无圆角
  */
 
@@ -14,7 +14,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { BoardHistoryItem } from "../types";
-import { SUGGESTED_ROOMS, COLOR_PALETTE } from "../constants";
+import { COLOR_PALETTE } from "../constants";
 
 /* ---------- 署名 ---------- */
 
@@ -73,97 +73,6 @@ export function NameModal({
 }
 
 /* ---------- 换房 ---------- */
-
-export function RoomModal({
-  room,
-  roomInput,
-  setRoomInput,
-  onSwitch,
-  onRandom,
-  onClose,
-}: {
-  room: string;
-  roomInput: string;
-  setRoomInput: (v: string) => void;
-  onSwitch: (name: string) => void;
-  onRandom: () => void;
-  onClose: () => void;
-}) {
-  return (
-    <div className="fixed inset-0 modal-scrim flex items-center justify-center p-4 z-50">
-      <div className="panel modal-sheet w-full max-w-lg rise">
-        <div className="px-5 sm:px-8 pt-6 sm:pt-8 pb-5 border-b border-[var(--c-border-soft)] flex items-start justify-between">
-          <div>
-            <p className="eyebrow">Room · 雅间</p>
-            <h3 className="font-serif font-normal text-[24px] sm:text-[28px] tracking-[-0.02em] mt-2 leading-snug">
-              换一间<em className="font-serif italic font-normal">诗意</em>的房间？
-            </h3>
-            <p className="text-[var(--fs-xs)] text-[var(--c-muted-alt)] mt-2">
-              当前：
-              <span className="font-serif text-[var(--c-ink)] ml-1">{room}</span>
-            </p>
-          </div>
-          <button type="button" onClick={onClose} className="btn btn-icon" title="关闭">
-            <X className="w-4 h-4" />
-          </button>
-        </div>
-
-        <div className="px-5 sm:px-8 py-5 sm:py-6">
-          <div className="panel-soft p-4 text-[var(--fs-xs)] text-[var(--c-muted)] leading-relaxed">
-            <p className="kicker mb-2">How · 如何找回</p>
-            <p className="mb-1.5">每一个雅间名对应一张独立看板。地址栏 <code className="font-serif text-[var(--c-ink)]">?room=房间名</code> 相同，即是同一间。</p>
-            <p>找不到便签时，多半进了随机新房——在下方输入旧房名即可回来。</p>
-          </div>
-
-          <label className="block mt-6 mb-1.5 text-[var(--fs-xs)] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
-            Enter · 输入房名
-          </label>
-          <div className="flex border border-[var(--c-border-soft)]">
-            <input
-              type="text"
-              placeholder="历史房间名，或自定义（如：听雨）"
-              value={roomInput}
-              onChange={(e) => setRoomInput(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && onSwitch(roomInput)}
-              className="field flex-1 border-0"
-              maxLength={20}
-            />
-            <button
-              type="button"
-              onClick={() => onSwitch(roomInput)}
-              className="btn btn-primary h-auto px-4 border-0 border-l border-[var(--c-border-soft)]"
-            >
-              切换
-            </button>
-          </div>
-
-          <p className="kicker mt-6 mb-2">Suggested · 推荐</p>
-          <div className="grid grid-cols-2 sm:grid-cols-4 border-t border-l border-[var(--c-border-soft)]">
-            {SUGGESTED_ROOMS.map((name) => (
-              <button
-                key={name}
-                type="button"
-                onClick={() => onSwitch(name)}
-                className="font-serif text-[var(--fs-sm)] py-3 border-r border-b border-[var(--c-border-soft)] hover:bg-[var(--c-btn)] hover:text-[var(--c-on-dark)] transition-colors duration-300"
-              >
-                {name}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div className="px-5 sm:px-8 py-4 sm:py-5 border-t border-[var(--c-border-soft)] flex flex-col sm:flex-row gap-0 pb-[max(1rem,env(safe-area-inset-bottom))]">
-          <button type="button" onClick={onRandom} className="btn btn-ghost flex-1 h-11">
-            随机开辟新雅间
-          </button>
-          <button type="button" onClick={onClose} className="btn btn-ghost h-11 px-6 sm:border-l-0 border-t sm:border-t-0 border-[var(--c-border-soft)]">
-            取消
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
 
 /* ---------- 提问 ---------- */
 
@@ -413,7 +322,7 @@ export function HistoryModal({
               <span>Save · 保存快照</span>
             </div>
             <p className="text-[11px] text-[var(--c-muted)] leading-relaxed">
-              将当前标题、便签、坐标与票数打包为版本，日后可一键恢复。
+              有改动时系统每 15 分钟自动存档；也可在此手动打包，日后一键恢复。
             </p>
             <form onSubmit={onCreate} className="flex flex-col gap-3 mt-1">
               <div>
@@ -475,7 +384,7 @@ export function HistoryModal({
                   <History className="w-8 h-8 stroke-[1.5] opacity-40" />
                   <span className="font-serif text-[var(--c-muted)] text-[var(--fs-sm)]">暂无历史版本</span>
                   <p className="max-w-xs text-[10px] leading-relaxed">
-                    在左侧填写信息并打包快照，即可留下第一份归档。
+                    白板有改动后，约每 15 分钟会自动出现一份存档；也可左侧手动打包。
                   </p>
                 </div>
               ) : (
@@ -490,8 +399,11 @@ export function HistoryModal({
                           {String(idx + 1).padStart(2, "0")}
                         </span>
                         <div className="min-w-0">
-                          <div className="flex items-center gap-2">
+                          <div className="flex items-center gap-2 flex-wrap">
                             <span className="text-[var(--fs-sm)] text-[var(--c-ink)] truncate">{item.name}</span>
+                            <span className="shrink-0 text-[10px] text-[var(--c-muted-alt)] border border-[var(--c-border-soft)] px-1.5 py-0.5">
+                              {item.kind === "auto" ? "自动" : "手动"}
+                            </span>
                             <span className="shrink-0 text-[10px] text-[var(--c-muted-alt)] border border-[var(--c-border-soft)] px-1.5 py-0.5">
                               {item.notesCount} 张
                             </span>
@@ -543,8 +455,9 @@ export function HistoryModal({
         <div className="panel-dark px-6 py-2.5 flex items-center justify-between text-[10px] tracking-wide">
           <span>
             Room · <span className="font-serif">{room}</span>
+            <span className="opacity-70 ml-2">有改动 · 每 15 分钟自动存档</span>
           </span>
-          <span className="opacity-70">快照由服务端安全归档</span>
+          <span className="opacity-70">最多保留 20 份</span>
         </div>
       </div>
     </div>

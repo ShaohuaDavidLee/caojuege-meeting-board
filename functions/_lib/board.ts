@@ -27,9 +27,18 @@ export interface BoardHistoryItem {
   creator: string;
   notesCount: number;
   board: BoardState;
+  kind?: "auto" | "manual";
 }
 
 export const DEFAULT_BOARD_TITLE = "草诀歌 AI Labs 会议白板";
+
+/** 每房历史快照上限 */
+export const MAX_HISTORY_ITEMS = 20;
+
+export function pruneHistory(history: BoardHistoryItem[]): BoardHistoryItem[] {
+  if (history.length <= MAX_HISTORY_ITEMS) return history;
+  return history.slice(0, MAX_HISTORY_ITEMS);
+}
 
 function roomKey(roomId: string) {
   return `room:${encodeURIComponent(roomId)}`;

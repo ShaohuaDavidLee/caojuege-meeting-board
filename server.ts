@@ -138,6 +138,14 @@ interface BoardHistoryItem {
   creator: string;
   notesCount: number;
   board: BoardState;
+  kind?: "auto" | "manual";
+}
+
+const MAX_HISTORY_ITEMS = 20;
+
+function pruneHistory(history: BoardHistoryItem[]): BoardHistoryItem[] {
+  if (history.length <= MAX_HISTORY_ITEMS) return history;
+  return history.slice(0, MAX_HISTORY_ITEMS);
 }
 
 function getRoomHistoryFilePath(roomId: string): string {
@@ -336,9 +344,10 @@ app.get("/api/board/:room/history", (req, res) => {
 // 9. Save a new history version snapshot
 app.post("/api/board/:room/history", (req, res) => {
   const { room } = req.params;
-  const { name, creator } = req.body;
+  const { name, creator, kind: rawKind } = req.body;
   const state = loadRoom(room);
-  
+  const kind = rawKind === "auto" ? "auto" : "manual";
+
   const history = loadRoomHistory(room);
   const newItem: BoardHistoryItem = {
     id: "hist_" + Math.random().toString(36).substring(2, 11) + "_" + Date.now(),
@@ -346,11 +355,12 @@ app.post("/api/board/:room/history", (req, res) => {
     name: String(name || `未命名版本`).trim(),
     creator: String(creator || "匿名").trim(),
     notesCount: state.notes.length,
-    board: JSON.parse(JSON.stringify(state)), // Deep clone the board state
+    board: JSON.parse(JSON.stringify(state)),
+    kind,
   };
-  
-  history.unshift(newItem); // newest first
-  saveRoomHistory(room, history);
+
+  history.unshift(newItem);
+  saveRoomHistory(room, pruneHistory(history));
   res.json({ success: true, data: newItem });
 });
 

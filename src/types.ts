@@ -28,6 +28,8 @@ export interface BoardHistoryItem {
   creator: string;
   notesCount: number;
   board: BoardState;
+  /** 自动定时存档 / 手动打包；旧数据缺省视为手动 */
+  kind?: "auto" | "manual";
 }
 
 export interface ApiResponse<T = any> {

@@ -8,6 +8,7 @@ import {
   saveRoom,
   loadHistory,
   saveHistory,
+  pruneHistory,
   json,
   type StickyNote,
   type BoardHistoryItem,
@@ -178,6 +179,7 @@ export async function onRequest(context: PagesContext): Promise<Response> {
       const body = await readBody(request);
       const state = await loadRoom(kv, room);
       const history = await loadHistory(kv, room);
+      const kind = body.kind === "auto" ? "auto" : "manual";
       const newItem: BoardHistoryItem = {
         id: "hist_" + Math.random().toString(36).substring(2, 11) + "_" + Date.now(),
         timestamp: new Date().toISOString(),
@@ -185,9 +187,10 @@ export async function onRequest(context: PagesContext): Promise<Response> {
         creator: String(body.creator || "匿名").trim(),
         notesCount: state.notes.length,
         board: JSON.parse(JSON.stringify(state)),
+        kind,
       };
       history.unshift(newItem);
-      await saveHistory(kv, room, history);
+      await saveHistory(kv, room, pruneHistory(history));
       return json({ success: true, data: newItem });
     }
 

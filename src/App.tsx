@@ -23,7 +23,8 @@ import {
 } from "lucide-react";
 import { StickyNote, BoardState, BoardHistoryItem } from "./types";
 import {
-  POETIC_WORDS,
+  DEFAULT_ROOM,
+  AUTO_SNAPSHOT_INTERVAL_MS,
   NOTE_SURFACE,
   COLOR_PALETTE,
   DEFAULT_BOARD_TITLE,
@@ -31,21 +32,14 @@ import {
 } from "./constants";
 import {
   NameModal,
-  RoomModal,
   AddNoteModal,
   DeleteModal,
   HistoryModal,
 } from "./components/Modals";
 
 export default function App() {
-  const [room, setRoom] = useState<string>(() => {
-    if (typeof window !== "undefined") {
-      const params = new URLSearchParams(window.location.search);
-      const roomParam = params.get("room");
-      if (roomParam) return roomParam;
-    }
-    return POETIC_WORDS[Math.floor(Math.random() * POETIC_WORDS.length)];
-  });
+  /** 全场固定一间，杜绝随机开房导致内容失散 */
+  const room = DEFAULT_ROOM;
   const [boardTitle, setBoardTitle] = useState<string>(DEFAULT_BOARD_TITLE);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleInput, setTitleInput] = useState("");
@@ -53,9 +47,6 @@ export default function App() {
   const [notes, setNotes] = useState<StickyNote[]>([]);
   const [loading, setLoading] = useState(true);
   const [showSidebar, setShowSidebar] = useState(false);
-
-  const [isSwitchingRoom, setIsSwitchingRoom] = useState(false);
-  const [roomInput, setRoomInput] = useState("");
 
   const [zoomScale, setZoomScale] = useState(1.0);
 
@@ -99,6 +90,9 @@ export default function App() {
   }, [room]);
 
   const lastWriteTimeRef = useRef(0);
+  /** 上次成功自动存档时间；初始等于 now，避免刚进房就空存一份 */
+  const lastAutoSnapshotAtRef = useRef(Date.now());
+  const autoSnapshotInFlightRef = useRef(false);
 
   const [filterType, setFilterType] = useState<"all" | "unanswered" | "answered">(
     "all"
@@ -133,11 +127,11 @@ export default function App() {
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
-    if (params.get("room") !== room) {
-      const newUrl = `${window.location.origin}${window.location.pathname}?room=${room}`;
+    if (params.get("room") !== DEFAULT_ROOM) {
+      const newUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(DEFAULT_ROOM)}`;
       window.history.replaceState(null, "", newUrl);
     }
-  }, [room]);
+  }, []);
 
   const showToast = (message: string, type: "success" | "info" = "success") => {
     setNotification({ message, type });
@@ -149,7 +143,7 @@ export default function App() {
     const fetchStartTime = Date.now();
     try {
       if (!isSilent) setLoading(true);
-      const res = await fetch(`/api/board/${roomName}`);
+      const res = await fetch(`/api/board/${encodeURIComponent(roomName)}`);
       const data = await res.json();
 
       if (roomName !== roomRef.current) return;
@@ -183,7 +177,7 @@ export default function App() {
                 backupBoard.notes.length !== 3;
 
               if (hasCustomContent && backupBoard.notes.length > 0) {
-                const syncRes = await fetch(`/api/board/${roomName}/sync-full`, {
+                const syncRes = await fetch(`/api/board/${encodeURIComponent(roomName)}/sync-full`, {
                   method: "PUT",
                   headers: { "Content-Type": "application/json" },
                   body: JSON.stringify({
@@ -237,44 +231,28 @@ export default function App() {
     }
   };
 
-  const handleSwitchRoomTo = (newRoom: string) => {
-    const trimmed = newRoom.trim();
-    if (!trimmed) {
-      showToast("请输入有效的房间名称", "info");
-      return;
-    }
-    setRoom(trimmed);
-    setIsSwitchingRoom(false);
-    showToast(`已切换至「${trimmed}」`);
-  };
-
   const handleCopyRoomLink = () => {
-    const fullUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(room)}`;
+    const fullUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(DEFAULT_ROOM)}`;
     navigator.clipboard
       .writeText(fullUrl)
-      .then(() => showToast(`已复制「${room}」分享链接`))
+      .then(() => showToast("已复制分享链接"))
       .catch(() => showToast(`复制失败，链接为：${fullUrl}`, "info"));
   };
 
-  const handleCreateRandomPoeticRoom = () => {
-    handleSwitchRoomTo(POETIC_WORDS[Math.floor(Math.random() * POETIC_WORDS.length)]);
-  };
-
   useEffect(() => {
-    if (!room) return;
     fetchBoardState(room, false);
     const interval = setInterval(() => fetchBoardState(room, true), 1500);
     return () => clearInterval(interval);
-  }, [room, activeDragId, isEditingTitle, editingNoteId]);
+  }, [activeDragId, isEditingTitle, editingNoteId]);
 
   useEffect(() => {
-    if (showHistoryModal && room) fetchHistoryList();
-  }, [showHistoryModal, room]);
+    if (showHistoryModal) fetchHistoryList();
+  }, [showHistoryModal]);
 
   const fetchHistoryList = async () => {
     try {
       setHistoryLoading(true);
-      const res = await fetch(`/api/board/${room}/history`);
+      const res = await fetch(`/api/board/${encodeURIComponent(room)}/history`);
       const data = await res.json();
       if (data.success && data.data) setHistoryList(data.data);
     } catch (e) {
@@ -285,6 +263,51 @@ export default function App() {
     }
   };
 
+  const postHistorySnapshot = async (payload: {
+    name: string;
+    creator: string;
+    kind: "auto" | "manual";
+  }) => {
+    const res = await fetch(`/api/board/${encodeURIComponent(room)}/history`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(payload),
+    });
+    return res.json();
+  };
+
+  useEffect(() => {
+    const tick = setInterval(async () => {
+      if (autoSnapshotInFlightRef.current) return;
+      if (lastWriteTimeRef.current <= lastAutoSnapshotAtRef.current) return;
+      autoSnapshotInFlightRef.current = true;
+      try {
+        const now = new Date();
+        const hh = String(now.getHours()).padStart(2, "0");
+        const mm = String(now.getMinutes()).padStart(2, "0");
+        const res = await fetch(
+          `/api/board/${encodeURIComponent(DEFAULT_ROOM)}/history`,
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              name: `自动存档 · ${hh}:${mm}`,
+              creator: "系统",
+              kind: "auto",
+            }),
+          }
+        );
+        const data = await res.json();
+        if (data.success) lastAutoSnapshotAtRef.current = Date.now();
+      } catch (e) {
+        console.error("自动存档失败：", e);
+      } finally {
+        autoSnapshotInFlightRef.current = false;
+      }
+    }, AUTO_SNAPSHOT_INTERVAL_MS);
+    return () => clearInterval(tick);
+  }, []);
+
   const handleCreateSnapshot = async (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     const finalName =
@@ -292,16 +315,16 @@ export default function App() {
     const finalCreator = snapshotCreator.trim() || username || "草诀歌神秘听众";
     try {
       setIsSavingSnapshot(true);
-      const res = await fetch(`/api/board/${room}/history`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ name: finalName, creator: finalCreator }),
+      const data = await postHistorySnapshot({
+        name: finalName,
+        creator: finalCreator,
+        kind: "manual",
       });
-      const data = await res.json();
       if (data.success) {
         showToast("历史版本已保存");
         setNewSnapshotName("");
         setSnapshotCreator("");
+        lastAutoSnapshotAtRef.current = Date.now();
         await fetchHistoryList();
       } else {
         showToast(`保存失败：${data.error || "未知错误"}`, "info");
@@ -317,7 +340,7 @@ export default function App() {
   const handleRestoreSnapshot = async (snapshotId: string) => {
     try {
       setHistoryLoading(true);
-      const res = await fetch(`/api/board/${room}/history/${snapshotId}/restore`, {
+      const res = await fetch(`/api/board/${encodeURIComponent(room)}/history/${snapshotId}/restore`, {
         method: "POST",
       });
       const data = await res.json();
@@ -342,7 +365,7 @@ export default function App() {
   const handleDeleteSnapshot = async (snapshotId: string) => {
     try {
       setHistoryLoading(true);
-      const res = await fetch(`/api/board/${room}/history/${snapshotId}`, {
+      const res = await fetch(`/api/board/${encodeURIComponent(room)}/history/${snapshotId}`, {
         method: "DELETE",
       });
       const data = await res.json();
@@ -364,7 +387,7 @@ export default function App() {
     if (!titleInput.trim()) return;
     setIsEditingTitle(false);
     try {
-      const res = await fetch(`/api/board/${room}/title`, {
+      const res = await fetch(`/api/board/${encodeURIComponent(room)}/title`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ title: titleInput.trim() }),
@@ -410,7 +433,7 @@ export default function App() {
       : (250 - panOffset.y) / zoomScale;
 
     try {
-      const res = await fetch(`/api/board/${room}/note`, {
+      const res = await fetch(`/api/board/${encodeURIComponent(room)}/note`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -492,7 +515,7 @@ export default function App() {
     if (!editingText.trim()) return;
     lastWriteTimeRef.current = Date.now();
     try {
-      const res = await fetch(`/api/board/${room}/note/${id}`, {
+      const res = await fetch(`/api/board/${encodeURIComponent(room)}/note/${id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ text: editingText.trim() }),
@@ -514,7 +537,7 @@ export default function App() {
     lastWriteTimeRef.current = Date.now();
     const updatedStatus = !note.answered;
     try {
-      const res = await fetch(`/api/board/${room}/note/${note.id}`, {
+      const res = await fetch(`/api/board/${encodeURIComponent(room)}/note/${note.id}`, {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ answered: updatedStatus }),
@@ -542,7 +565,7 @@ export default function App() {
     localStorage.setItem("qa_whiteboard_votes", JSON.stringify(newUpvoteState));
 
     try {
-      const res = await fetch(`/api/board/${room}/note/${id}/vote`, {
+      const res = await fetch(`/api/board/${encodeURIComponent(room)}/note/${id}/vote`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ increment: !isUpvoted }),
@@ -737,7 +760,7 @@ export default function App() {
 
     for (const note of alignedNotes) {
       try {
-        await fetch(`/api/board/${room}/note/${note.id}`, {
+        await fetch(`/api/board/${encodeURIComponent(room)}/note/${note.id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ x: note.x, y: note.y, rotate: 0 }),
@@ -801,37 +824,13 @@ export default function App() {
             )}
           </div>
 
-          <button
-            type="button"
-            onClick={() => {
-              setRoomInput(room);
-              setIsSwitchingRoom(true);
-            }}
-            className="sm:hidden btn btn-ghost h-9 px-2.5 text-[11px] shrink-0"
-            title={`雅间：${room}`}
-          >
-            <span className="font-serif">{room}</span>
-          </button>
-
-          <div className="hidden sm:flex items-center border border-[var(--c-border-soft)] h-9 shrink-0">
-            <span className="px-2.5 text-[10px] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)] border-r border-[var(--c-border-soft)]">
+          <div className="flex items-center border border-[var(--c-border-soft)] h-9 shrink-0">
+            <span className="hidden sm:inline px-2.5 text-[10px] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)] border-r border-[var(--c-border-soft)]">
               Room
             </span>
-            <span className="font-serif px-2.5 text-[var(--fs-sm)]" title={`当前雅间：${room}`}>
-              {room}
+            <span className="font-serif px-2.5 text-[var(--fs-sm)]" title="全场共用一间">
+              {DEFAULT_ROOM}
             </span>
-            <button
-              type="button"
-              onClick={() => {
-                setRoomInput(room);
-                setIsSwitchingRoom(true);
-              }}
-              className="btn btn-ghost h-full px-2.5 text-[11px] border-0 border-l border-[var(--c-border-soft)] rounded-none"
-              title="切换雅间"
-            >
-              <RefreshCw className="w-3 h-3" />
-              切换
-            </button>
           </div>
 
           <div className="hidden md:flex items-stretch border border-[var(--c-border-soft)] h-9 shrink-0">
@@ -1355,17 +1354,6 @@ export default function App() {
           setProfileInput={setProfileInput}
           onSave={handleSaveUsername}
           onCancel={() => setIsSettingName(false)}
-        />
-      )}
-
-      {isSwitchingRoom && (
-        <RoomModal
-          room={room}
-          roomInput={roomInput}
-          setRoomInput={setRoomInput}
-          onSwitch={handleSwitchRoomTo}
-          onRandom={handleCreateRandomPoeticRoom}
-          onClose={() => setIsSwitchingRoom(false)}
         />
       )}
 
