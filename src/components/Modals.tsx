@@ -14,7 +14,7 @@ import {
   RefreshCw,
 } from "lucide-react";
 import { BoardHistoryItem } from "../types";
-import { SUGGESTED_ROOMS } from "../constants";
+import { SUGGESTED_ROOMS, COLOR_PALETTE } from "../constants";
 
 /* ---------- 署名 ---------- */
 
@@ -170,6 +170,8 @@ export function RoomModal({
 export function AddNoteModal({
   newNoteText,
   setNewNoteText,
+  newNoteColor,
+  setNewNoteColor,
   noteCreationCoords,
   submitterNameType,
   setSubmitterNameType,
@@ -180,6 +182,8 @@ export function AddNoteModal({
 }: {
   newNoteText: string;
   setNewNoteText: (v: string) => void;
+  newNoteColor: string;
+  setNewNoteColor: (v: string) => void;
   noteCreationCoords: { x: number; y: number } | null;
   submitterNameType: "self" | "anonymous";
   setSubmitterNameType: (v: "self" | "anonymous") => void;
@@ -267,6 +271,28 @@ export function AddNoteModal({
                 修改昵称
               </button>
             )}
+          </div>
+
+          <div>
+            <label className="block mb-1.5 text-[var(--fs-xs)] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
+              Color · 底色
+            </label>
+            <div className="flex items-center gap-2">
+              {COLOR_PALETTE.map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  onClick={() => setNewNoteColor(c.value)}
+                  className={`w-7 h-7 border transition-colors duration-300 ${
+                    newNoteColor === c.value
+                      ? "border-[var(--c-ink)]"
+                      : "border-[var(--c-border-soft)]"
+                  }`}
+                  style={{ backgroundColor: c.value }}
+                  title={c.name}
+                />
+              ))}
+            </div>
           </div>
         </div>
 

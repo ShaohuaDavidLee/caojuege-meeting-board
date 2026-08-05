@@ -24,6 +24,7 @@ import { StickyNote, BoardState, BoardHistoryItem } from "./types";
 import {
   POETIC_WORDS,
   NOTE_SURFACE,
+  COLOR_PALETTE,
   DEFAULT_BOARD_TITLE,
   LEGACY_TITLES,
 } from "./constants";
@@ -65,6 +66,7 @@ export default function App() {
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [newNoteText, setNewNoteText] = useState("");
+  const [newNoteColor, setNewNoteColor] = useState<string>(NOTE_SURFACE);
   const [noteCreationCoords, setNoteCreationCoords] = useState<{
     x: number;
     y: number;
@@ -415,7 +417,7 @@ export default function App() {
           name: finalName,
           x,
           y,
-          color: NOTE_SURFACE,
+          color: newNoteColor,
           rotate: 0,
         }),
       });
@@ -443,15 +445,40 @@ export default function App() {
 
   const handleDeleteNote = async (id: string) => {
     lastWriteTimeRef.current = Date.now();
+    // 乐观移除，避免菜单/轮询抢状态
+    setNotes((prev) => prev.filter((n) => n.id !== id));
     try {
-      const res = await fetch(`/api/board/${room}/note/${id}`, { method: "DELETE" });
+      const res = await fetch(
+        `/api/board/${encodeURIComponent(room)}/note/${encodeURIComponent(id)}`,
+        { method: "DELETE" }
+      );
       const data = await res.json();
       if (data.success) {
-        setNotes((prev) => prev.filter((n) => n.id !== id));
-        showToast("便签已撤销", "info");
+        showToast("便签已删除", "info");
+      } else {
+        showToast(`删除失败：${data.error || "未知错误"}`, "info");
+        fetchBoardState(room, true);
       }
     } catch {
       showToast("删除失败，请稍后重试", "info");
+      fetchBoardState(room, true);
+    }
+  };
+
+  const handleChangeNoteColor = async (id: string, colorHex: string) => {
+    lastWriteTimeRef.current = Date.now();
+    setNotes((prev) => prev.map((n) => (n.id === id ? { ...n, color: colorHex } : n)));
+    try {
+      await fetch(
+        `/api/board/${encodeURIComponent(room)}/note/${encodeURIComponent(id)}`,
+        {
+          method: "PUT",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ color: colorHex }),
+        }
+      );
+    } catch {
+      showToast("更新颜色失败", "info");
     }
   };
 
@@ -534,17 +561,19 @@ export default function App() {
   };
 
   const handleCanvasMouseDown = (e: React.MouseEvent<HTMLDivElement>) => {
-    setActiveMenuNoteId(null);
     if (e.button !== 0) return;
     const target = e.target as HTMLElement;
+    // 点在便签/控件内时绝不能先关菜单，否则「删除」的 click 会丢
     if (
       target.closest(".sticky-note") ||
       target.closest("button") ||
       target.closest("input") ||
+      target.closest("textarea") ||
       target.closest(".nav-bar")
     ) {
       return;
     }
+    setActiveMenuNoteId(null);
     setIsPanning(true);
     panStart.current = { x: e.clientX - panOffset.x, y: e.clientY - panOffset.y };
   };
@@ -558,11 +587,15 @@ export default function App() {
       target.closest("button") ||
       target.closest("input") ||
       target.closest("textarea") ||
+      target.closest(".color-picker") ||
       editingNoteId === note.id
     ) {
+      e.stopPropagation();
       return;
     }
     e.preventDefault();
+    e.stopPropagation();
+    setActiveMenuNoteId(null);
     setActiveDragId(note.id);
     dragStart.current = {
       mouseX: e.clientX,
@@ -679,21 +712,11 @@ export default function App() {
         </div>
       )}
 
-      {/* Nav — 80px 实色底 + 发丝底线 */}
+      {/* Nav — 产品名即标题，只出现一次 */}
       <header className="nav-bar shrink-0 h-20 px-4 md:px-8 flex items-center justify-between z-10 bg-[var(--c-bg)] border-b border-[var(--c-border-soft)]">
         <div className="flex items-center gap-5 min-w-0">
-            <div className="flex flex-col min-w-0">
-            <div className="flex items-baseline gap-2">
-              <span className="font-serif text-[15px] tracking-[0.12em] text-[var(--c-ink)] shrink-0">
-                草诀歌
-              </span>
-              <span className="text-[10px] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
-                AI Labs
-              </span>
-              <span className="text-[10px] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)] hidden sm:inline">
-                · Board
-              </span>
-            </div>
+          <div className="flex flex-col min-w-0">
+            <p className="eyebrow">Board · 白板</p>
             {isEditingTitle ? (
               <div className="flex items-center gap-1 mt-0.5">
                 <input
@@ -702,9 +725,9 @@ export default function App() {
                   onChange={(e) => setTitleInput(e.target.value)}
                   onBlur={saveTitle}
                   onKeyDown={(e) => e.key === "Enter" && saveTitle()}
-                  className="field py-0.5 px-1.5 text-[var(--fs-sm)] font-serif max-w-[220px]"
+                  className="field py-0.5 px-1.5 text-[var(--fs-sm)] font-serif max-w-[280px]"
                   autoFocus
-                  maxLength={25}
+                  maxLength={40}
                 />
                 <button type="button" onClick={saveTitle} className="btn btn-icon w-7 h-7">
                   <Check className="w-3.5 h-3.5" />
@@ -716,7 +739,7 @@ export default function App() {
                   setTitleInput(boardTitle);
                   setIsEditingTitle(true);
                 }}
-                className="font-serif text-[var(--fs-sm)] md:text-base tracking-[-0.01em] cursor-pointer truncate hover:text-[var(--c-btn)] transition-colors duration-300 mt-0.5"
+                className="font-serif text-[15px] md:text-lg tracking-[-0.02em] cursor-pointer truncate hover:text-[var(--c-btn)] transition-colors duration-300 mt-0.5"
                 title="点击编辑标题"
               >
                 {boardTitle}
@@ -843,6 +866,30 @@ export default function App() {
             <Plus className="w-5 h-5" />
             <span className="text-[9px] tracking-wide">提问</span>
           </button>
+          <div className="border-t border-[var(--c-border-soft)] px-2 py-2.5 flex flex-col items-center gap-1.5">
+            <span className="text-[8px] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
+              Color
+            </span>
+            <div className="grid grid-cols-2 gap-1">
+              {COLOR_PALETTE.map((c) => (
+                <button
+                  key={c.value}
+                  type="button"
+                  onClick={() => {
+                    setNewNoteColor(c.value);
+                    showToast(`已选用：${c.name}`);
+                  }}
+                  className={`w-4 h-4 border transition-colors duration-300 ${
+                    newNoteColor === c.value
+                      ? "border-[var(--c-ink)]"
+                      : "border-[var(--c-border-soft)]"
+                  }`}
+                  style={{ backgroundColor: c.value }}
+                  title={c.name}
+                />
+              ))}
+            </div>
+          </div>
           <div className="border-t border-[var(--c-border-soft)] px-2 py-2.5 flex flex-col items-center gap-1 text-center">
             <RefreshCw className="w-3 h-3 text-[var(--c-muted-alt)] animate-spin" style={{ animationDuration: "3s" }} />
             <span className="text-[8px] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)] leading-tight">
@@ -966,6 +1013,7 @@ export default function App() {
                   style={{
                     left: `${note.x}px`,
                     top: `${note.y}px`,
+                    backgroundColor: note.color || NOTE_SURFACE,
                     transition: isBeingDragged
                       ? "none"
                       : "left 0.4s cubic-bezier(0.16, 1, 0.3, 1), top 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, border-color 0.3s ease",
@@ -986,16 +1034,31 @@ export default function App() {
                         {note.answered ? "Answered" : "Open"}
                       </span>
                     </div>
-                    <div className="flex items-center gap-0 border border-[var(--c-border-soft)]">
+                    <div className="flex items-center gap-0 border border-[var(--c-border-soft)] bg-[var(--c-surface)]">
                       <button
                         type="button"
-                        onClick={() => handleToggleAnswered(note)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleToggleAnswered(note);
+                        }}
                         className={`btn h-7 w-7 border-0 p-0 ${
                           note.answered ? "btn-primary" : "btn-ghost"
                         }`}
                         title={note.answered ? "恢复为未回答" : "标记为已回答"}
                       >
                         <Check className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          setDeleteConfirmNoteId(note.id);
+                          setActiveMenuNoteId(null);
+                        }}
+                        className="btn btn-ghost h-7 w-7 border-0 border-l border-[var(--c-border-soft)] p-0"
+                        title="删除便签"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
                       </button>
                       <div className="relative border-l border-[var(--c-border-soft)]">
                         <button
@@ -1013,20 +1076,32 @@ export default function App() {
                         </button>
                         {activeMenuNoteId === note.id && (
                           <div
-                            className="absolute right-0 top-full mt-0 w-28 panel z-50"
+                            className="color-picker absolute right-0 top-full mt-0 panel z-50 p-2"
+                            onMouseDown={(e) => e.stopPropagation()}
                             onClick={(e) => e.stopPropagation()}
                           >
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setDeleteConfirmNoteId(note.id);
-                                setActiveMenuNoteId(null);
-                              }}
-                              className="w-full text-left px-3 py-2 text-[11px] text-[var(--c-ink)] hover:bg-[var(--c-btn)] hover:text-[var(--c-on-dark)] transition-colors duration-300 flex items-center gap-1.5 bg-transparent border-0 cursor-pointer"
-                            >
-                              <Trash2 className="w-3 h-3 shrink-0" />
-                              删除便签
-                            </button>
+                            <p className="text-[9px] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)] mb-1.5 px-0.5">
+                              Color
+                            </p>
+                            <div className="flex items-center gap-1">
+                              {COLOR_PALETTE.map((c) => (
+                                <button
+                                  key={c.value}
+                                  type="button"
+                                  onClick={() => {
+                                    handleChangeNoteColor(note.id, c.value);
+                                    setActiveMenuNoteId(null);
+                                  }}
+                                  className={`w-4 h-4 border ${
+                                    (note.color || NOTE_SURFACE) === c.value
+                                      ? "border-[var(--c-ink)]"
+                                      : "border-[var(--c-border-soft)]"
+                                  }`}
+                                  style={{ backgroundColor: c.value }}
+                                  title={c.name}
+                                />
+                              ))}
+                            </div>
                           </div>
                         )}
                       </div>
@@ -1191,6 +1266,8 @@ export default function App() {
         <AddNoteModal
           newNoteText={newNoteText}
           setNewNoteText={setNewNoteText}
+          newNoteColor={newNoteColor}
+          setNewNoteColor={setNewNoteColor}
           noteCreationCoords={noteCreationCoords}
           submitterNameType={submitterNameType}
           setSubmitterNameType={setSubmitterNameType}

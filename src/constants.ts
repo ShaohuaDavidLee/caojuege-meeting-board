@@ -16,8 +16,18 @@ export const POETIC_WORDS = [
   "词赋", "丹青", "弦歌", "雅集", "兰亭", "蓬莱", "瀛洲", "瑶池", "紫微", "太白",
 ];
 
-/** 规范禁止色相便签；API 仍保留 color 字段，统一落白面 */
+/** 默认便签色（米白纸面） */
 export const NOTE_SURFACE = "#ffffff";
+
+/** 便签配色：低饱和纸感，只做区分，不当品牌强调色 */
+export const COLOR_PALETTE = [
+  { name: "宣纸", value: "#ffffff" },
+  { name: "米色", value: "#f3efe6" },
+  { name: "竹青", value: "#e4ebe3" },
+  { name: "雨灰", value: "#e6eaee" },
+  { name: "桃雾", value: "#f3e8e6" },
+  { name: "藤黄", value: "#f2edd8" },
+] as const;
 
 export const DEFAULT_BOARD_TITLE = "草诀歌 AI Labs 会议白板";
 

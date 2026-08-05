@@ -243,7 +243,6 @@ body {
 
 .sticky-note.is-answered {
   opacity: 0.55;
-  background: var(--c-bg);
 }
 
 /* ---------- Toast ---------- */
