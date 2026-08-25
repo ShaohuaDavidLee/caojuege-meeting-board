@@ -9,6 +9,7 @@ import {
   loadHistory,
   saveHistory,
   pruneHistory,
+  isRoomNameValid,
   json,
   type StickyNote,
   type BoardHistoryItem,
@@ -61,6 +62,10 @@ export async function onRequest(context: PagesContext): Promise<Response> {
   }
 
   const room = decodeURIComponent(segments[1]);
+  if (!isRoomNameValid(room)) {
+    return json({ success: false, error: "房间名不合法" }, 400);
+  }
+
   const method = request.method.toUpperCase();
   const rest = segments.slice(2);
 

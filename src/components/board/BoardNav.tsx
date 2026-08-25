@@ -1,9 +1,9 @@
 /**
- * 顶栏 —— 标题 / 房间 / 筛选 / 工具
+ * 顶栏 —— 返回 / 标题 / 房间 / 筛选 / 工具
  */
 
-import { Check, Grid, History, Layers, Share2 } from "lucide-react";
-import { DEFAULT_ROOM } from "../../constants";
+import { Check, ChevronLeft, Grid, History, Layers, Share2 } from "lucide-react";
+import { isDefaultRoom } from "../../utils/boardHelpers";
 import type { NoteFilter } from "../../hooks/useBoardSession";
 
 const FILTERS = [
@@ -13,6 +13,7 @@ const FILTERS = [
 ] as const;
 
 export function BoardNav({
+  room,
   boardTitle,
   isEditingTitle,
   titleInput,
@@ -23,12 +24,14 @@ export function BoardNav({
   setFilterType,
   username,
   showSidebar,
+  onLeave,
   onEditProfile,
   onAutoAlign,
   onOpenHistory,
   onToggleSidebar,
   onCopyLink,
 }: {
+  room: string;
   boardTitle: string;
   isEditingTitle: boolean;
   titleInput: string;
@@ -39,6 +42,7 @@ export function BoardNav({
   setFilterType: (v: NoteFilter) => void;
   username: string;
   showSidebar: boolean;
+  onLeave: () => void;
   onEditProfile: () => void;
   onAutoAlign: () => void;
   onOpenHistory: () => void;
@@ -48,6 +52,16 @@ export function BoardNav({
   return (
     <header className="nav-bar shrink-0 h-20 px-3 sm:px-4 md:px-8 flex items-center justify-between z-10 bg-[var(--c-bg)] border-b border-[var(--c-border-soft)] gap-2">
       <div className="flex items-center gap-2 sm:gap-5 min-w-0 flex-1">
+        <button
+          type="button"
+          onClick={onLeave}
+          className="btn btn-icon shrink-0"
+          title="回首页 · 换一间房"
+          aria-label="回首页"
+        >
+          <ChevronLeft className="w-4 h-4" />
+        </button>
+
         <div className="flex flex-col min-w-0 flex-1">
           <p className="eyebrow">Board · 白板</p>
           {isEditingTitle ? (
@@ -80,12 +94,15 @@ export function BoardNav({
           )}
         </div>
 
-        <div className="flex items-center border border-[var(--c-border-soft)] h-9 shrink-0">
+        <div className="flex items-center border border-[var(--c-border-soft)] h-9 shrink-0 max-w-[46vw] sm:max-w-none">
           <span className="hidden sm:inline px-2.5 text-[10px] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)] border-r border-[var(--c-border-soft)]">
             Room
           </span>
-          <span className="font-serif px-2.5 text-[var(--fs-sm)]" title="全场共用一间">
-            {DEFAULT_ROOM}
+          <span
+            className="font-serif px-2.5 text-[var(--fs-sm)] truncate"
+            title={isDefaultRoom(room) ? "草诀歌 AI Labs 主房" : `独立房间「${room}」`}
+          >
+            {room}
           </span>
         </div>
 
@@ -149,7 +166,7 @@ export function BoardNav({
           type="button"
           onClick={onCopyLink}
           className="btn btn-primary h-full px-2.5 sm:px-3.5 text-[11px] border-0 group"
-          title={`分享「${DEFAULT_ROOM}」`}
+          title={`分享「${room}」`}
         >
           <Share2 className="w-3.5 h-3.5" />
         </button>

@@ -32,6 +32,12 @@ if (!fs.existsSync(DATA_DIR)) {
 // In-memory cache
 const roomsCache: { [roomId: string]: BoardState } = {};
 
+/** 主房：与 src/constants.ts 的 DEFAULT_ROOM 保持一致 */
+const DEFAULT_ROOM = "草诀歌 AI Labs";
+
+/** 主房改名前用过的房名，按顺序认领 */
+const LEGACY_ROOM_NAMES = ["共创会", "草诀歌AI Labs"];
+
 // Helper to get room filepath
 function getRoomFilePath(roomId: string): string {
   const buffer = Buffer.from(roomId);
@@ -70,6 +76,12 @@ function loadRoom(roomId: string): BoardState {
     } catch (e) {
       console.error(`Error reading file for room ${roomId}:`, e);
     }
+  }
+
+  // 主房改名：新房还空、老房有内容时整体搬过来
+  if (roomId === DEFAULT_ROOM) {
+    const adopted = adoptLegacyRoom(roomId);
+    if (adopted) return adopted;
   }
 
   // Fallback default state —— 文案与色相对齐《设计规范.md》
@@ -118,6 +130,29 @@ function loadRoom(roomId: string): BoardState {
   roomsCache[roomId] = defaultState;
   saveRoom(roomId, defaultState);
   return defaultState;
+}
+
+function adoptLegacyRoom(roomId: string): BoardState | null {
+  for (const legacy of LEGACY_ROOM_NAMES) {
+    if (legacy === roomId) continue;
+    const legacyPath = getRoomFilePath(legacy);
+    if (!fs.existsSync(legacyPath)) continue;
+    try {
+      const state = JSON.parse(
+        fs.readFileSync(legacyPath, "utf-8")
+      ) as BoardState;
+      saveRoom(roomId, state);
+
+      const legacyHistory = loadRoomHistory(legacy);
+      if (legacyHistory.length > 0) saveRoomHistory(roomId, legacyHistory);
+
+      console.log(`Adopted room "${legacy}" into "${roomId}"`);
+      return state;
+    } catch (e) {
+      console.error(`Error adopting legacy room ${legacy}:`, e);
+    }
+  }
+  return null;
 }
 
 // Helper to save room state

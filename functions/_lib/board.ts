@@ -32,6 +32,15 @@ export interface BoardHistoryItem {
 
 export const DEFAULT_BOARD_TITLE = "草诀歌 AI Labs 会议白板";
 
+/** 主房：与 src/constants.ts 的 DEFAULT_ROOM 保持一致 */
+export const DEFAULT_ROOM = "草诀歌 AI Labs";
+
+/** 主房改名前用过的房名，按顺序认领 */
+export const LEGACY_ROOM_NAMES = ["共创会", "草诀歌AI Labs"];
+
+/** 房名同时是 KV 键，编码后不得超过这个长度 */
+export const MAX_ROOM_KEY_LENGTH = 256;
+
 /** 每房历史快照上限 */
 export const MAX_HISTORY_ITEMS = 20;
 
@@ -93,11 +102,47 @@ export function createDefaultBoard(): BoardState {
   };
 }
 
+export function isRoomNameValid(roomId: string): boolean {
+  const name = roomId.trim();
+  return name.length > 0 && roomKey(name).length <= MAX_ROOM_KEY_LENGTH;
+}
+
+/**
+ * 主房从「共创会」改名到「草诀歌 AI Labs」。
+ * 新键还空、老键有内容时整体搬过来，旧会议的便签与历史都不失联。
+ */
+async function adoptLegacyRoom(
+  kv: KVNamespace,
+  roomId: string
+): Promise<BoardState | null> {
+  for (const legacy of LEGACY_ROOM_NAMES) {
+    if (legacy === roomId) continue;
+    const raw = await kv.get(roomKey(legacy), "json");
+    if (!raw || typeof raw !== "object") continue;
+
+    const state = raw as BoardState;
+    await saveRoom(kv, roomId, state);
+
+    const legacyHistory = await loadHistory(kv, legacy);
+    if (legacyHistory.length > 0) {
+      await saveHistory(kv, roomId, legacyHistory);
+    }
+    return state;
+  }
+  return null;
+}
+
 export async function loadRoom(kv: KVNamespace, roomId: string): Promise<BoardState> {
   const raw = await kv.get(roomKey(roomId), "json");
   if (raw && typeof raw === "object") {
     return raw as BoardState;
   }
+
+  if (roomId === DEFAULT_ROOM) {
+    const adopted = await adoptLegacyRoom(kv, roomId);
+    if (adopted) return adopted;
+  }
+
   const fresh = createDefaultBoard();
   await saveRoom(kv, roomId, fresh);
   return fresh;
