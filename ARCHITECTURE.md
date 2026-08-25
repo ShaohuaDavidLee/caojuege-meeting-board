@@ -12,7 +12,9 @@
 ├── wrangler.toml
 ├── index.html
 ├── server.ts                     # 本地 Express（.data/ JSON）
-├── public/_redirects
+├── public/
+│   ├── _redirects
+│   └── board-preview.png         # 落地页用的白板截图
 ├── functions/
 │   ├── _lib/board.ts             # KV 读写 + 默认板 + 历史裁剪
 │   └── api/[[path]].ts           # 线上 /api/*
@@ -23,16 +25,16 @@
     ├── types.ts
     ├── constants.ts
     ├── pages/
-    │   ├── Landing.tsx           # 落地页 + 房间入口
+    │   ├── Landing.tsx           # 落地页 + 会议间入口
     │   └── Board.tsx             # 白板组装层：hooks + 视图接线
     ├── api/
     │   └── boardApi.ts           # 前端 HTTP 客户端
     ├── utils/
-    │   ├── boardHelpers.ts       # 房名归一 / 默认态判断 / 网格对齐 / 分享链
-    │   └── recentRooms.ts        # 本机去过的房间
+    │   ├── boardHelpers.ts       # 名称归一 / 默认态判断 / 网格对齐 / 分享链
+    │   └── recentRooms.ts        # 本机去过的会议间
     ├── hooks/
     │   ├── useToast.ts           # 轻提示
-    │   ├── useRoute.ts           # 读写 ?room=，旧房名归一
+    │   ├── useRoute.ts           # 读写 ?room=，旧名归一
     │   ├── useBoardSession.ts    # notes / 标题 / 用户 / 轮询
     │   ├── useNoteActions.ts     # 便签增删改 / 投票 / 对齐
     │   ├── useBoardHistory.ts    # 手动 + 自动归档
@@ -52,12 +54,12 @@
 只有两页，靠 URL 上有没有 `?room=` 分：
 
 ```
-/                   → Landing   落地页 + 房间入口
-/?room=<房名>        → Board     那一间的白板
+/                       → Landing   落地页 + 会议间入口
+/?room=<会议间名称>      → Board     那一间的白板
 ```
 
-`useRoute` 负责读写这个参数：进来先把旧房名归一成正名（`共创会` / `草诀歌AI Labs` → `草诀歌 AI Labs`），
-再 pushState 切页，`App` 用 `key={room}` 让换房时整块白板重挂载。
+`useRoute` 负责读写这个参数：进来先把旧名归一成正名（`共创会` / `草诀歌AI Labs` → `草诀歌 AI Labs`），
+再 pushState 切页，`App` 用 `key={room}` 让换间时整块白板重挂载。
 
 ## 双运行时
 
@@ -72,7 +74,7 @@ API 路径形状一致，前端无分支。
 
 ```
 App ──► useRoute ──► ?room=
- ├─ Landing（无 room）──► 进主房 / 开新房 / 最近去过
+ ├─ Landing（无 room）──► 进主会议间 / 另开一间 / 最近去过
  └─ Board（有 room）
      ├─ useToast
      ├─ useBoardSession ──► notes 真相源 / 轮询
@@ -88,17 +90,18 @@ App ──► useRoute ──► ?room=
 - 本地 → Express → `.data/`
 - 线上 → Functions → `BOARD_KV`
 
-## 房间与归档
+## 会议间与归档
 
-- 主房 `草诀歌 AI Labs`（`DEFAULT_ROOM`）：社区自己的场子，链接长期有效。
-- 其他人可在落地页另开一间：房名即地址，便签 / 投票 / 历史按房隔离。
-- 房名归一：`LEGACY_ROOM_ALIASES` 里的旧写法进来即换成正名，老链接不失效。
-- 主房迁移：`loadRoom` 发现主房键还空、旧房键有内容时，把便签与历史整体认领过来（KV 与本地 `.data/` 两边都做）。
-- 历史：有本地写入后每 15 分钟自动存档；手动打包仍保留；每房最多 20 份。
+- 主会议间 `草诀歌 AI Labs`（`DEFAULT_ROOM`）：社区自己的场子，链接长期有效。
+- 需要单独一场时可在落地页另开一间：名称即地址，便签 / 投票 / 历史按间隔离。
+- 名称归一：`LEGACY_ROOM_ALIASES` 里的旧写法进来即换成正名，老链接不失效。
+- 主会议间迁移：`loadRoom` 发现主键还空、旧键有内容时，把便签与历史整体认领过来（KV 与本地 `.data/` 两边都做）。
+- 历史：有本地写入后每 15 分钟自动存档；手动打包仍保留；每间最多 20 份。
 
 ## 变更日志
 
-- 2026-08-25：加落地页；主房从「共创会」改名「草诀歌 AI Labs」，其他人可另开房间；组件类收进 `@layer components`，Tailwind 工具类才盖得住。
+- 2026-08-25：落地页改版：主标语换成「在白板上共享自由交流和思想碰撞」，加白板截图一节，去掉「社区相信什么」「社区里现在有谁」，全站「房」改称「会议间」，另开一间不再强调。
+- 2026-08-25：加落地页；主会议间从「共创会」改名「草诀歌 AI Labs」，可另开会议间；组件类收进 `@layer components`，Tailwind 工具类才盖得住。
 - 2026-08-05：再拆 `useNoteActions`；会话与便签动作解耦。
 - 2026-08-05：拆分 `App.tsx` → hooks / api / board 组件；组装层只接线。
 - 2026-08-05：固定默认房「共创会」；有改动时 15 分钟自动存档；去掉雅间切换。

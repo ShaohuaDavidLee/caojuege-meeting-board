@@ -1,6 +1,6 @@
 /**
  * 路由 —— 只有两页：无 ?room= 是落地页，有 ?room= 是白板
- * 房名同时是 URL 参数与存储键，进出口都走 canonicalRoomName 归一
+ * 名称同时是 URL 参数与存储键，进出口都走 canonicalRoomName 归一
  */
 
 import { useCallback, useEffect, useState } from "react";
@@ -15,7 +15,7 @@ function readRoomFromUrl(): string {
 export function useRoute() {
   const [room, setRoom] = useState<string>(readRoomFromUrl);
 
-  /** 旧房名进来先把地址栏换成正名，分享出去的链接才是同一间 */
+  /** 旧名进来先把地址栏换成正名，分享出去的链接才是同一间 */
   useEffect(() => {
     const raw = new URLSearchParams(window.location.search).get("room") || "";
     const canonical = canonicalRoomName(raw);

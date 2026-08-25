@@ -1,5 +1,5 @@
 /**
- * 最近去过的房间 —— 只存在本机，方便回到自己开过的那一间
+ * 最近去过的会议间 —— 只存在本机，方便回到自己开过的那一间
  */
 
 import { canonicalRoomName } from "./boardHelpers";
