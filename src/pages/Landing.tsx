@@ -115,7 +115,7 @@ export default function Landing({
       {/* ---------- 首屏：左文右图 ---------- */}
       <section className="border-b border-[var(--c-border-soft)] pt-20">
         <div className="wrap">
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-14 lg:gap-14 items-center min-h-[85vh] py-20">
+          <div className="grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] gap-14 lg:gap-16 items-center min-h-[85vh] py-20">
             <div>
               <p className="eyebrow rise">Caojuege AI Labs · Meeting Board</p>
 
