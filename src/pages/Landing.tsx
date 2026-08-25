@@ -113,9 +113,9 @@ export default function Landing({
       </header>
 
       {/* ---------- 首屏：左文右图 ---------- */}
-      <section className="border-b border-[var(--c-border-soft)] pt-20 [overflow-x:clip]">
+      <section className="border-b border-[var(--c-border-soft)] pt-20">
         <div className="wrap">
-          <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.15fr)] gap-14 lg:gap-16 items-center min-h-[85vh] py-20">
+          <div className="grid lg:grid-cols-[minmax(0,1fr)_minmax(0,1.1fr)] gap-14 lg:gap-14 items-center min-h-[85vh] py-20">
             <div>
               <p className="eyebrow rise">Caojuege AI Labs · Meeting Board</p>
 
@@ -141,9 +141,9 @@ export default function Landing({
               </div>
             </div>
 
-            <figure className="min-w-0 bleed-right rise rise-d2">
+            <figure className="min-w-0 rise rise-d2">
               {/* 截图底色与页面底色同为 #e5e5e5，靠白衬边把它托起来，边缘才立得住 */}
-              <div className="border border-[var(--c-border-on-dark)] bg-[var(--c-btn)] p-3 lg:p-4">
+              <div className="border border-[var(--c-border-on-dark)] bg-[var(--c-btn)] p-2 lg:p-2.5">
                 <div className="overflow-x-auto">
                   <img
                     src="/board-preview.png"

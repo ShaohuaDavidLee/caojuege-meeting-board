@@ -406,13 +406,6 @@ body {
     text-wrap: balance;
   }
 
-  /* 首屏配图向右出血到视口边缘：左侧仍与容器对齐，右侧吃掉 wrap 的居中留白 */
-  @media (min-width: 1024px) {
-    .bleed-right {
-      margin-right: calc(-1 * max(48px, (100vw - 1280px) / 2 + 48px));
-    }
-  }
-
   .lead {
     font-size: var(--fs-lg);
     line-height: 1.75;
