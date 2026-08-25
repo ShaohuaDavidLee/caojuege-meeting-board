@@ -1,0 +1,820 @@
+<title>会议白板两版样张</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@400;700;900&display=swap">
+
+<style>
+/* ===========================================================
+   样张外壳 —— 刻意单一浅色：两版要在同一块中性底上比色，
+   底色跟着系统换会改变酸绿的读法。所有颜色显式绘制。
+   =========================================================== */
+:root{
+  --sheet-bg:#F4F2ED;
+  --sheet-card:#FFFFFF;
+  --sheet-ink:#1B1A17;
+  --sheet-mut:#6E6A61;
+  --sheet-line:#DCD8CF;
+  --sheet-line-2:#C6C1B5;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0;background:var(--sheet-bg);color:var(--sheet-ink);
+  font-family:"Inter","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  line-height:1.75;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1560px;margin:0 auto;padding:0 28px}
+
+/* ---------- 顶部 ---------- */
+.sheet-head{background:var(--sheet-bg)}
+.sheet-head .wrap{padding-top:22px;padding-bottom:16px}
+/* 吸顶的只有控制条：整块页头吸顶会吃掉 200px 视高 */
+.ctrlbar{position:sticky;top:0;z-index:20;background:var(--sheet-bg);
+  border-top:1px solid var(--sheet-line);border-bottom:1px solid var(--sheet-line)}
+.ctrlbar .wrap{padding-top:11px;padding-bottom:11px}
+.kicker{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--sheet-mut);margin:0 0 6px;
+}
+.sheet-head h1{
+  font-family:"Noto Serif SC",serif;font-weight:700;
+  font-size:22px;line-height:1.4;letter-spacing:0;margin:0 0 6px;
+}
+.axis{font-size:13.5px;color:var(--sheet-mut);margin:0;max-width:78ch;line-height:1.8}
+.axis b{color:var(--sheet-ink);font-weight:600}
+.controls{display:flex;flex-wrap:wrap;gap:22px;align-items:center}
+.cgroup{display:flex;align-items:center;gap:8px}
+.clabel{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--sheet-mut);
+}
+.cbtns{display:flex;border:1px solid var(--sheet-line-2);background:var(--sheet-card)}
+.cbtns button{
+  font:inherit;font-size:13px;line-height:1;padding:9px 15px;border:0;background:transparent;
+  color:var(--sheet-mut);cursor:pointer;transition:background .15s,color .15s;
+}
+.cbtns button + button{border-left:1px solid var(--sheet-line-2)}
+.cbtns button:hover{color:var(--sheet-ink)}
+.cbtns button[aria-pressed="true"]{background:var(--sheet-ink);color:#F4F2ED}
+.cbtns button:focus-visible{outline:2px solid #1B1A17;outline-offset:2px}
+
+/* ---------- 变体栅格 ---------- */
+.grid{display:grid;gap:26px;padding:26px 0 46px}
+.grid[data-view="both"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid[data-view="v1"],.grid[data-view="v2"]{grid-template-columns:minmax(0,1fr)}
+.grid[data-view="v1"] .variant[data-v="v2"],
+.grid[data-view="v2"] .variant[data-v="v1"]{display:none}
+.variant{min-width:0}
+.vmeta{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.vname{font-family:"Noto Serif SC",serif;font-weight:700;font-size:17px;letter-spacing:0}
+.vtag{
+  font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--sheet-mut);
+}
+.vdesc{font-size:13px;color:var(--sheet-mut);line-height:1.7;margin:0 0 12px;max-width:62ch}
+.frame{
+  position:relative;overflow:hidden;background:#fff;
+  border:1px solid var(--sheet-line-2);aspect-ratio:1280/840;
+}
+.stage{position:absolute;top:0;left:0;width:1280px;height:840px;transform-origin:0 0}
+/* 两种屏都是纵向 flex 列；.screen.on 的特指度高于 .lp/.bd，
+   所以 display 必须在这里给对，否则 flex:1 全部失效、底栏浮在半空。 */
+.stage > .screen{display:none;width:1280px;height:840px;overflow:hidden;flex-direction:column}
+.stage > .screen.on{display:flex}
+
+/* ---------- 数值出处表 ---------- */
+.prov{border-top:1px solid var(--sheet-line);background:var(--sheet-bg)}
+.prov .wrap{padding-top:34px;padding-bottom:10px}
+.prov h2{font-family:"Noto Serif SC",serif;font-size:17px;font-weight:700;margin:0 0 4px}
+.prov p.sub{font-size:13px;color:var(--sheet-mut);margin:0 0 18px}
+.ptable{width:100%;border-collapse:collapse;font-size:13px;background:var(--sheet-card);
+  border:1px solid var(--sheet-line-2)}
+.ptable th,.ptable td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--sheet-line);vertical-align:top}
+.ptable th{
+  font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--sheet-mut);font-weight:400;background:#FAF8F4;
+}
+.ptable tr:last-child td{border-bottom:0}
+.ptable code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px}
+.src{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10.5px;letter-spacing:.06em;
+  padding:2px 6px;border:1px solid var(--sheet-line-2);white-space:nowrap}
+.src-m{background:#E8F0E4}   /* 量得 */
+.src-g{background:#F6EBD8}   /* 看图估的 */
+.src-d{background:#E6EAF2}   /* 我们定的 */
+.tscroll{overflow-x:auto}
+
+/* ---------- 确认区 ---------- */
+.confirm{border-top:1px solid var(--sheet-line);margin-top:34px}
+.confirm .wrap{padding-top:36px;padding-bottom:90px}
+.confirm h2,.confirm .hint,.q{max-width:860px}
+.confirm h2{font-family:"Noto Serif SC",serif;font-size:19px;font-weight:700;margin:0 0 4px}
+.confirm .hint{font-size:13px;color:var(--sheet-mut);margin:0 0 30px}
+.q{margin-bottom:28px}
+.q label{display:block;font-size:14.5px;font-weight:600;margin-bottom:4px}
+.q .why{font-size:12.5px;color:var(--sheet-mut);margin:0 0 10px;line-height:1.75}
+.q select,.q textarea{
+  width:100%;font:inherit;font-size:14px;padding:11px 13px;background:var(--sheet-card);
+  border:1px solid var(--sheet-line-2);border-radius:0;color:var(--sheet-ink);resize:vertical;
+}
+.q textarea{min-height:88px;line-height:1.8}
+.q select:focus-visible,.q textarea:focus-visible{outline:2px solid var(--sheet-ink);outline-offset:1px}
+.copy{
+  font:inherit;font-size:14px;font-weight:600;padding:12px 28px;border:1px solid var(--sheet-ink);
+  background:var(--sheet-ink);color:#F4F2ED;cursor:pointer;
+}
+.copy:hover{background:#000;border-color:#000}
+.copy:focus-visible{outline:2px solid #000;outline-offset:2px}
+.copied{font-size:13px;color:var(--sheet-mut);margin-left:12px}
+
+@media (max-width:900px){
+  .grid[data-view="both"]{grid-template-columns:minmax(0,1fr)}
+  .wrap{padding:0 16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+
+/* ===========================================================
+   两版共用的舞台骨架
+   =========================================================== */
+.screen{position:relative;font-family:"Noto Sans SC","PingFang SC",sans-serif;color:var(--ink)}
+.screen .icon{width:1em;height:1em;display:block;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+
+/* ---- 变体一 · 硬派：忠实迁移 ---- */
+.v1{
+  --paper:#CCF224; --surf:#FFFFFF; --ink:#000000; --pink:#FF2E7E; --cyan:#35D6F0;
+  --bw:4px;            /* 0.25em @16px · 看图估的 */
+  --sh:8px;            /* 0.5em  @16px · 参考页自报 */
+  --tr:150ms;          /* 参考页自报 */
+  --mut:#3A3A3A;
+}
+/* ---- 变体二 · 取气：骨照搬，色回家 ---- */
+.v2{
+  --paper:#E5E5E5; --surf:#FFFFFF; --ink:#1A1A1A; --btn:#47494B; --acid:#CCF224;
+  --bw:2px;            /* 0.125em @16px · 我们定的：参考的一半 */
+  --sh:4px;            /* 我们定的：参考的一半 */
+  --tr:350ms;          /* 现站 --ease-out 时长 · 量得 */
+  --mut:#5C5E60; --mut2:#8B949E;
+}
+
+/* ===========================================================
+   屏一 · 落地页首屏
+   =========================================================== */
+.lp{width:1280px;height:840px;background:var(--paper);display:flex;flex-direction:column}
+
+.lp-nav{display:flex;align-items:center;justify-content:space-between;padding:18px 44px;background:var(--surf)}
+.v1 .lp-nav{border-bottom:var(--bw) solid var(--ink);background:#fff}
+.v2 .lp-nav{background:var(--paper);border-bottom:var(--bw) solid var(--ink)}
+
+.logo{display:flex;align-items:stretch}
+.v1 .logo-a{background:var(--ink);color:#fff;font-family:"Noto Serif SC",serif;font-weight:700;
+  font-size:20px;letter-spacing:.12em;padding:7px 14px 7px 16px}
+.v1 .logo-b{background:var(--pink);color:var(--ink);font-family:"JetBrains Mono",monospace;
+  font-weight:700;font-size:13px;letter-spacing:.18em;padding:7px 14px;display:flex;align-items:center}
+.v1 .logo{border:var(--bw) solid var(--ink)}
+.v2 .logo{align-items:baseline;gap:11px}
+.v2 .logo-a{font-family:"Noto Serif SC",serif;font-weight:700;font-size:21px;letter-spacing:.14em}
+.v2 .logo-b{font-size:12px;font-weight:500;letter-spacing:.2em;color:var(--mut2)}
+
+.lp-menu{display:flex}
+.v1 .lp-menu{border:var(--bw) solid var(--ink);background:#fff}
+.v1 .lp-menu span{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.06em;
+  padding:9px 15px;font-weight:700}
+.v1 .lp-menu span + span{border-left:var(--bw) solid var(--ink)}
+.v2 .lp-menu{gap:34px}
+.v2 .lp-menu span{font-size:14px;color:var(--mut)}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:9px;border-radius:0;
+  font-family:inherit;line-height:1;cursor:default}
+.v1 .btn{border:var(--bw) solid var(--ink);font-family:"JetBrains Mono",monospace;font-weight:700;
+  letter-spacing:.06em;text-transform:none}
+.v2 .btn{border:var(--bw) solid var(--ink)}
+
+.v1 .btn-cta{background:var(--ink);color:#fff;padding:11px 20px;font-size:13px;
+  box-shadow:var(--sh) var(--sh) 0 var(--pink)}
+.v2 .btn-cta{background:var(--btn);border-color:var(--btn);color:#E5E5E5;padding:11px 20px;font-size:14px;
+  box-shadow:var(--sh) var(--sh) 0 var(--acid)}
+
+.lp-rule{height:0;border-top:var(--bw) dashed var(--ink);opacity:.9}
+.v2 .lp-rule{display:none}
+
+.lp-body{flex:1;display:flex;align-items:center;gap:56px;padding:0 44px 24px}
+.lp-left{min-width:0}
+.v1 .lp-left{flex:1}
+.v2 .lp-left{flex:1.12}
+.lp-right{flex:1;min-width:0;position:relative;height:500px}
+.v1 .lp-right{display:none}
+
+.chip{display:inline-block;font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.16em}
+.v1 .chip{background:var(--ink);color:var(--paper);padding:8px 15px;font-weight:700}
+.v2 .chip{color:var(--mut2);font-weight:500;letter-spacing:.2em;padding:0}
+
+.lp-h1{margin:20px 0 0;font-weight:900;letter-spacing:0;line-height:1.06;display:flex;
+  flex-direction:column}
+.v1 .lp-h1{font-family:"Noto Serif SC",serif;font-size:76px}
+.v2 .lp-h1{font-family:"Noto Serif SC",serif;font-size:64px;line-height:1.14}
+/* 中文不做描边空心字：CJK 笔画多，3px 描边会把字腔糊死。
+   换成参考里同样在用的反白色块，对比度和「硬」都保住。 */
+.hollow{align-self:flex-start}
+.v1 .hollow{background:var(--ink);color:var(--paper);padding:.04em .12em .1em;margin-top:.05em}
+.v2 .hollow{color:var(--ink);position:relative;font-style:italic}
+.v2 .hollow::after{content:"";position:absolute;left:-2px;right:-2px;bottom:6px;height:14px;
+  background:var(--acid);z-index:-1}
+.v2 .lp-h1{position:relative;z-index:0}
+
+.lp-lead{margin:24px 0 0;max-width:38ch;line-height:1.85}
+.v1 .lp-lead{font-family:"JetBrains Mono",monospace;font-size:15px;line-height:1.9;max-width:44ch}
+.v2 .lp-lead{font-size:17px;color:var(--mut);max-width:36ch}
+
+.lp-btns{display:flex;gap:20px;margin-top:32px}
+.v1 .btn-solid{background:var(--ink);color:#fff;padding:17px 26px;font-size:15px;
+  box-shadow:var(--sh) var(--sh) 0 var(--pink)}
+.v1 .btn-out{background:#fff;color:var(--ink);padding:17px 26px;font-size:15px;
+  box-shadow:var(--sh) var(--sh) 0 var(--ink)}
+.v2 .btn-solid{background:var(--btn);border-color:var(--btn);color:#E5E5E5;padding:16px 26px;font-size:16px;
+  box-shadow:var(--sh) var(--sh) 0 var(--acid)}
+.v2 .btn-out{background:transparent;color:var(--ink);padding:16px 26px;font-size:16px}
+
+/* 便签簇（只有取气用） */
+.cluster{position:absolute;inset:0}
+.mininote{position:absolute;width:262px;background:var(--surf);border:var(--bw) solid var(--ink);
+  box-shadow:var(--sh) var(--sh) 0 rgba(26,26,26,.18);padding:15px 16px}
+.mininote .mn-top{display:flex;justify-content:space-between;align-items:center;
+  font-family:"Inter",sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase;
+  color:var(--mut2);margin-bottom:9px}
+.mininote .mn-txt{font-size:13.5px;line-height:1.8;color:var(--ink)}
+.mininote .mn-bot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;
+  padding-top:9px;border-top:1px solid rgba(71,73,75,.2);font-size:11.5px;color:var(--mut2)}
+.mininote .mn-bot em{font-family:"Noto Serif SC",serif;font-style:normal;color:var(--ink)}
+.mininote .mn-vote{display:inline-flex;align-items:center;gap:5px;padding:3px 8px;
+  border:1px solid rgba(71,73,75,.3);font-family:"Noto Serif SC",serif;color:var(--ink)}
+.mininote .mn-vote .icon{width:11px;height:11px}
+.mn-1{left:0;top:0}
+.mn-2{left:210px;top:168px;background:#F3EFE6}
+.mn-3{left:58px;top:336px;background:#E4EBE3}
+.mn-2 .mn-top .st{color:var(--ink)}
+.mn-dot{width:8px;height:8px;background:var(--acid);border:1px solid var(--ink);display:inline-block;
+  margin-right:6px;vertical-align:middle}
+.lp-cap{position:absolute;left:0;bottom:-30px;font-size:12px;color:var(--mut2);line-height:1.7}
+
+/* 底部参数条 */
+.statbar{display:flex;margin:0 44px 40px}
+.v1 .statbar{border:var(--bw) solid var(--ink);background:var(--paper)}
+.v1 .statbar > div{flex:1;padding:16px 20px}
+.v1 .statbar > div + div{border-left:var(--bw) solid var(--ink)}
+.v2 .statbar{border-top:var(--bw) solid var(--ink)}
+.v2 .statbar > div{flex:1;padding:18px 0 0}
+.statbar b{display:block;font-family:"JetBrains Mono",monospace;font-weight:700;line-height:1}
+.v1 .statbar b{font-size:34px}
+.v1 .statbar > div:nth-child(1) b{color:var(--pink)}
+.v1 .statbar > div:nth-child(2) b{color:var(--ink)}
+.v1 .statbar > div:nth-child(3) b{color:var(--cyan)}
+.v1 .statbar > div:nth-child(4) b{color:var(--pink)}
+.v2 .statbar b{font-family:"Noto Serif SC",serif;font-size:30px;color:var(--ink)}
+.statbar span{display:block;margin-top:7px;font-family:"Inter",sans-serif;font-size:11px;
+  letter-spacing:.16em;text-transform:uppercase}
+.v1 .statbar span{color:var(--mut);font-weight:600}
+.v2 .statbar span{color:var(--mut2)}
+
+/* ===========================================================
+   屏二 / 屏三 · 内页（白板）
+   =========================================================== */
+.bd{width:1280px;height:840px;display:flex;flex-direction:column;background:var(--paper)}
+
+.bd-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;height:82px;flex:none}
+.v1 .bd-nav{background:var(--ink);color:#fff;border-bottom:var(--bw) solid var(--ink)}
+.v2 .bd-nav{background:var(--paper);border-bottom:var(--bw) solid var(--ink)}
+.bd-nav-l{display:flex;align-items:center;gap:16px;min-width:0;flex:1}
+.bd-nav-r{display:flex;align-items:stretch;height:38px}
+
+.ib{display:flex;align-items:center;justify-content:center;width:38px;height:38px;flex:none}
+.v1 .ib{border:2px solid #fff;background:transparent;color:#fff}
+.v2 .ib{border:var(--bw) solid var(--ink);background:transparent;color:var(--ink)}
+.ib .icon{width:16px;height:16px}
+
+.bd-title{min-width:0}
+.eb{margin:0;font-family:"Inter",sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase}
+.v1 .bd-title .eb{color:var(--cyan);font-family:"JetBrains Mono",monospace;font-weight:700}
+.v2 .bd-title .eb{color:var(--mut2)}
+.bd-title h2{margin:3px 0 0;font-family:"Noto Serif SC",serif;font-weight:700;font-size:19px;letter-spacing:0;
+  white-space:nowrap}
+
+.tagbox{display:flex;align-items:stretch;height:36px;flex:none}
+.v1 .tagbox{border:2px solid #fff}
+.v2 .tagbox{border:var(--bw) solid var(--ink)}
+.tagbox .tk{display:flex;align-items:center;padding:0 10px;font-family:"JetBrains Mono",monospace;
+  font-size:10px;letter-spacing:.18em}
+.v1 .tagbox .tk{background:var(--cyan);color:var(--ink);font-weight:700}
+.v2 .tagbox .tk{color:var(--mut2);border-right:1px solid rgba(71,73,75,.3)}
+.tagbox .tv{display:flex;align-items:center;padding:0 12px;font-family:"Noto Serif SC",serif;font-size:14px}
+
+.segs{display:flex;align-items:stretch;height:36px;flex:none}
+.v1 .segs{border:2px solid #fff}
+.v2 .segs{border:var(--bw) solid var(--ink)}
+.segs b{display:flex;align-items:center;padding:0 14px;font-size:12px;font-weight:400}
+.v1 .segs b + b{border-left:2px solid #fff}
+.v2 .segs b + b{border-left:var(--bw) solid var(--ink)}
+.v1 .segs b.on{background:var(--pink);color:var(--ink);font-weight:700}
+.v2 .segs b.on{background:var(--btn);color:#E5E5E5}
+
+.bd-nav-r .seg{display:flex;align-items:center;padding:0 13px;font-size:12px;white-space:nowrap;gap:6px}
+.bd-nav-r .seg .icon{width:14px;height:14px}
+.v1 .bd-nav-r{border:2px solid #fff}
+.v1 .bd-nav-r .seg + .seg{border-left:2px solid #fff}
+.v1 .bd-nav-r .seg-p{background:var(--pink);color:var(--ink);font-weight:700}
+.v2 .bd-nav-r{border:var(--bw) solid var(--ink)}
+.v2 .bd-nav-r .seg + .seg{border-left:var(--bw) solid var(--ink)}
+.v2 .bd-nav-r .seg-p{background:var(--btn);color:#E5E5E5}
+
+.bd-main{flex:1;display:flex;min-height:0}
+.bd-canvas{flex:1;position:relative;overflow:hidden;background:var(--paper)}
+.v1 .bd-canvas{background:var(--paper);
+  background-image:linear-gradient(rgba(0,0,0,.07) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(0,0,0,.07) 1px,transparent 1px);
+  background-size:32px 32px}
+.wm{position:absolute;right:56px;bottom:-96px;font-family:"Noto Serif SC",serif;font-weight:700;
+  font-size:340px;line-height:1;pointer-events:none;user-select:none}
+.v1 .wm{color:rgba(0,0,0,.07)}
+.v2 .wm{color:rgba(0,0,0,.05)}
+
+/* 左工具条 */
+.tools{position:absolute;left:22px;top:22px;display:flex;flex-direction:column;background:var(--surf);z-index:3}
+.v1 .tools{border:var(--bw) solid var(--ink);box-shadow:var(--sh) var(--sh) 0 var(--ink)}
+.v2 .tools{border:var(--bw) solid var(--ink);box-shadow:var(--sh) var(--sh) 0 rgba(26,26,26,.18)}
+.tool-add{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  width:62px;height:62px}
+.v1 .tool-add{background:var(--ink);color:var(--paper)}
+.v2 .tool-add{background:var(--btn);color:#E5E5E5}
+.tool-add .icon{width:20px;height:20px}
+.tool-add span{font-size:10px;letter-spacing:.06em}
+.tool-color{padding:9px 8px 10px;text-align:center}
+.v1 .tool-color{border-top:var(--bw) solid var(--ink)}
+.v2 .tool-color{border-top:1px solid rgba(71,73,75,.25)}
+.tool-color p{margin:0 0 7px;font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.2em;
+  color:var(--mut)}
+.sw{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;justify-items:center}
+.sw i{display:block;width:16px;height:16px;border:1px solid rgba(0,0,0,.35)}
+.sw i.pick{border:2px solid var(--ink)}
+.tool-live{padding:9px 8px 11px;text-align:center}
+.v1 .tool-live{border-top:var(--bw) solid var(--ink)}
+.v2 .tool-live{border-top:1px solid rgba(71,73,75,.25)}
+.tool-live .dot{display:block;width:9px;height:9px;margin:0 auto 6px}
+.v1 .tool-live .dot{background:var(--cyan);border:1px solid var(--ink)}
+.v2 .tool-live .dot{background:var(--acid);border:1px solid var(--ink)}
+.tool-live p{margin:0;font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.2em;color:var(--mut)}
+
+/* 缩放条 */
+.zoom{position:absolute;left:22px;bottom:22px;display:flex;align-items:stretch;height:36px;
+  background:var(--surf);z-index:3}
+.v1 .zoom{border:var(--bw) solid var(--ink);box-shadow:var(--sh) var(--sh) 0 var(--ink)}
+.v2 .zoom{border:var(--bw) solid var(--ink)}
+.zoom b,.zoom span{display:flex;align-items:center;justify-content:center;font-weight:400;font-size:12px}
+.zoom b{width:34px}
+.zoom span{padding:0 12px;font-family:"JetBrains Mono",monospace;font-size:11px;
+  font-variant-numeric:tabular-nums}
+.zoom b + span,.zoom span + b,.zoom b + b{border-left:1px solid rgba(0,0,0,.28)}
+.zoom .rst{width:auto;padding:0 12px;font-size:11px}
+
+/* 便签 */
+.note{position:absolute;width:296px;background:var(--surf);z-index:2}
+.v1 .note{border:var(--bw) solid var(--ink);box-shadow:var(--sh) var(--sh) 0 var(--ink)}
+.v2 .note{border:var(--bw) solid var(--ink);box-shadow:var(--sh) var(--sh) 0 rgba(26,26,26,.18)}
+.note-h{display:flex;align-items:center;justify-content:space-between;padding:8px 11px}
+.v1 .note-h{border-bottom:var(--bw) solid var(--ink)}
+.v2 .note-h{border-bottom:1px solid rgba(71,73,75,.2)}
+.note-h .lft{display:flex;align-items:center;gap:9px}
+.idx{font-family:"Noto Serif SC",serif;font-size:12px;color:var(--mut)}
+.st{font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.v1 .st{font-family:"JetBrains Mono",monospace;font-weight:700;background:var(--pink);color:var(--ink);
+  padding:2px 7px;border:1px solid var(--ink)}
+.v1 .st.done{background:var(--ink);color:var(--paper)}
+.v2 .st{color:var(--mut)}
+.v2 .st::before{content:"";display:inline-block;width:7px;height:7px;background:var(--acid);
+  border:1px solid var(--ink);margin-right:6px;vertical-align:middle}
+.v2 .st.done::before{background:var(--btn)}
+.note-acts{display:flex;align-items:stretch;height:26px}
+.note-acts i{display:flex;align-items:center;justify-content:center;width:26px}
+.note-acts .icon{width:13px;height:13px}
+.v1 .note-acts{border:2px solid var(--ink)}
+.v1 .note-acts i + i{border-left:2px solid var(--ink)}
+.v2 .note-acts{border:1px solid rgba(71,73,75,.3)}
+.v2 .note-acts i + i{border-left:1px solid rgba(71,73,75,.3)}
+.note-b{padding:14px 13px;font-size:14px;line-height:1.85}
+.note-f{display:flex;align-items:center;justify-content:space-between;padding:8px 11px;font-size:11.5px;
+  color:var(--mut)}
+.v1 .note-f{border-top:var(--bw) solid var(--ink)}
+.v2 .note-f{border-top:1px solid rgba(71,73,75,.2)}
+.note-f em{font-family:"Noto Serif SC",serif;font-style:normal;color:var(--ink)}
+.vote{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;font-variant-numeric:tabular-nums}
+.vote .icon{width:12px;height:12px}
+.v1 .vote{border:2px solid var(--ink);font-family:"JetBrains Mono",monospace;font-weight:700;color:var(--ink)}
+.v1 .vote.hot{background:var(--cyan)}
+.v2 .vote{border:1px solid rgba(71,73,75,.3);font-family:"Noto Serif SC",serif;color:var(--ink)}
+.v2 .vote.hot{background:var(--acid);border-color:var(--ink)}
+.note.done .note-b{text-decoration:line-through;color:var(--mut)}
+.note.done{opacity:.72}
+.n1{left:118px;top:66px}
+.n2{left:452px;top:150px;background:#F3EFE6}
+.n3{left:186px;top:352px;background:#E4EBE3}
+
+/* 右侧说明栏 */
+.bd-side{width:308px;flex:none;display:flex;flex-direction:column;background:var(--paper)}
+.v1 .bd-side{border-left:var(--bw) solid var(--ink);background:#fff}
+.v2 .bd-side{border-left:var(--bw) solid var(--ink)}
+.side-h{padding:20px 22px 15px}
+.v1 .side-h{border-bottom:var(--bw) solid var(--ink)}
+.v2 .side-h{border-bottom:1px solid rgba(71,73,75,.2)}
+.v1 .side-h .eb{color:var(--mut);font-family:"JetBrains Mono",monospace;font-weight:700}
+.v2 .side-h .eb{color:var(--mut2)}
+.side-h h3{margin:5px 0 0;font-family:"Noto Serif SC",serif;font-weight:700;font-size:23px;letter-spacing:0}
+.side-p{margin:0;padding:16px 22px;font-size:13.5px;line-height:1.85;color:var(--mut)}
+.v1 .side-p{border-bottom:var(--bw) solid var(--ink)}
+.v2 .side-p{border-bottom:1px solid rgba(71,73,75,.2)}
+.side-stats > div{display:flex;align-items:center;justify-content:space-between;padding:11px 22px;font-size:13px}
+.v1 .side-stats > div + div{border-top:2px solid var(--ink)}
+.v2 .side-stats > div + div{border-top:1px solid rgba(71,73,75,.2)}
+.side-stats span{color:var(--mut)}
+.side-stats b{font-variant-numeric:tabular-nums}
+.v1 .side-stats b{font-family:"JetBrains Mono",monospace;font-size:15px}
+.v2 .side-stats b{font-family:"Noto Serif SC",serif;font-size:16px}
+.v1 .side-stats{border-bottom:var(--bw) solid var(--ink)}
+.v2 .side-stats{border-bottom:1px solid rgba(71,73,75,.2)}
+.side-tips{flex:1;margin:0;padding:16px 22px;list-style:none;display:flex;flex-direction:column;gap:11px}
+.side-tips li{display:flex;gap:11px;font-size:12.5px;line-height:1.75;color:var(--mut)}
+.side-tips .n{font-family:"Noto Serif SC",serif;flex:none;color:var(--mut2)}
+.v1 .side-tips .n{font-family:"JetBrains Mono",monospace;font-weight:700;color:var(--ink)}
+.side-foot{padding:16px 22px;font-size:12.5px;line-height:1.8}
+.v1 .side-foot{background:var(--ink);color:var(--paper);border-top:var(--bw) solid var(--ink)}
+.v2 .side-foot{background:var(--btn);color:#E5E5E5}
+
+/* 空状态卡 */
+.empty{position:absolute;left:150px;top:150px;width:480px;background:var(--surf);z-index:2;padding:34px 32px 32px}
+.v1 .empty{border:var(--bw) solid var(--ink);box-shadow:var(--sh) var(--sh) 0 var(--ink)}
+.v2 .empty{border:var(--bw) solid var(--ink);box-shadow:var(--sh) var(--sh) 0 rgba(26,26,26,.18)}
+.v1 .empty .eb{font-family:"JetBrains Mono",monospace;font-weight:700;color:var(--ink);
+  background:var(--cyan);display:inline-block;padding:4px 9px;border:1px solid var(--ink)}
+.v2 .empty .eb{color:var(--mut2)}
+.empty h3{margin:14px 0 0;font-family:"Noto Serif SC",serif;font-weight:700;font-size:34px;
+  letter-spacing:0;line-height:1.3}
+.v1 .empty h3 em{font-style:normal;background:var(--pink);padding:0 .06em}
+.v2 .empty h3 em{font-style:italic}
+.empty p{margin:14px 0 0;font-size:14px;line-height:1.85;color:var(--mut)}
+.empty-btns{display:flex;margin-top:26px}
+.empty-btns .eb1,.empty-btns .eb2{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+  height:48px;font-size:14px}
+.empty-btns .icon{width:15px;height:15px}
+.v1 .empty-btns{border:var(--bw) solid var(--ink);box-shadow:var(--sh) var(--sh) 0 var(--pink)}
+.v1 .empty-btns .eb1{background:var(--ink);color:#fff;font-family:"JetBrains Mono",monospace;font-weight:700}
+.v1 .empty-btns .eb2{background:#fff;border-left:var(--bw) solid var(--ink);font-family:"JetBrains Mono",monospace;
+  font-weight:700}
+.v2 .empty-btns{border:var(--bw) solid var(--ink)}
+.v2 .empty-btns .eb1{background:var(--btn);color:#E5E5E5}
+.v2 .empty-btns .eb2{background:transparent;border-left:var(--bw) solid var(--ink)}
+</style>
+
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></symbol>
+  <symbol id="i-thumb" viewBox="0 0 24 24"><path d="M7 22V11l5-9a2.5 2.5 0 012.5 3.2L13.5 9H20a2 2 0 012 2.4l-1.5 8A2 2 0 0118.5 21H7z"/><path d="M7 11H3v11h4"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-layer" viewBox="0 0 24 24"><path d="M12 2l9 5-9 5-9-5 9-5z"/><path d="M3 12l9 5 9-5"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+</svg>
+
+<header class="sheet-head">
+  <div class="wrap">
+    <p class="kicker">Liebin · 设计方向确认 · 2026-08-25</p>
+    <h1>草诀歌 AI Labs 会议白板 —— 两套风格，落地页与内页各三屏</h1>
+    <p class="axis">两版沿同一条轴排开：<b>对参考的取舍程度</b>。参考（stylekit neo-brutalist）最显眼的特征是<b>酸绿满屏当底色</b>。「硬派」把它整个搬过来；「取气」把这一条拿掉，只留粗黑线、硬投影、直角、巨标题这副骨架，底色换回品牌自己的暖灰。你对第二版的反应，会直接告诉我那片酸绿到底是不是你要的。</p>
+  </div>
+</header>
+
+<div class="ctrlbar">
+  <div class="wrap">
+    <div class="controls">
+      <div class="cgroup">
+        <span class="clabel">Screen</span>
+        <div class="cbtns" id="screenTabs">
+          <button aria-pressed="true"  data-s="0">落地页 · 首屏</button>
+          <button aria-pressed="false" data-s="1">内页 · 白板</button>
+          <button aria-pressed="false" data-s="2">内页 · 空状态</button>
+        </div>
+      </div>
+      <div class="cgroup">
+        <span class="clabel">View</span>
+        <div class="cbtns" id="viewTabs">
+          <button aria-pressed="true"  data-v="both">并列对比</button>
+          <button aria-pressed="false" data-v="v1">只看 硬派</button>
+          <button aria-pressed="false" data-v="v2">只看 取气</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="grid" id="grid" data-view="both">
+    <section class="variant" data-v="v1">
+      <div class="vmeta"><span class="vname">硬派</span><span class="vtag">忠实迁移 / Faithful</span></div>
+      <p class="vdesc">参考照单全收：酸绿当底、4px 黑框、8px 硬投影、等宽字、洋红与青当强调。冲，但它压过品牌现有的灰度语言。</p>
+      <div class="frame"><div class="stage v1"></div></div>
+    </section>
+    <section class="variant" data-v="v2">
+      <div class="vmeta"><span class="vname">取气</span><span class="vtag">取骨换色 / Grafted</span></div>
+      <p class="vdesc">骨架照搬（直角、粗线、硬投影、巨标题），底色回到品牌的 #E5E5E5，酸绿从「底」降级成唯一的强调点。稳，但可能不够解气。</p>
+      <div class="frame"><div class="stage v2"></div></div>
+    </section>
+  </div>
+</div>
+
+<section class="prov">
+  <div class="wrap">
+    <h2>每个数值的出处</h2>
+    <p class="sub">
+      <span class="src src-m">量得</span> 有明确来源（参考页自己印在屏幕上，或仓库里的 token）·
+      <span class="src src-g">看图估的</span> 只有截图，报的是关系不是数 ·
+      <span class="src src-d">我们定的</span> 这次拍板的判断，没有外部依据。
+      参考里的绝对 px 一律先除以字号转成 em 再迁移；容器宽度是唯一保留绝对值的地方。
+    </p>
+    <div class="tscroll">
+      <table class="ptable">
+        <tr><th>项</th><th>硬派</th><th>取气</th><th>出处</th></tr>
+        <tr><td>页面底色</td><td><code>#CCF224</code> 满屏</td><td><code>#E5E5E5</code></td>
+            <td><span class="src src-g">看图估的</span> / <span class="src src-m">量得</span> 仓库 <code>--c-bg</code></td></tr>
+        <tr><td>墨色</td><td><code>#000000</code></td><td><code>#1A1A1A</code></td>
+            <td><span class="src src-g">看图估的</span> 参考自称 maximum contrast / <span class="src src-m">量得</span> <code>--c-ink</code></td></tr>
+        <tr><td>强调色</td><td><code>#FF2E7E</code> 洋红 + <code>#35D6F0</code> 青</td><td><code>#CCF224</code> 只做状态点</td>
+            <td><span class="src src-g">看图估的</span> / <span class="src src-d">我们定的</span></td></tr>
+        <tr><td>边框粗细</td><td><code>0.25em</code>（16px 下 4px）</td><td><code>0.125em</code>（2px）</td>
+            <td><span class="src src-g">看图估的</span> 参考页「BORDER WIDTH」那格在截图里被裁掉了 / <span class="src src-d">我们定的</span>：取参考的一半</td></tr>
+        <tr><td>硬投影偏移</td><td><code>0.5em 0.5em 0</code>（8px）</td><td><code>0.25em 0.25em 0</code>（4px）</td>
+            <td><span class="src src-m">量得</span> 参考页自报 SHADOW OFFSET 8px / <span class="src src-d">我们定的</span></td></tr>
+        <tr><td>圆角</td><td><code>0</code></td><td><code>0</code></td>
+            <td><span class="src src-m">量得</span> 参考页自报 0px；现站《设计规范》也是 0，这一条两边同意</td></tr>
+        <tr><td>过渡时长</td><td><code>150ms</code></td><td><code>350ms</code></td>
+            <td><span class="src src-m">量得</span> 参考页自报 / <span class="src src-m">量得</span> 现站 <code>--ease-out</code> 0.35s</td></tr>
+        <tr><td>中文标题字距</td><td><code>0</code></td><td><code>0</code></td>
+            <td><span class="src src-d">我们定的</span>：中文标题不用负字距。现站是 <code>-0.02em</code>，这次两版都改掉</td></tr>
+        <tr><td>正文行高</td><td><code>1.9</code></td><td><code>1.85</code></td>
+            <td><span class="src src-d">我们定的</span>：中文正文 1.7–1.9，不是拉丁文的 1.4–1.6</td></tr>
+        <tr><td>主标题 / 正文比</td><td>82 / 16 ≈ <code>5.1×</code></td><td>64 / 17 ≈ <code>3.8×</code></td>
+            <td><span class="src src-d">我们定的</span>：硬派要参考那种压迫感，取气收一档给中文留呼吸</td></tr>
+        <tr><td>大写标签字距</td><td><code>0.2em</code></td><td><code>0.2em</code></td>
+            <td><span class="src src-m">量得</span> 现站 <code>--ls-widest</code>，两版都留着——它是品牌的排版结构，不是装饰</td></tr>
+        <tr><td>字族</td><td>Noto Serif SC 900 + JetBrains Mono</td><td>Noto Serif SC 700 + Inter / Noto Sans SC</td>
+            <td><span class="src src-g">看图估的</span> 参考正文明显是等宽 / <span class="src src-m">量得</span> 现站两字族</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="confirm">
+  <div class="wrap">
+    <h2>三个问题</h2>
+    <p class="hint">填完点按钮，内容会复制到剪贴板，贴回对话里就行。第 2 问最重要——你骂出来的原话会原样进 DESIGN.md，不会被我改写成「保持视觉克制」这种废话。</p>
+
+    <div class="q">
+      <label for="pick">1 · 选哪个？</label>
+      <select id="pick">
+        <option value="">— 请选择 —</option>
+        <option>硬派</option>
+        <option>取气</option>
+        <option>两套都要，做成可切换的主题</option>
+        <option>两个都不要</option>
+      </select>
+    </div>
+
+    <div class="q">
+      <label for="reject">2 · 没选的那版，哪里不要？（原话）</label>
+      <p class="why">说具体的，别客气。「这片绿刺眼」「投影太重像贴纸」「这版太素了跟现在没区别」「等宽字排中文很别扭」——这些句子才有约束力。</p>
+      <textarea id="reject" placeholder="例：硬派那片绿满屏晃眼，开一天会眼睛受不了；取气又太乖了，跟现在的白板看不出差别。"></textarea>
+    </div>
+
+    <div class="q">
+      <label for="ctx">3 · 谁会在什么状态下打开它？</label>
+      <p class="why">不是问画面，是问人。什么时间、什么设备、什么心情、周围有没有人。这一问会推翻一半「好看」的选择——投影仪上放的酸绿和手机上握着的酸绿，是两回事。</p>
+      <textarea id="ctx" placeholder="例：闭门会现场，二三十人各自掏手机扫码进来，会议室投影同时开着大屏；多数人只看不写，写的人在别人讲话时单手打字。"></textarea>
+    </div>
+
+    <button class="copy" id="copyBtn" type="button">复制我的选择</button><span class="copied" id="tip"></span>
+  </div>
+</section>
+
+<script>
+(function () {
+  var I = function (id) { return '<svg class="icon"><use href="#i-' + id + '"></use></svg>'; };
+
+  var SWATCH = ['#ffffff', '#f3efe6', '#e4ebe3', '#e6eaee', '#f3e8e6', '#f2edd8'];
+
+  function swatches() {
+    return SWATCH.map(function (c, i) {
+      return '<i class="' + (i === 1 ? 'pick' : '') + '" style="background:' + c + '"></i>';
+    }).join('');
+  }
+
+  function boardNav() {
+    return '' +
+      '<div class="bd-nav">' +
+        '<div class="bd-nav-l">' +
+          '<div class="ib">' + I('chev') + '</div>' +
+          '<div class="bd-title"><p class="eb">Board · 白板</p><h2>草诀歌 AI Labs 会议白板</h2></div>' +
+          '<div class="tagbox"><span class="tk">Room</span><span class="tv">草诀歌 AI Labs</span></div>' +
+          '<div class="segs"><b class="on">全部</b><b>未答</b><b>已答</b></div>' +
+        '</div>' +
+        '<div class="bd-nav-r">' +
+          '<span class="seg">韶华</span>' +
+          '<span class="seg">' + I('grid') + '排序</span>' +
+          '<span class="seg">' + I('clock') + '</span>' +
+          '<span class="seg">' + I('layer') + '</span>' +
+          '<span class="seg seg-p">' + I('share') + '</span>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function tools() {
+    return '' +
+      '<div class="tools">' +
+        '<div class="tool-add">' + I('plus') + '<span>提问</span></div>' +
+        '<div class="tool-color"><p>Color</p><div class="sw">' + swatches() + '</div></div>' +
+        '<div class="tool-live"><span class="dot"></span><p>Live</p></div>' +
+      '</div>';
+  }
+
+  function zoom() {
+    return '<div class="zoom"><b>&minus;</b><span>100%</span><b>+</b><b class="rst">重置</b></div>';
+  }
+
+  function note(o) {
+    return '' +
+      '<div class="note ' + o.pos + (o.done ? ' done' : '') + '"' + (o.bg ? ' style="background:' + o.bg + '"' : '') + '>' +
+        '<div class="note-h">' +
+          '<div class="lft"><span class="idx">' + o.idx + '</span>' +
+            '<span class="st' + (o.done ? ' done' : '') + '">' + (o.done ? 'Answered' : 'Open') + '</span></div>' +
+          '<div class="note-acts"><i>' + I('check') + '</i><i>' + I('pen') + '</i><i>' + I('dots') + '</i></div>' +
+        '</div>' +
+        '<div class="note-b">' + o.text + '</div>' +
+        '<div class="note-f"><span>By <em>' + o.by + '</em></span>' +
+          '<span class="vote' + (o.hot ? ' hot' : '') + '">' + I('thumb') + o.votes + '</span></div>' +
+      '</div>';
+  }
+
+  function sidebar(n, open, top) {
+    return '' +
+      '<aside class="bd-side">' +
+        '<div class="side-h"><p class="eb">Guide · 说明</p><h3>白板如何工作？</h3></div>' +
+        '<p class="side-p">完全实时同步的会议收集板。开启同一链接的人，会看到你拖曳的每一次落点与每一次表态。</p>' +
+        '<div class="side-stats">' +
+          '<div><span>便签总计</span><b>' + n + '</b></div>' +
+          '<div><span>未标记解答</span><b>' + open + '</b></div>' +
+          '<div><span>赞数最高</span><b>' + top + '</b></div>' +
+        '</div>' +
+        '<ul class="side-tips">' +
+          '<li><span class="n">01</span><span>点左上角「提问」：新建便签</span></li>' +
+          '<li><span class="n">02</span><span>单指拖空白处：平移画布</span></li>' +
+          '<li><span class="n">03</span><span>点铅笔图标：编辑提问</span></li>' +
+          '<li><span class="n">04</span><span>「更多」里可改色或删除</span></li>' +
+        '</ul>' +
+        '<div class="side-foot">无需登录。复制链接分享给参会者，大家就能一起写入。</div>' +
+      '</aside>';
+  }
+
+  /* ---------- 屏一 · 落地页首屏 ---------- */
+  var LANDING = '' +
+    '<div class="screen lp on">' +
+      '<div class="lp-nav">' +
+        '<div class="logo"><span class="logo-a">草诀歌</span><span class="logo-b">AI LABS</span></div>' +
+        '<div class="lp-menu"><span>白板怎么用</span><span>你可以获得什么</span><span>进哪个会议间</span></div>' +
+        '<div class="btn btn-cta">进入会议间' + I('arrow') + '</div>' +
+      '</div>' +
+      '<div class="lp-rule"></div>' +
+      '<div class="lp-body">' +
+        '<div class="lp-left">' +
+          '<div class="chip">Caojuege AI Labs · Meeting Board</div>' +
+          '<h1 class="lp-h1"><span>在白板上共享</span><span>自由交流和</span><span class="hollow">思想碰撞</span></h1>' +
+          '<p class="lp-lead">一场会议真正的产出，是那些被说出口的问题。草诀歌 AI Labs 的会议白板把提问、投票与解答放在同一张纸面上——开一个链接，所有人一起写。</p>' +
+          '<div class="lp-btns">' +
+            '<div class="btn btn-solid">进入草诀歌 AI Labs 会议间</div>' +
+            '<div class="btn btn-out">另开一间</div>' +
+          '</div>' +
+        '</div>' +
+        '<div class="lp-right"><div class="cluster">' +
+          '<div class="mininote mn-1"><div class="mn-top"><span class="st">Open</span><span>01</span></div>' +
+            '<div class="mn-txt">欢迎来到草诀歌 AI Labs 会议白板。大家可以在这里相互提问、投票和拖拽分类。</div>' +
+            '<div class="mn-bot"><span>By <em>看板助手</em></span><span class="mn-vote">' + I('thumb') + '3</span></div></div>' +
+          '<div class="mininote mn-2"><div class="mn-top"><span class="st">Open</span><span>02</span></div>' +
+            '<div class="mn-txt">主持人或其他人解答完后，点击便签上的对勾即可标为「已回答」。</div>' +
+            '<div class="mn-bot"><span>By <em>主持人</em></span><span class="mn-vote">' + I('thumb') + '8</span></div></div>' +
+          '<div class="mininote mn-3"><div class="mn-top"><span class="st">Answered</span><span>03</span></div>' +
+            '<div class="mn-txt">支持自由拖拽排版。若需整齐网格，可用顶栏「排序」一键对齐。</div>' +
+            '<div class="mn-bot"><span>By <em>草诀歌 AI Labs</em></span><span class="mn-vote">' + I('thumb') + '5</span></div></div>' +
+          '</div>' +
+          '<p class="lp-cap">一张便签就是一个问题。右下角是票数，答完的会被划掉并标为「已解答」。</p>' +
+        '</div>' +
+      '</div>' +
+      '<div class="statbar">' +
+        '<div><b>15</b><span>分钟自动存档</span></div>' +
+        '<div><b>20</b><span>份历史上限</span></div>' +
+        '<div><b>300</b><span>字单张上限</span></div>' +
+        '<div><b>0</b><span>步注册登录</span></div>' +
+      '</div>' +
+    '</div>';
+
+  /* ---------- 屏二 · 内页白板 ---------- */
+  var BOARD = '' +
+    '<div class="screen bd">' + boardNav() +
+      '<div class="bd-main"><div class="bd-canvas">' +
+        '<div class="wm">问</div>' + tools() +
+        note({ pos: 'n1', idx: '01', by: '看板助手', votes: 3,
+          text: '欢迎来到草诀歌 AI Labs 会议白板。大家可以在这里相互提问、投票和拖拽分类。双击空白处可以快速新建一张便签。' }) +
+        note({ pos: 'n2', idx: '02', by: '主持人', votes: 8, hot: true, bg: '#F3EFE6',
+          text: '主持人或其他人解答完后，点击便签上的对勾即可标为「已回答」。' }) +
+        note({ pos: 'n3', idx: '03', by: '草诀歌 AI Labs', votes: 5, done: true, bg: '#E4EBE3',
+          text: '支持自由拖拽排版。若需整齐网格，可用顶栏「排序」一键对齐。' }) +
+        zoom() +
+      '</div>' + sidebar(3, 2, 8) + '</div>' +
+    '</div>';
+
+  /* ---------- 屏三 · 内页空状态 ---------- */
+  var EMPTY = '' +
+    '<div class="screen bd">' + boardNav() +
+      '<div class="bd-main"><div class="bd-canvas">' +
+        '<div class="wm">问</div>' + tools() +
+        '<div class="empty">' +
+          '<p class="eb">Empty · 空板</p>' +
+          '<h3>这间会议室还没有人<em>提问</em></h3>' +
+          '<p>点击左上角「提问」，即可落下一张便签。手机上可单指拖动画布。</p>' +
+          '<div class="empty-btns"><span class="eb1">发布首张便签</span>' +
+            '<span class="eb2">' + I('share') + '分享</span></div>' +
+        '</div>' +
+        zoom() +
+      '</div>' + sidebar(0, 0, 0) + '</div>' +
+    '</div>';
+
+  var SCREENS = LANDING + BOARD + EMPTY;
+  [].forEach.call(document.querySelectorAll('.stage'), function (st) { st.innerHTML = SCREENS; });
+
+  /* ---------- 缩放适配 ---------- */
+  function fit() {
+    [].forEach.call(document.querySelectorAll('.stage'), function (st) {
+      var w = st.parentElement.clientWidth;
+      st.style.transform = 'scale(' + (w / 1280) + ')';
+    });
+  }
+  window.addEventListener('resize', fit);
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fit); }
+  fit();
+
+  /* ---------- 屏切换 ---------- */
+  document.getElementById('screenTabs').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    [].forEach.call(this.children, function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    var i = +b.dataset.s;
+    [].forEach.call(document.querySelectorAll('.stage'), function (st) {
+      [].forEach.call(st.children, function (sc, j) { sc.classList.toggle('on', j === i); });
+    });
+  });
+
+  /* ---------- 风格切换 ---------- */
+  document.getElementById('viewTabs').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    [].forEach.call(this.children, function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    document.getElementById('grid').dataset.view = b.dataset.v;
+    requestAnimationFrame(fit);
+  });
+
+  /* ---------- 收集判断 ---------- */
+  document.getElementById('copyBtn').addEventListener('click', function () {
+    var pick = document.getElementById('pick').value || '（没选）';
+    var rej = document.getElementById('reject').value.trim() || '（没写）';
+    var ctx = document.getElementById('ctx').value.trim() || '（没写）';
+    var out = [
+      '# 列宾 · 方向确认（草诀歌 AI Labs 会议白板）',
+      '',
+      '1 · 选哪个：' + pick,
+      '',
+      '2 · 没选的那版哪里不要（原话）：',
+      rej,
+      '',
+      '3 · 谁会在什么状态下打开它：',
+      ctx
+    ].join('\n');
+    var tip = document.getElementById('tip');
+    function done() { tip.textContent = '已复制，贴回对话里就行。'; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(out).then(done, function () { fallback(out, tip); });
+    } else { fallback(out, tip); }
+  });
+
+  function fallback(text, tip) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); tip.textContent = '已复制，贴回对话里就行。'; }
+    catch (err) { tip.textContent = '复制失败，手动选中上面三栏内容即可。'; }
+    document.body.removeChild(ta);
+  }
+})();
+</script>
