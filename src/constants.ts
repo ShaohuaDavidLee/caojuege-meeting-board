@@ -4,8 +4,16 @@
 
 export const PRODUCT_NAME = "草诀歌 AI Labs 会议白板";
 
-/** 全场唯一默认房间：不再随机开房，避免内容散落 */
-export const DEFAULT_ROOM = "共创会";
+export const BRAND_NAME = "草诀歌 AI Labs";
+
+/** 主房：草诀歌 AI Labs 自己的场子。其他人需要房间可另开一间 */
+export const DEFAULT_ROOM = "草诀歌 AI Labs";
+
+/** 旧房名 / 少空格写法：进来后归一到 DEFAULT_ROOM，老链接不失效 */
+export const LEGACY_ROOM_ALIASES = ["共创会", "草诀歌AI Labs"];
+
+/** 房名长度上限：房名同时是 URL 参数与存储键 */
+export const MAX_ROOM_NAME_LENGTH = 24;
 
 /** 有改动时自动归档间隔（毫秒） */
 export const AUTO_SNAPSHOT_INTERVAL_MS = 15 * 60 * 1000;

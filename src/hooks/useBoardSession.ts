@@ -1,15 +1,12 @@
 /**
  * 看板会话 —— notes / 标题 / 用户 / 轮询
  * 单一真相：notes 只在这里生长；便签动作见 useNoteActions
+ * room 由路由传入：主房是「草诀歌 AI Labs」，其他人可另开一间
  */
 
 import { useState, useEffect, useRef } from "react";
 import type { BoardState, StickyNote } from "../types";
-import {
-  DEFAULT_BOARD_TITLE,
-  DEFAULT_ROOM,
-  LEGACY_TITLES,
-} from "../constants";
+import { DEFAULT_BOARD_TITLE, LEGACY_TITLES } from "../constants";
 import * as api from "../api/boardApi";
 import { isDefaultBoardState, shareRoomUrl } from "../utils/boardHelpers";
 import type { ToastType } from "./useToast";
@@ -18,9 +15,7 @@ export type NoteFilter = "all" | "unanswered" | "answered";
 
 type ShowToast = (message: string, type?: ToastType) => void;
 
-export function useBoardSession(showToast: ShowToast) {
-  const room = DEFAULT_ROOM;
-
+export function useBoardSession(room: string, showToast: ShowToast) {
   const [boardTitle, setBoardTitle] = useState(DEFAULT_BOARD_TITLE);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleInput, setTitleInput] = useState("");
@@ -48,12 +43,8 @@ export function useBoardSession(showToast: ShowToast) {
   const activeDragIdRef = useRef<string | null>(null);
 
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    if (params.get("room") !== DEFAULT_ROOM) {
-      const newUrl = `${window.location.origin}${window.location.pathname}?room=${encodeURIComponent(DEFAULT_ROOM)}`;
-      window.history.replaceState(null, "", newUrl);
-    }
-  }, []);
+    roomRef.current = room;
+  }, [room]);
 
   const markWrite = () => {
     lastWriteTimeRef.current = Date.now();
@@ -139,10 +130,12 @@ export function useBoardSession(showToast: ShowToast) {
   };
 
   const refreshBoard = () => {
-    void fetchBoardState(room, true);
+    void fetchBoardState(roomRef.current, true);
   };
 
   useEffect(() => {
+    roomRef.current = room;
+    setNotes([]);
     fetchBoardState(room, false);
     const interval = setInterval(
       () => fetchBoardState(room, true, activeDragIdRef.current),
@@ -151,10 +144,10 @@ export function useBoardSession(showToast: ShowToast) {
     return () => clearInterval(interval);
     // 轮询读 ref，不因编辑态重启计时器
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [room]);
 
   const handleCopyRoomLink = () => {
-    const fullUrl = shareRoomUrl(DEFAULT_ROOM);
+    const fullUrl = shareRoomUrl(room);
     navigator.clipboard
       .writeText(fullUrl)
       .then(() => showToast("已复制分享链接"))

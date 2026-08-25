@@ -4,7 +4,7 @@
 
 import { useState, useEffect, useRef, FormEvent, MutableRefObject } from "react";
 import type { BoardHistoryItem, BoardState } from "../types";
-import { AUTO_SNAPSHOT_INTERVAL_MS, DEFAULT_ROOM } from "../constants";
+import { AUTO_SNAPSHOT_INTERVAL_MS } from "../constants";
 import * as api from "../api/boardApi";
 import type { ToastType } from "./useToast";
 
@@ -55,7 +55,7 @@ export function useBoardHistory(opts: {
         const now = new Date();
         const hh = String(now.getHours()).padStart(2, "0");
         const mm = String(now.getMinutes()).padStart(2, "0");
-        const data = await api.createHistory(DEFAULT_ROOM, {
+        const data = await api.createHistory(room, {
           name: `自动存档 · ${hh}:${mm}`,
           creator: "系统",
           kind: "auto",
@@ -68,7 +68,7 @@ export function useBoardHistory(opts: {
       }
     }, AUTO_SNAPSHOT_INTERVAL_MS);
     return () => clearInterval(tick);
-  }, [lastWriteTimeRef]);
+  }, [room, lastWriteTimeRef]);
 
   const handleCreateSnapshot = async (e?: FormEvent) => {
     if (e) e.preventDefault();
