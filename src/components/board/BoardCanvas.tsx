@@ -168,7 +168,7 @@ export function BoardCanvas({
           onClick={() =>
             setZoomScale((prev) => Math.max(0.3, parseFloat((prev - 0.1).toFixed(1))))
           }
-          className="btn btn-ghost h-9 w-9 sm:h-8 sm:w-8 border-0 border-r border-[var(--c-border-soft)] text-[var(--fs-sm)]"
+          className="btn btn-ghost h-9 w-9 sm:h-8 sm:w-8 border-0 border-r border-[var(--c-border-soft)] text-[length:var(--fs-sm)]"
         >
           −
         </button>
@@ -180,7 +180,7 @@ export function BoardCanvas({
           onClick={() =>
             setZoomScale((prev) => Math.min(2.0, parseFloat((prev + 0.1).toFixed(1))))
           }
-          className="btn btn-ghost h-9 w-9 sm:h-8 sm:w-8 border-0 border-l border-[var(--c-border-soft)] text-[var(--fs-sm)]"
+          className="btn btn-ghost h-9 w-9 sm:h-8 sm:w-8 border-0 border-l border-[var(--c-border-soft)] text-[length:var(--fs-sm)]"
         >
           +
         </button>
@@ -220,10 +220,10 @@ export function BoardCanvas({
           {notesCount === 0 && !loading && (
             <div className="absolute left-4 top-24 sm:left-[280px] sm:top-[160px] panel-soft p-6 sm:p-10 w-[min(340px,calc(100vw-2rem))] max-w-md rise rise-d2">
               <p className="eyebrow">Empty · 空板</p>
-              <h3 className="font-serif text-[24px] sm:text-[var(--fs-display-m)] tracking-[-0.02em] mt-2 leading-tight">
+              <h3 className="font-serif text-[24px] sm:text-[length:var(--fs-display-m)] tracking-[-0.02em] mt-2 leading-tight">
                 这间会议室还没有人<em className="font-serif italic">提问</em>
               </h3>
-              <p className="mt-3 text-[var(--fs-sm)] text-[var(--c-muted)] leading-relaxed">
+              <p className="mt-3 text-[length:var(--fs-sm)] text-[var(--c-muted)] leading-relaxed">
                 点击左上角「提问」，即可落下一张便签。手机上可单指拖动画布。
               </p>
               <div className="mt-6 flex flex-col sm:flex-row border border-[var(--c-border-soft)]">

@@ -1,7 +1,7 @@
 /**
  * 看板会话 —— notes / 标题 / 用户 / 轮询
  * 单一真相：notes 只在这里生长；便签动作见 useNoteActions
- * room 由路由传入：主房是「草诀歌 AI Labs」，其他人可另开一间
+ * room 由路由传入：主会议间是「草诀歌 AI Labs」，需要时可另开一间
  */
 
 import { useState, useEffect, useRef } from "react";

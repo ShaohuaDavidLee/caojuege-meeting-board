@@ -39,7 +39,8 @@
   --font-serif: "Noto Serif SC", "Songti SC", serif;
   --font-sans: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
 
-  --fs-display-xl: clamp(48px, 8vw, 96px);
+  /* 首屏改成左文右图后，96px 在半栏里会断成四行，收到 76px */
+  --fs-display-xl: clamp(40px, 5.4vw, 76px);
   --fs-display-l: clamp(32px, 5vw, 60px);
   --fs-display-m: clamp(28px, 4vw, 40px);
   --fs-lg: 20px;
@@ -384,6 +385,7 @@ body {
     font-weight: 600;
     line-height: 1.05;
     letter-spacing: -0.02em;
+    text-wrap: balance;
   }
 
   .display-l {
@@ -437,81 +439,6 @@ body {
     font-family: var(--font-serif);
     font-size: var(--fs-lg);
     color: var(--c-muted-alt);
-  }
-
-  /* 首屏水印：全站唯一一处，半裁切 */
-  .hero-watermark {
-    position: absolute;
-    right: -0.06em;
-    bottom: -0.2em;
-    font-family: var(--font-serif);
-    font-size: clamp(220px, 34vw, 460px);
-    line-height: 0.8;
-    letter-spacing: -0.04em;
-    color: var(--c-watermark);
-    pointer-events: none;
-    user-select: none;
-    z-index: 0;
-  }
-
-  /* 角色卡网格：卡片自带四边线，负边距把相邻的两条并成一条，仍然不留 gap */
-  .grid-roles {
-    padding-top: 1px;
-    padding-left: 1px;
-  }
-
-  .grid-roles > * {
-    margin-top: -1px;
-    margin-left: -1px;
-  }
-
-  /* 角色卡：全站唯一的「炫技」交互，深底浅字 hover 整体反转 */
-  .role-card {
-    position: relative;
-    overflow: hidden;
-    border: 1px solid var(--c-border-on-dark);
-    background: var(--c-btn);
-    color: var(--c-on-dark);
-    transition: background 500ms var(--ease-out), color 500ms var(--ease-out),
-      border-color 500ms var(--ease-out);
-  }
-
-  .role-card:hover {
-    z-index: 1;
-    background: transparent;
-    color: var(--c-ink);
-    border-color: var(--c-border-soft);
-  }
-
-  .role-card__mark {
-    position: absolute;
-    right: -0.06em;
-    bottom: -0.24em;
-    font-family: var(--font-serif);
-    font-size: 200px;
-    line-height: 1;
-    color: rgba(255, 255, 255, 0.05);
-    pointer-events: none;
-    user-select: none;
-    transition: color 500ms var(--ease-out);
-  }
-
-  .role-card:hover .role-card__mark {
-    color: var(--c-watermark);
-  }
-
-  /* 唯一的圆角例外 */
-  .role-badge {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 46px;
-    height: 46px;
-    border: 1px solid currentColor;
-    border-radius: 9999px;
-    font-family: var(--font-serif);
-    font-size: var(--fs-lg);
-    line-height: 1;
   }
 
   .eyebrow.is-on-dark {
@@ -575,14 +502,6 @@ body {
     font-size: 96px;
     right: -8%;
     bottom: 18%;
-  }
-
-  .hero-watermark {
-    font-size: 160px;
-  }
-
-  .role-card__mark {
-    font-size: 150px;
   }
 
   .modal-scrim {

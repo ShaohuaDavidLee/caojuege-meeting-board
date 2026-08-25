@@ -1,5 +1,5 @@
 /**
- * 顶栏 —— 返回 / 标题 / 房间 / 筛选 / 工具
+ * 顶栏 —— 返回 / 标题 / 会议间 / 筛选 / 工具
  */
 
 import { Check, ChevronLeft, Grid, History, Layers, Share2 } from "lucide-react";
@@ -56,7 +56,7 @@ export function BoardNav({
           type="button"
           onClick={onLeave}
           className="btn btn-icon shrink-0"
-          title="回首页 · 换一间房"
+          title="回首页 · 换会议间"
           aria-label="回首页"
         >
           <ChevronLeft className="w-4 h-4" />
@@ -72,7 +72,7 @@ export function BoardNav({
                 onChange={(e) => setTitleInput(e.target.value)}
                 onBlur={saveTitle}
                 onKeyDown={(e) => e.key === "Enter" && saveTitle()}
-                className="field py-0.5 px-1.5 text-[var(--fs-sm)] font-serif w-full max-w-[280px]"
+                className="field py-0.5 px-1.5 text-[length:var(--fs-sm)] font-serif w-full max-w-[280px]"
                 autoFocus
                 maxLength={40}
               />
@@ -99,8 +99,8 @@ export function BoardNav({
             Room
           </span>
           <span
-            className="font-serif px-2.5 text-[var(--fs-sm)] truncate"
-            title={isDefaultRoom(room) ? "草诀歌 AI Labs 主房" : `独立房间「${room}」`}
+            className="font-serif px-2.5 text-[length:var(--fs-sm)] truncate"
+            title={isDefaultRoom(room) ? "草诀歌 AI Labs 主会议间" : `独立会议间「${room}」`}
           >
             {room}
           </span>

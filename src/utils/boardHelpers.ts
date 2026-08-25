@@ -1,5 +1,5 @@
 /**
- * 白板纯函数 —— 房名归一 / 默认态判断 / 网格对齐 / 分享链
+ * 白板纯函数 —— 名称归一 / 默认态判断 / 网格对齐 / 分享链
  */
 
 import type { BoardState, StickyNote } from "../types";
@@ -16,7 +16,7 @@ export function normalizeRoomName(raw: string): string {
   return raw.replace(/\s+/g, " ").trim().slice(0, MAX_ROOM_NAME_LENGTH);
 }
 
-/** 旧房名与「草诀歌AI Labs」这类少空格写法，一律归到主房 */
+/** 旧名与「草诀歌AI Labs」这类少空格写法，一律归到主会议间 */
 export function canonicalRoomName(raw: string): string {
   const name = normalizeRoomName(raw);
   if (!name) return "";

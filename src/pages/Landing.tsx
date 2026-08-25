@@ -13,25 +13,10 @@ import {
 import { canonicalRoomName, readableRoomUrl } from "../utils/boardHelpers";
 import { readRecentRooms } from "../utils/recentRooms";
 
-const BELIEFS = [
-  {
-    title: "口诀先于天赋",
-    body: "Vibe coding 是我们这个时代的草诀歌。学草书的人先背口诀歌——口诀不让你成为书法家，却让你当场写得出来。让非专家做出专家级的东西，是同一件事。",
-  },
-  {
-    title: "作品重于产量",
-    body: "AI 的真正红利不在批量制造垃圾，而在于创造独特作品。所以我们不比谁发得多，只看谁做出了别人做不出的那一件。",
-  },
-  {
-    title: "交叉胜于同温层",
-    body: "美第奇效应：画家、科学家、工程师坐到同一张桌子边上，互相授粉。会议白板想留住的，正是交叉发生的那一刻。",
-  },
-];
-
 const STEPS = [
   {
-    title: "开一间房",
-    body: "主房叫「草诀歌 AI Labs」，闭门会与共创会都落在这里。要办自己的场，另开一间就好，两边互不打扰。",
+    title: "打开会议间",
+    body: "主会议间是「草诀歌 AI Labs」，闭门会与共创会都落在这里。链接长期有效，进来就能看到上一场留下的问题。",
   },
   {
     title: "把链接发出去",
@@ -43,7 +28,7 @@ const STEPS = [
   },
   {
     title: "散会带得走",
-    body: "有改动时每 15 分钟自动存档，每间房留最近 20 份。会散了，问题还在。",
+    body: "有改动时每 15 分钟自动存档，最近 20 份留着。会散了，问题还在。",
   },
 ];
 
@@ -59,24 +44,6 @@ const GAINS = [
   {
     title: "可回溯的现场",
     body: "每一次存档都是一张会议切片。三个月后回头看，你会看见问题是怎么长出来的。",
-  },
-];
-
-const ROLES = [
-  {
-    mark: "草",
-    name: "跨界者 · 草书者",
-    body: "自由、有经验、乐于分享。写得快，是因为已经写过很多遍。",
-  },
-  {
-    mark: "行",
-    name: "造物者 · 行书者",
-    body: "在动手，在造东西。产品还没做完，但已经跑起来了。",
-  },
-  {
-    mark: "楷",
-    name: "探索者 · 楷书者",
-    body: "在学习，讲求精确。一笔一画，先把结构立住。",
   },
 ];
 
@@ -134,77 +101,62 @@ export default function Landing({
             <span className="eyebrow">AI Labs</span>
           </a>
 
-          <div className="flex items-center gap-3 shrink-0">
-            <a href="#rooms" className="hidden sm:inline-flex btn btn-ghost h-9 px-4">
-              开一间自己的房
-            </a>
-            <button
-              type="button"
-              onClick={() => onEnterRoom(DEFAULT_ROOM)}
-              className="btn btn-primary h-9 px-4 whitespace-nowrap group"
-            >
-              进入主房
-              <ArrowRight className="w-4 h-4 arrow-nudge" />
-            </button>
-          </div>
+          <button
+            type="button"
+            onClick={() => onEnterRoom(DEFAULT_ROOM)}
+            className="btn btn-primary h-9 px-4 shrink-0 whitespace-nowrap group"
+          >
+            进入会议间
+            <ArrowRight className="w-4 h-4 arrow-nudge" />
+          </button>
         </div>
       </header>
 
-      {/* ---------- 首屏 ---------- */}
-      <section className="relative overflow-hidden pt-20 border-b border-[var(--c-border-soft)]">
-        <span className="hero-watermark" aria-hidden="true">
-          草
-        </span>
-
-        <div className="wrap relative z-10 min-h-[85vh] flex flex-col justify-center py-24">
-          <p className="eyebrow rise">Caojuege AI Labs · Meeting Board</p>
-
-          <h1 className="display-xl mt-6 rise rise-d1">
-            以产品为笔，
-            <br />
-            <em className="font-serif italic">和世界对话</em>。
-          </h1>
-
-          <p className="lead mt-8 max-w-2xl rise rise-d2">
-            一场会议真正的产出，是那些被说出口的问题。草诀歌 AI Labs
-            的会议白板把提问、投票与解答放在同一张纸面上——开一个链接，所有人一起写。
-          </p>
-
-          <div className="mt-12 flex flex-wrap items-center gap-3 rise rise-d3">
-            <button
-              type="button"
-              onClick={() => onEnterRoom(DEFAULT_ROOM)}
-              className="btn btn-primary h-12 px-7 text-[var(--fs-base)] group"
-            >
-              进入草诀歌 AI Labs
-              <ArrowRight className="w-4 h-4 arrow-nudge" />
-            </button>
-            <a href="#rooms" className="btn btn-ghost h-12 px-7 text-[var(--fs-base)]">
-              开一间自己的房
-            </a>
-          </div>
-        </div>
-      </section>
-
-      {/* ---------- 社区相信什么？ ---------- */}
-      <section className="section border-b border-[var(--c-border-soft)]">
+      {/* ---------- 首屏：左文右图 ---------- */}
+      <section className="border-b border-[var(--c-border-soft)] pt-20">
         <div className="wrap">
-          <SectionHead
-            eyebrow="What We Believe"
-            title="社区相信"
-            emphasis="什么？"
-          />
+          <div className="grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] gap-14 lg:gap-16 items-center min-h-[85vh] py-20">
+            <div>
+              <p className="eyebrow rise">Caojuege AI Labs · Meeting Board</p>
 
-          <div className="grid-frame grid md:grid-cols-3">
-            {BELIEFS.map((item, i) => (
-              <div key={item.title} className="cell">
-                <span className="ordinal">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="display-m mt-6">{item.title}</h3>
-                <p className="mt-5 text-[var(--fs-sm)] leading-loose text-[var(--c-muted)]">
-                  {item.body}
-                </p>
+              {/* 断成三行：情绪落点「思想碰撞」独占一行，窄屏也不会掉孤字 */}
+              <h1 className="display-xl mt-6 rise rise-d1">
+                在白板上共享<br />自由交流和<br /><em className="font-serif italic">思想碰撞</em>
+              </h1>
+
+              <p className="lead mt-8 rise rise-d2">
+                一场会议真正的产出，是那些被说出口的问题。草诀歌 AI Labs
+                的会议白板把提问、投票与解答放在同一张纸面上——开一个链接，所有人一起写。
+              </p>
+
+              <div className="mt-12 rise rise-d3">
+                <button
+                  type="button"
+                  onClick={() => onEnterRoom(DEFAULT_ROOM)}
+                  className="btn btn-primary h-12 px-7 text-[length:var(--fs-base)] group"
+                >
+                  进入草诀歌 AI Labs 会议间
+                  <ArrowRight className="w-4 h-4 arrow-nudge" />
+                </button>
               </div>
-            ))}
+            </div>
+
+            <figure className="min-w-0 rise rise-d2">
+              {/* 截图底色与页面底色同为 #e5e5e5，靠白衬边把它托起来，边缘才立得住 */}
+              <div className="border border-[var(--c-border-on-dark)] bg-[var(--c-btn)] p-2 lg:p-2.5">
+                <div className="overflow-x-auto">
+                  <img
+                    src="/board-preview.png"
+                    alt="草诀歌 AI Labs 会议间：便签、投票与已解答标记"
+                    className="block h-auto w-full min-w-[560px] lg:min-w-0"
+                  />
+                </div>
+              </div>
+              <figcaption className="mt-4 text-[length:var(--fs-xs)] leading-relaxed text-[var(--c-muted-alt)]">
+                一张便签就是一个问题。右下角是票数，答完的会被划掉并标为「已解答」。
+                <span className="lg:hidden">（窄屏可左右滑动看细节）</span>
+              </figcaption>
+            </figure>
           </div>
         </div>
       </section>
@@ -222,10 +174,10 @@ export default function Landing({
             {STEPS.map((item, i) => (
               <div key={item.title} className="cell cell--tight">
                 <span className="ordinal">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="font-serif text-[var(--fs-lg)] tracking-[-0.02em] mt-6">
+                <h3 className="font-serif text-[length:var(--fs-lg)] tracking-[-0.02em] mt-6">
                   {item.title}
                 </h3>
-                <p className="mt-4 text-[var(--fs-sm)] leading-loose text-[var(--c-muted)]">
+                <p className="mt-4 text-[length:var(--fs-sm)] leading-loose text-[var(--c-muted)]">
                   {item.body}
                 </p>
               </div>
@@ -247,7 +199,7 @@ export default function Landing({
             {GAINS.map((item) => (
               <div key={item.title} className="cell">
                 <h3 className="display-m">{item.title}</h3>
-                <p className="mt-5 text-[var(--fs-sm)] leading-loose text-[var(--c-muted)]">
+                <p className="mt-5 text-[length:var(--fs-sm)] leading-loose text-[var(--c-muted)]">
                   {item.body}
                 </p>
               </div>
@@ -256,106 +208,73 @@ export default function Landing({
         </div>
       </section>
 
-      {/* ---------- 社区里现在有谁？ ---------- */}
-      <section className="section border-b border-[var(--c-border-soft)]">
-        <div className="wrap">
-          <SectionHead
-            eyebrow="Who Is Here"
-            title="社区里现在"
-            emphasis="有谁？"
-          />
-
-          <div className="grid-roles grid md:grid-cols-3">
-            {ROLES.map((role) => (
-              <div key={role.mark} className="cell role-card">
-                <span className="role-card__mark" aria-hidden="true">
-                  {role.mark}
-                </span>
-                <div className="relative z-10">
-                  <span className="role-badge">{role.mark}</span>
-                  <h3 className="font-serif text-[var(--fs-lg)] tracking-[-0.02em] mt-6">
-                    {role.name}
-                  </h3>
-                  <p className="mt-4 text-[var(--fs-sm)] leading-loose opacity-80">
-                    {role.body}
-                  </p>
-                </div>
-              </div>
-            ))}
-          </div>
-
-          <p className="mt-8 text-[var(--fs-sm)] text-[var(--c-muted-alt)]">
-            三种笔速，同一张纸。没有初级中级高级，只有你此刻在用哪一种笔。
-          </p>
-        </div>
-      </section>
-
-      {/* ---------- 进哪一间？ ---------- */}
+      {/* ---------- 进哪个会议间？ ---------- */}
       <section id="rooms" className="section border-b border-[var(--c-border-soft)]">
         <div className="wrap">
           <SectionHead
             eyebrow="Enter A Room"
-            title="今天进"
-            emphasis="哪一间？"
+            title="进哪个"
+            emphasis="会议间？"
           />
 
-          <div className="grid-frame grid lg:grid-cols-2">
-            <div className="cell flex flex-col">
-              <p className="eyebrow">Main Room · 主房</p>
-              <h3 className="display-m mt-4">{DEFAULT_ROOM}</h3>
-              <p className="mt-5 text-[var(--fs-sm)] leading-loose text-[var(--c-muted)] flex-1">
+          <div className="grid-frame grid">
+            {/* 主角：草诀歌 AI Labs 会议间 */}
+            <div className="cell">
+              <p className="eyebrow">Main Room · 主会议间</p>
+              <h3 className="display-l mt-4">{DEFAULT_ROOM}</h3>
+              <p className="lead mt-6 max-w-2xl">
                 闭门会、共创会与日常提问都落在这一间。它是社区自己的场子，链接长期有效，进来就能看到上一场留下的问题。
               </p>
-              <div className="mt-8">
+              <div className="mt-10">
                 <button
                   type="button"
                   onClick={() => onEnterRoom(DEFAULT_ROOM)}
-                  className="btn btn-primary h-12 px-7 text-[var(--fs-base)] group"
+                  className="btn btn-primary h-12 px-7 text-[length:var(--fs-base)] group"
                 >
-                  进入主房
+                  进入会议间
                   <ArrowRight className="w-4 h-4 arrow-nudge" />
                 </button>
               </div>
             </div>
 
-            <div className="cell flex flex-col">
-              <p className="eyebrow">Your Room · 自己的房</p>
-              <h3 className="display-m mt-4">开一间新的</h3>
-              <p className="mt-5 text-[var(--fs-sm)] leading-loose text-[var(--c-muted)]">
-                其他人要开会，不必挤在主房里。取一个房名，就得到一间独立的白板：便签、投票与存档都只属于这一间。
-              </p>
-
-              <form onSubmit={handleCreateRoom} className="mt-8">
-                <label htmlFor="room-name" className="eyebrow block">
-                  Room Name · 房名
-                </label>
-                <div className="mt-3 flex flex-col sm:flex-row">
+            {/* 配角：需要单独一间时才用 */}
+            <div className="cell cell--tight">
+              <form
+                onSubmit={handleCreateRoom}
+                className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6"
+              >
+                <p className="text-[length:var(--fs-sm)] text-[var(--c-muted)] lg:shrink-0">
+                  要单独开一场？取个名字就是一间新的会议间。
+                </p>
+                <div className="flex flex-1 flex-col sm:flex-row lg:max-w-md">
                   <input
                     id="room-name"
                     type="text"
                     value={roomInput}
                     onChange={(e) => setRoomInput(e.target.value)}
-                    placeholder="例如：产品共创 07"
+                    placeholder="会议间名称"
+                    aria-label="会议间名称"
                     maxLength={MAX_ROOM_NAME_LENGTH}
-                    className="field h-12 sm:border-r-0"
+                    className="field h-11 sm:border-r-0"
                   />
                   <button
                     type="submit"
                     disabled={!pendingRoom}
-                    className="btn btn-primary h-12 px-7 shrink-0 mt-2 sm:mt-0 disabled:opacity-40 disabled:cursor-not-allowed"
+                    className="btn btn-ghost h-11 px-5 shrink-0 mt-2 sm:mt-0 disabled:opacity-40 disabled:cursor-not-allowed"
                   >
-                    开这一间
+                    进这一间
                   </button>
                 </div>
-                <p className="mt-4 text-[var(--fs-xs)] leading-relaxed text-[var(--c-muted-alt)]">
-                  {pendingRoom
-                    ? `这一间的地址是 ${readableRoomUrl(pendingRoom)}`
-                    : "房名就是地址。同名即同房，把链接发给参会者，大家看到的是同一张纸面。"}
-                </p>
               </form>
 
+              {pendingRoom && (
+                <p className="mt-4 text-[length:var(--fs-xs)] leading-relaxed text-[var(--c-muted-alt)]">
+                  这一间的地址是 {readableRoomUrl(pendingRoom)}
+                </p>
+              )}
+
               {recentRooms.length > 0 && (
-                <div className="mt-8 pt-6 border-t border-[var(--c-border-soft)]">
+                <div className="mt-6 pt-5 border-t border-[var(--c-border-soft)]">
                   <p className="eyebrow">Recent · 你去过的</p>
                   <div className="mt-3 flex flex-wrap gap-2">
                     {recentRooms.map((name) => (
@@ -388,7 +307,7 @@ export default function Landing({
           <button
             type="button"
             onClick={() => onEnterRoom(DEFAULT_ROOM)}
-            className="btn btn-on-dark h-12 px-7 text-[var(--fs-base)] shrink-0 self-start lg:self-auto group"
+            className="btn btn-on-dark h-12 px-7 text-[length:var(--fs-base)] shrink-0 self-start lg:self-auto group"
           >
             进入草诀歌 AI Labs
             <ArrowRight className="w-4 h-4 arrow-nudge" />
@@ -396,7 +315,7 @@ export default function Landing({
         </div>
 
         <div className="border-t border-[var(--c-border-on-dark)]">
-          <div className="wrap py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-[var(--fs-xs)]">
+          <div className="wrap py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-[length:var(--fs-xs)]">
             <p className="on-dark-soft">
               {BRAND_NAME} —— 面向非技术创作者的中文 vibe coding 社区
             </p>
