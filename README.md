@@ -43,13 +43,11 @@ npm run build
 
 ## 部署（Cloudflare Pages）
 
-推送到 `main` 将由 GitHub Actions 自动部署（需仓库 Secrets：`CLOUDFLARE_API_TOKEN`、`CLOUDFLARE_ACCOUNT_ID`）。
+Pages 项目已连 Git：推送到 `main` 由 Cloudflare 自己拉代码、构建、发布到 Production，不需要 GitHub Actions，也不需要配任何仓库 Secret。构建产物目录见 `wrangler.toml` 的 `pages_build_output_dir`。
 
-本地手动：
+部署记录：Cloudflare Dashboard → Workers 和 Pages → `caojuege-meeting-board` → 部署。
 
-```bash
-npm run deploy
-```
+`package.json` 里的 `npm run deploy`（wrangler 直传）不是当前的部署路径，线上每一个版本都来自上面这条 Git 链路。
 
 DNS（`caojuege.com` zone）：
 
