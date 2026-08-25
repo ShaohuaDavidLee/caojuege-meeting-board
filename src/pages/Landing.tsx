@@ -142,12 +142,15 @@ export default function Landing({
             </div>
 
             <figure className="m-0 min-w-0 rise rise-d2">
-              <div className="border border-[var(--c-border-soft)] bg-[var(--c-surface)] overflow-x-auto">
-                <img
-                  src="/board-preview.png"
-                  alt="草诀歌 AI Labs 会议间：便签、投票与已解答标记"
-                  className="block h-auto w-full min-w-[560px] lg:min-w-0"
-                />
+              {/* 截图底色与页面底色同为 #e5e5e5，靠白衬边把它托起来，边缘才立得住 */}
+              <div className="border border-[var(--c-border-on-dark)] bg-[var(--c-btn)] p-3 lg:p-4">
+                <div className="overflow-x-auto">
+                  <img
+                    src="/board-preview.png"
+                    alt="草诀歌 AI Labs 会议间：便签、投票与已解答标记"
+                    className="block h-auto w-full min-w-[560px] lg:min-w-0"
+                  />
+                </div>
               </div>
               <figcaption className="mt-4 text-[length:var(--fs-xs)] leading-relaxed text-[var(--c-muted-alt)]">
                 一张便签就是一个问题。右下角是票数，答完的会被划掉并标为「已解答」。
