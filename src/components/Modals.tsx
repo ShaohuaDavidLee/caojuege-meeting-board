@@ -36,7 +36,7 @@ export function NameModal({
       <div className="panel modal-sheet w-full max-w-sm p-6 sm:p-8 rise">
         <p className="eyebrow">Identity · 署名</p>
         <h3 className="font-serif font-normal text-[24px] sm:text-[28px] tracking-[-0.02em] text-[var(--c-ink)] mt-2 leading-snug">
-          你希望被怎样<em className="font-serif italic font-normal">称呼</em>？
+          怎么<em className="font-serif italic font-normal">称呼</em>你？
         </h3>
         <p className="text-[length:var(--fs-sm)] text-[var(--c-muted)] mt-3 leading-relaxed">
           主持人或同伴回答时，能叫出你的名字。无需登录，只是一块纸上的署名。
