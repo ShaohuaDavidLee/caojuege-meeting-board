@@ -36,7 +36,7 @@ export function BoardSidebar({
           </button>
         </div>
 
-        <div className="px-6 py-5 text-[var(--fs-sm)] text-[var(--c-muted)] leading-relaxed border-b border-[var(--c-border-soft)]">
+        <div className="px-6 py-5 text-[length:var(--fs-sm)] text-[var(--c-muted)] leading-relaxed border-b border-[var(--c-border-soft)]">
           完全实时同步的会议收集板。开启同一链接的人，会看到你拖曳的每一次落点与每一次表态。
         </div>
 
@@ -48,7 +48,7 @@ export function BoardSidebar({
           ].map((row, i) => (
             <div
               key={row.k}
-              className={`flex items-center justify-between px-6 py-3 text-[var(--fs-sm)] ${
+              className={`flex items-center justify-between px-6 py-3 text-[length:var(--fs-sm)] ${
                 i > 0 ? "border-t border-[var(--c-border-soft)]" : ""
               }`}
             >
@@ -58,7 +58,7 @@ export function BoardSidebar({
           ))}
         </div>
 
-        <div className="px-6 py-5 flex-1 text-[var(--fs-xs)] text-[var(--c-muted)] space-y-3">
+        <div className="px-6 py-5 flex-1 text-[length:var(--fs-xs)] text-[var(--c-muted)] space-y-3">
           {[
             "点左上角「提问」：新建便签",
             "单指拖空白处：平移画布",
@@ -74,7 +74,7 @@ export function BoardSidebar({
           ))}
         </div>
 
-        <div className="panel-dark px-6 py-5 text-[var(--fs-xs)] leading-relaxed pb-[max(1.25rem,env(safe-area-inset-bottom))]">
+        <div className="panel-dark px-6 py-5 text-[length:var(--fs-xs)] leading-relaxed pb-[max(1.25rem,env(safe-area-inset-bottom))]">
           无需登录。复制链接分享给参会者，大家就能一起写入。
         </div>
       </aside>

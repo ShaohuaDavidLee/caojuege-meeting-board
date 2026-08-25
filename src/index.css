@@ -39,7 +39,8 @@
   --font-serif: "Noto Serif SC", "Songti SC", serif;
   --font-sans: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
 
-  --fs-display-xl: clamp(48px, 8vw, 96px);
+  /* 首屏改成左文右图后，96px 在半栏里会断成四行，收到 76px */
+  --fs-display-xl: clamp(40px, 5.4vw, 76px);
   --fs-display-l: clamp(32px, 5vw, 60px);
   --fs-display-m: clamp(28px, 4vw, 40px);
   --fs-lg: 20px;
@@ -440,21 +441,6 @@ body {
     color: var(--c-muted-alt);
   }
 
-  /* 首屏水印：全站唯一一处，半裁切 */
-  .hero-watermark {
-    position: absolute;
-    right: -0.06em;
-    bottom: -0.2em;
-    font-family: var(--font-serif);
-    font-size: clamp(220px, 34vw, 460px);
-    line-height: 0.8;
-    letter-spacing: -0.04em;
-    color: var(--c-watermark);
-    pointer-events: none;
-    user-select: none;
-    z-index: 0;
-  }
-
   .eyebrow.is-on-dark {
     color: rgba(229, 229, 229, 0.6);
   }
@@ -516,10 +502,6 @@ body {
     font-size: 96px;
     right: -8%;
     bottom: 18%;
-  }
-
-  .hero-watermark {
-    font-size: 160px;
   }
 
   .modal-scrim {

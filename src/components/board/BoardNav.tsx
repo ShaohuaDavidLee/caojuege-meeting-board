@@ -72,7 +72,7 @@ export function BoardNav({
                 onChange={(e) => setTitleInput(e.target.value)}
                 onBlur={saveTitle}
                 onKeyDown={(e) => e.key === "Enter" && saveTitle()}
-                className="field py-0.5 px-1.5 text-[var(--fs-sm)] font-serif w-full max-w-[280px]"
+                className="field py-0.5 px-1.5 text-[length:var(--fs-sm)] font-serif w-full max-w-[280px]"
                 autoFocus
                 maxLength={40}
               />
@@ -99,7 +99,7 @@ export function BoardNav({
             Room
           </span>
           <span
-            className="font-serif px-2.5 text-[var(--fs-sm)] truncate"
+            className="font-serif px-2.5 text-[length:var(--fs-sm)] truncate"
             title={isDefaultRoom(room) ? "草诀歌 AI Labs 主会议间" : `独立会议间「${room}」`}
           >
             {room}

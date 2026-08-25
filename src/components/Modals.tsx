@@ -38,11 +38,11 @@ export function NameModal({
         <h3 className="font-serif font-normal text-[24px] sm:text-[28px] tracking-[-0.02em] text-[var(--c-ink)] mt-2 leading-snug">
           你希望被怎样<em className="font-serif italic font-normal">称呼</em>？
         </h3>
-        <p className="text-[var(--fs-sm)] text-[var(--c-muted)] mt-3 leading-relaxed">
+        <p className="text-[length:var(--fs-sm)] text-[var(--c-muted)] mt-3 leading-relaxed">
           主持人或同伴回答时，能叫出你的名字。无需登录，只是一块纸上的署名。
         </p>
 
-        <label className="block mt-6 mb-1.5 text-[var(--fs-xs)] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
+        <label className="block mt-6 mb-1.5 text-[length:var(--fs-xs)] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
           Name · 昵称
         </label>
         <input
@@ -113,7 +113,7 @@ export function AddNoteModal({
             <h3 className="font-serif font-normal text-[22px] sm:text-[26px] tracking-[-0.02em] text-[var(--c-ink)] mt-2 leading-snug">
               写下你的<em className="font-serif italic font-normal">疑惑</em>
             </h3>
-            <p className="font-sans text-[var(--fs-xs)] text-[var(--c-muted-alt)] mt-2">
+            <p className="font-sans text-[length:var(--fs-xs)] text-[var(--c-muted-alt)] mt-2">
               {noteCreationCoords
                 ? `落点 X ${Math.round(noteCreationCoords.x)} · Y ${Math.round(noteCreationCoords.y)}`
                 : "自动落在画布中央"}
@@ -126,7 +126,7 @@ export function AddNoteModal({
 
         <div className="px-5 sm:px-8 py-5 sm:py-6 flex flex-col gap-5 bg-[var(--c-surface)]">
           <div>
-            <label className="block mb-1.5 font-sans text-[var(--fs-xs)] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
+            <label className="block mb-1.5 font-sans text-[length:var(--fs-xs)] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
               Ask · 正文（限 300 字）
             </label>
             <textarea
@@ -142,14 +142,14 @@ export function AddNoteModal({
           </div>
 
           <div>
-            <label className="block mb-1.5 font-sans text-[var(--fs-xs)] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
+            <label className="block mb-1.5 font-sans text-[length:var(--fs-xs)] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
               Sign · 署名
             </label>
             <div className="grid grid-cols-2 border border-[var(--c-border-soft)] bg-[var(--c-bg)]">
               <button
                 type="button"
                 onClick={() => setSubmitterNameType("self")}
-                className={`py-3 px-3 font-sans text-[var(--fs-xs)] transition-colors duration-300 border-r border-[var(--c-border-soft)] ${
+                className={`py-3 px-3 font-sans text-[length:var(--fs-xs)] transition-colors duration-300 border-r border-[var(--c-border-soft)] ${
                   submitterNameType === "self"
                     ? "bg-[var(--c-surface)] text-[var(--c-ink)]"
                     : "bg-transparent text-[var(--c-muted)] hover:text-[var(--c-ink)]"
@@ -169,7 +169,7 @@ export function AddNoteModal({
               <button
                 type="button"
                 onClick={() => setSubmitterNameType("anonymous")}
-                className={`py-3 px-3 font-sans text-[var(--fs-xs)] transition-colors duration-300 ${
+                className={`py-3 px-3 font-sans text-[length:var(--fs-xs)] transition-colors duration-300 ${
                   submitterNameType === "anonymous"
                     ? "bg-[var(--c-surface)] text-[var(--c-ink)]"
                     : "bg-transparent text-[var(--c-muted)] hover:text-[var(--c-ink)]"
@@ -191,7 +191,7 @@ export function AddNoteModal({
               <button
                 type="button"
                 onClick={onOpenName}
-                className="mt-2 font-sans text-[var(--fs-xs)] text-[var(--c-muted-alt)] hover:text-[var(--c-ink)] transition-colors duration-300 bg-transparent border-0 cursor-pointer p-0"
+                className="mt-2 font-sans text-[length:var(--fs-xs)] text-[var(--c-muted-alt)] hover:text-[var(--c-ink)] transition-colors duration-300 bg-transparent border-0 cursor-pointer p-0"
               >
                 修改昵称
               </button>
@@ -199,7 +199,7 @@ export function AddNoteModal({
           </div>
 
           <div>
-            <label className="block mb-1.5 font-sans text-[var(--fs-xs)] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
+            <label className="block mb-1.5 font-sans text-[length:var(--fs-xs)] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)]">
               Color · 底色
             </label>
             <div className="flex items-center gap-2">
@@ -252,7 +252,7 @@ export function DeleteModal({
           <Trash2 className="w-5 h-5 shrink-0" />
           确认移除此便签？
         </h3>
-        <p className="text-[var(--fs-sm)] text-[var(--c-muted)] mt-3 leading-relaxed">
+        <p className="text-[length:var(--fs-sm)] text-[var(--c-muted)] mt-3 leading-relaxed">
           将从所有协作者的屏幕上同步移除，且无法撤销。
         </p>
         <div className="mt-6 flex border border-[var(--c-border-soft)]">
@@ -375,14 +375,14 @@ export function HistoryModal({
 
             <div className="flex-1 overflow-y-auto">
               {historyLoading && historyList.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-[var(--fs-xs)] text-[var(--c-muted-alt)] gap-2">
+                <div className="h-full flex flex-col items-center justify-center text-[length:var(--fs-xs)] text-[var(--c-muted-alt)] gap-2">
                   <RefreshCw className="w-4 h-4 animate-spin" />
                   <span>正在检索…</span>
                 </div>
               ) : historyList.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-[var(--fs-xs)] text-[var(--c-muted-alt)] py-12 gap-2 text-center px-6">
+                <div className="h-full flex flex-col items-center justify-center text-[length:var(--fs-xs)] text-[var(--c-muted-alt)] py-12 gap-2 text-center px-6">
                   <History className="w-8 h-8 stroke-[1.5] opacity-40" />
-                  <span className="font-serif text-[var(--c-muted)] text-[var(--fs-sm)]">暂无历史版本</span>
+                  <span className="font-serif text-[var(--c-muted)] text-[length:var(--fs-sm)]">暂无历史版本</span>
                   <p className="max-w-xs text-[10px] leading-relaxed">
                     白板有改动后，约每 15 分钟会自动出现一份存档；也可左侧手动打包。
                   </p>
@@ -395,12 +395,12 @@ export function HistoryModal({
                       className="px-5 py-3.5 border-b border-[var(--c-border-soft)] flex items-center justify-between gap-4 hover:bg-[var(--c-surface)] transition-colors duration-300"
                     >
                       <div className="flex items-start gap-3 min-w-0 flex-1">
-                        <span className="font-serif text-[var(--fs-sm)] text-[var(--c-muted-alt)] shrink-0 w-6">
+                        <span className="font-serif text-[length:var(--fs-sm)] text-[var(--c-muted-alt)] shrink-0 w-6">
                           {String(idx + 1).padStart(2, "0")}
                         </span>
                         <div className="min-w-0">
                           <div className="flex items-center gap-2 flex-wrap">
-                            <span className="text-[var(--fs-sm)] text-[var(--c-ink)] truncate">{item.name}</span>
+                            <span className="text-[length:var(--fs-sm)] text-[var(--c-ink)] truncate">{item.name}</span>
                             <span className="shrink-0 text-[10px] text-[var(--c-muted-alt)] border border-[var(--c-border-soft)] px-1.5 py-0.5">
                               {item.kind === "auto" ? "自动" : "手动"}
                             </span>

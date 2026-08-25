@@ -70,7 +70,7 @@ export function StickyNoteCard({
     >
       <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-[var(--c-border-soft)]">
         <div className="flex items-center gap-2 min-w-0">
-          <span className="font-serif text-[var(--fs-xs)] text-[var(--c-muted-alt)] shrink-0">
+          <span className="font-serif text-[length:var(--fs-xs)] text-[var(--c-muted-alt)] shrink-0">
             {String((index % 99) + 1).padStart(2, "0")}
           </span>
           <span
@@ -179,7 +179,7 @@ export function StickyNoteCard({
                   onSaveText(note.id);
                 }
               }}
-              className="field text-[var(--fs-sm)] leading-relaxed"
+              className="field text-[length:var(--fs-sm)] leading-relaxed"
               rows={4}
               maxLength={300}
               autoFocus
@@ -194,7 +194,7 @@ export function StickyNoteCard({
           </div>
         ) : (
           <p
-            className={`font-sans text-[var(--fs-sm)] break-words whitespace-pre-wrap leading-relaxed ${
+            className={`font-sans text-[length:var(--fs-sm)] break-words whitespace-pre-wrap leading-relaxed ${
               note.answered
                 ? "line-through text-[var(--c-muted)]"
                 : "text-[var(--c-ink)]"

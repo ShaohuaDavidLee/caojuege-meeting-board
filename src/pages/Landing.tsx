@@ -112,62 +112,49 @@ export default function Landing({
         </div>
       </header>
 
-      {/* ---------- 首屏 ---------- */}
-      <section className="relative overflow-hidden pt-20 border-b border-[var(--c-border-soft)]">
-        <span className="hero-watermark" aria-hidden="true">
-          草
-        </span>
-
-        <div className="wrap relative z-10 min-h-[85vh] flex flex-col justify-center py-24">
-          <p className="eyebrow rise">Caojuege AI Labs · Meeting Board</p>
-
-          {/* 窄屏多断一次，「碰撞」不会掉成孤行 */}
-          <h1 className="display-xl mt-6 rise rise-d1">
-            在白板上共享<br />自由交流<br className="sm:hidden" />和<em className="font-serif italic">思想碰撞</em>
-          </h1>
-
-          <p className="lead mt-8 max-w-2xl rise rise-d2">
-            一场会议真正的产出，是那些被说出口的问题。草诀歌 AI Labs
-            的会议白板把提问、投票与解答放在同一张纸面上——开一个链接，所有人一起写。
-          </p>
-
-          <div className="mt-12 rise rise-d3">
-            <button
-              type="button"
-              onClick={() => onEnterRoom(DEFAULT_ROOM)}
-              className="btn btn-primary h-12 px-7 text-[var(--fs-base)] group"
-            >
-              进入草诀歌 AI Labs 会议间
-              <ArrowRight className="w-4 h-4 arrow-nudge" />
-            </button>
-          </div>
-        </div>
-      </section>
-
-      {/* ---------- 白板长什么样？ ---------- */}
-      <section className="section border-b border-[var(--c-border-soft)]">
+      {/* ---------- 首屏：左文右图 ---------- */}
+      <section className="border-b border-[var(--c-border-soft)] pt-20">
         <div className="wrap">
-          <SectionHead
-            eyebrow="What It Looks Like"
-            title="白板长"
-            emphasis="什么样？"
-          />
+          <div className="grid lg:grid-cols-2 gap-14 lg:gap-16 items-center min-h-[85vh] py-20">
+            <div>
+              <p className="eyebrow rise">Caojuege AI Labs · Meeting Board</p>
 
-          <figure className="m-0">
-            <div className="border border-[var(--c-border-soft)] bg-[var(--c-surface)] overflow-x-auto">
-              <img
-                src="/board-preview.png"
-                width={2800}
-                height={1860}
-                alt="草诀歌 AI Labs 会议间：便签、投票与已解答标记"
-                className="block h-auto w-full min-w-[760px] md:min-w-0"
-              />
+              {/* 断成三行：情绪落点「思想碰撞」独占一行，窄屏也不会掉孤字 */}
+              <h1 className="display-xl mt-6 rise rise-d1">
+                在白板上共享<br />自由交流和<br /><em className="font-serif italic">思想碰撞</em>
+              </h1>
+
+              <p className="lead mt-8 rise rise-d2">
+                一场会议真正的产出，是那些被说出口的问题。草诀歌 AI Labs
+                的会议白板把提问、投票与解答放在同一张纸面上——开一个链接，所有人一起写。
+              </p>
+
+              <div className="mt-12 rise rise-d3">
+                <button
+                  type="button"
+                  onClick={() => onEnterRoom(DEFAULT_ROOM)}
+                  className="btn btn-primary h-12 px-7 text-[length:var(--fs-base)] group"
+                >
+                  进入草诀歌 AI Labs 会议间
+                  <ArrowRight className="w-4 h-4 arrow-nudge" />
+                </button>
+              </div>
             </div>
-            <figcaption className="mt-4 text-[var(--fs-xs)] leading-relaxed text-[var(--c-muted-alt)]">
-              一张便签就是一个问题。右下角是票数，答完的会被划掉并标为「已解答」，顶栏可以只看还没答的那些。
-              <span className="md:hidden">（窄屏可左右滑动看细节）</span>
-            </figcaption>
-          </figure>
+
+            <figure className="m-0 min-w-0 rise rise-d2">
+              <div className="border border-[var(--c-border-soft)] bg-[var(--c-surface)] overflow-x-auto">
+                <img
+                  src="/board-preview.png"
+                  alt="草诀歌 AI Labs 会议间：便签、投票与已解答标记"
+                  className="block h-auto w-full min-w-[560px] lg:min-w-0"
+                />
+              </div>
+              <figcaption className="mt-4 text-[length:var(--fs-xs)] leading-relaxed text-[var(--c-muted-alt)]">
+                一张便签就是一个问题。右下角是票数，答完的会被划掉并标为「已解答」。
+                <span className="lg:hidden">（窄屏可左右滑动看细节）</span>
+              </figcaption>
+            </figure>
+          </div>
         </div>
       </section>
 
@@ -184,10 +171,10 @@ export default function Landing({
             {STEPS.map((item, i) => (
               <div key={item.title} className="cell cell--tight">
                 <span className="ordinal">{String(i + 1).padStart(2, "0")}</span>
-                <h3 className="font-serif text-[var(--fs-lg)] tracking-[-0.02em] mt-6">
+                <h3 className="font-serif text-[length:var(--fs-lg)] tracking-[-0.02em] mt-6">
                   {item.title}
                 </h3>
-                <p className="mt-4 text-[var(--fs-sm)] leading-loose text-[var(--c-muted)]">
+                <p className="mt-4 text-[length:var(--fs-sm)] leading-loose text-[var(--c-muted)]">
                   {item.body}
                 </p>
               </div>
@@ -209,7 +196,7 @@ export default function Landing({
             {GAINS.map((item) => (
               <div key={item.title} className="cell">
                 <h3 className="display-m">{item.title}</h3>
-                <p className="mt-5 text-[var(--fs-sm)] leading-loose text-[var(--c-muted)]">
+                <p className="mt-5 text-[length:var(--fs-sm)] leading-loose text-[var(--c-muted)]">
                   {item.body}
                 </p>
               </div>
@@ -239,7 +226,7 @@ export default function Landing({
                 <button
                   type="button"
                   onClick={() => onEnterRoom(DEFAULT_ROOM)}
-                  className="btn btn-primary h-12 px-7 text-[var(--fs-base)] group"
+                  className="btn btn-primary h-12 px-7 text-[length:var(--fs-base)] group"
                 >
                   进入会议间
                   <ArrowRight className="w-4 h-4 arrow-nudge" />
@@ -253,7 +240,7 @@ export default function Landing({
                 onSubmit={handleCreateRoom}
                 className="flex flex-col lg:flex-row lg:items-center gap-4 lg:gap-6"
               >
-                <p className="text-[var(--fs-sm)] text-[var(--c-muted)] lg:shrink-0">
+                <p className="text-[length:var(--fs-sm)] text-[var(--c-muted)] lg:shrink-0">
                   要单独开一场？取个名字就是一间新的会议间。
                 </p>
                 <div className="flex flex-1 flex-col sm:flex-row lg:max-w-md">
@@ -278,7 +265,7 @@ export default function Landing({
               </form>
 
               {pendingRoom && (
-                <p className="mt-4 text-[var(--fs-xs)] leading-relaxed text-[var(--c-muted-alt)]">
+                <p className="mt-4 text-[length:var(--fs-xs)] leading-relaxed text-[var(--c-muted-alt)]">
                   这一间的地址是 {readableRoomUrl(pendingRoom)}
                 </p>
               )}
@@ -317,7 +304,7 @@ export default function Landing({
           <button
             type="button"
             onClick={() => onEnterRoom(DEFAULT_ROOM)}
-            className="btn btn-on-dark h-12 px-7 text-[var(--fs-base)] shrink-0 self-start lg:self-auto group"
+            className="btn btn-on-dark h-12 px-7 text-[length:var(--fs-base)] shrink-0 self-start lg:self-auto group"
           >
             进入草诀歌 AI Labs
             <ArrowRight className="w-4 h-4 arrow-nudge" />
@@ -325,7 +312,7 @@ export default function Landing({
         </div>
 
         <div className="border-t border-[var(--c-border-on-dark)]">
-          <div className="wrap py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-[var(--fs-xs)]">
+          <div className="wrap py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-[length:var(--fs-xs)]">
             <p className="on-dark-soft">
               {BRAND_NAME} —— 面向非技术创作者的中文 vibe coding 社区
             </p>
