@@ -1,0 +1,815 @@
+<title>会议白板两版样张</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;700&family=Noto+Sans+SC:wght@400;500;700;900&family=Noto+Serif+SC:wght@400;700;900&display=swap">
+
+<style>
+/* ===========================================================
+   样张外壳 —— 刻意单一浅色：两版要在同一块中性底上比色，
+   底色跟着系统换会改变酸绿的读法。所有颜色显式绘制。
+   =========================================================== */
+:root{
+  --sheet-bg:#F4F2ED;
+  --sheet-card:#FFFFFF;
+  --sheet-ink:#1B1A17;
+  --sheet-mut:#6E6A61;
+  --sheet-line:#DCD8CF;
+  --sheet-line-2:#C6C1B5;
+}
+*,*::before,*::after{box-sizing:border-box}
+body{
+  margin:0;background:var(--sheet-bg);color:var(--sheet-ink);
+  font-family:"Inter","Noto Sans SC","PingFang SC","Microsoft YaHei",sans-serif;
+  line-height:1.75;-webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1560px;margin:0 auto;padding:0 28px}
+
+/* ---------- 顶部 ---------- */
+.sheet-head{background:var(--sheet-bg)}
+.sheet-head .wrap{padding-top:22px;padding-bottom:16px}
+/* 吸顶的只有控制条：整块页头吸顶会吃掉 200px 视高 */
+.ctrlbar{position:sticky;top:0;z-index:20;background:var(--sheet-bg);
+  border-top:1px solid var(--sheet-line);border-bottom:1px solid var(--sheet-line)}
+.ctrlbar .wrap{padding-top:11px;padding-bottom:11px}
+.kicker{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:var(--sheet-mut);margin:0 0 6px;
+}
+.sheet-head h1{
+  font-family:"Noto Serif SC",serif;font-weight:700;
+  font-size:22px;line-height:1.4;letter-spacing:0;margin:0 0 6px;
+}
+.axis{font-size:13.5px;color:var(--sheet-mut);margin:0;max-width:78ch;line-height:1.8}
+.axis b{color:var(--sheet-ink);font-weight:600}
+.controls{display:flex;flex-wrap:wrap;gap:22px;align-items:center}
+.cgroup{display:flex;align-items:center;gap:8px}
+.clabel{
+  font-family:"JetBrains Mono",ui-monospace,monospace;
+  font-size:10px;letter-spacing:.16em;text-transform:uppercase;color:var(--sheet-mut);
+}
+.cbtns{display:flex;border:1px solid var(--sheet-line-2);background:var(--sheet-card)}
+.cbtns button{
+  font:inherit;font-size:13px;line-height:1;padding:9px 15px;border:0;background:transparent;
+  color:var(--sheet-mut);cursor:pointer;transition:background .15s,color .15s;
+}
+.cbtns button + button{border-left:1px solid var(--sheet-line-2)}
+.cbtns button:hover{color:var(--sheet-ink)}
+.cbtns button[aria-pressed="true"]{background:var(--sheet-ink);color:#F4F2ED}
+.cbtns button:focus-visible{outline:2px solid #1B1A17;outline-offset:2px}
+
+/* ---------- 变体栅格 ---------- */
+.grid{display:grid;gap:26px;padding:26px 0 46px}
+.grid[data-view="both"]{grid-template-columns:repeat(2,minmax(0,1fr))}
+.grid[data-view="v1"],.grid[data-view="v2"]{grid-template-columns:minmax(0,1fr)}
+.grid[data-view="v1"] .variant[data-v="v2"],
+.grid[data-view="v2"] .variant[data-v="v1"]{display:none}
+.variant{min-width:0}
+.vmeta{display:flex;align-items:baseline;gap:10px;margin-bottom:4px}
+.vname{font-family:"Noto Serif SC",serif;font-weight:700;font-size:17px;letter-spacing:0}
+.vtag{
+  font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--sheet-mut);
+}
+.vdesc{font-size:13px;color:var(--sheet-mut);line-height:1.7;margin:0 0 12px;max-width:62ch}
+.frame{
+  position:relative;overflow:hidden;background:#fff;
+  border:1px solid var(--sheet-line-2);aspect-ratio:1280/840;
+}
+.stage{position:absolute;top:0;left:0;width:1280px;height:840px;transform-origin:0 0}
+/* 两种屏都是纵向 flex 列；.screen.on 的特指度高于 .lp/.bd，
+   所以 display 必须在这里给对，否则 flex:1 全部失效、底栏浮在半空。 */
+.stage > .screen{display:none;width:1280px;height:840px;overflow:hidden;flex-direction:column}
+.stage > .screen.on{display:flex}
+
+/* ---------- 数值出处表 ---------- */
+.prov{border-top:1px solid var(--sheet-line);background:var(--sheet-bg)}
+.prov .wrap{padding-top:34px;padding-bottom:10px}
+.prov h2{font-family:"Noto Serif SC",serif;font-size:17px;font-weight:700;margin:0 0 4px}
+.prov p.sub{font-size:13px;color:var(--sheet-mut);margin:0 0 18px}
+.ptable{width:100%;border-collapse:collapse;font-size:13px;background:var(--sheet-card);
+  border:1px solid var(--sheet-line-2)}
+.ptable th,.ptable td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--sheet-line);vertical-align:top}
+.ptable th{
+  font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--sheet-mut);font-weight:400;background:#FAF8F4;
+}
+.ptable tr:last-child td{border-bottom:0}
+.ptable th[colspan]{background:var(--sheet-ink);color:#F4F2ED;font-size:10px;letter-spacing:.16em}
+.ptable code{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:12px}
+.src{font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10.5px;letter-spacing:.06em;
+  padding:2px 6px;border:1px solid var(--sheet-line-2);white-space:nowrap}
+.src-m{background:#E8F0E4}   /* 量得 */
+.src-g{background:#F6EBD8}   /* 看图估的 */
+.src-d{background:#E6EAF2}   /* 我们定的 */
+.tscroll{overflow-x:auto}
+
+/* ---------- 确认区 ---------- */
+.confirm{border-top:1px solid var(--sheet-line);margin-top:34px}
+.confirm .wrap{padding-top:36px;padding-bottom:90px}
+.confirm h2,.confirm .hint,.q{max-width:860px}
+.confirm h2{font-family:"Noto Serif SC",serif;font-size:19px;font-weight:700;margin:0 0 4px}
+.confirm .hint{font-size:13px;color:var(--sheet-mut);margin:0 0 30px}
+.q{margin-bottom:28px}
+.settled{border-left:3px solid var(--sheet-ink);background:#EFEDE6;padding:14px 18px;
+  margin-bottom:30px;max-width:860px}
+.settled-k{margin:0 0 6px;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--sheet-mut)}
+.settled-v{margin:0;font-size:14px;line-height:1.8}
+.q label{display:block;font-size:14.5px;font-weight:600;margin-bottom:4px}
+.q .why{font-size:12.5px;color:var(--sheet-mut);margin:0 0 10px;line-height:1.75}
+.q select,.q textarea{
+  width:100%;font:inherit;font-size:14px;padding:11px 13px;background:var(--sheet-card);
+  border:1px solid var(--sheet-line-2);border-radius:0;color:var(--sheet-ink);resize:vertical;
+}
+.q textarea{min-height:88px;line-height:1.8}
+.q select:focus-visible,.q textarea:focus-visible{outline:2px solid var(--sheet-ink);outline-offset:1px}
+.copy{
+  font:inherit;font-size:14px;font-weight:600;padding:12px 28px;border:1px solid var(--sheet-ink);
+  background:var(--sheet-ink);color:#F4F2ED;cursor:pointer;
+}
+.copy:hover{background:#000;border-color:#000}
+.copy:focus-visible{outline:2px solid #000;outline-offset:2px}
+.copied{font-size:13px;color:var(--sheet-mut);margin-left:12px}
+
+@media (max-width:900px){
+  .grid[data-view="both"]{grid-template-columns:minmax(0,1fr)}
+  .wrap{padding:0 16px}
+}
+@media (prefers-reduced-motion:reduce){*{animation:none !important;transition:none !important}}
+
+/* ===========================================================
+   两版共用的舞台骨架
+   =========================================================== */
+.screen{position:relative;font-family:"Noto Sans SC","PingFang SC",sans-serif;color:var(--ink)}
+.screen .icon{width:1em;height:1em;display:block;fill:none;stroke:currentColor;stroke-width:2;
+  stroke-linecap:round;stroke-linejoin:round}
+
+/* ---- v1 = 硬派：新增的一层皮肤 ---- */
+.v1{
+  --paper:#CCF224; --surf:#FFFFFF; --ink:#000000; --line:#000000;
+  --pink:#FF2E7E; --cyan:#35D6F0; --btn:#000000;
+  --mut:#3A3A3A; --mut2:#3A3A3A;
+  --bw:4px;            /* 0.25em @16px · 看图估的 */
+  --sh:8px;            /* 0.5em  @16px · 参考页自报 */
+  --tr:150ms;          /* 参考页自报 */
+}
+/* ---- v2 = 现在：现站 index.css 原样，一个值都没动 ---- */
+.v2{
+  --paper:#E5E5E5;     /* --c-bg */
+  --surf:#FFFFFF;      /* --c-surface */
+  --ink:#1A1A1A;       /* --c-ink */
+  --line:rgba(71,73,75,.2);  /* --c-border-soft */
+  --btn:#47494B;       /* --c-btn */
+  --mut:#5C5E60;       /* --c-muted */
+  --mut2:#8B949E;      /* --c-muted-alt */
+  --bw:1px; --sh:0px;
+  --tr:350ms;          /* --ease-out 0.35s */
+}
+
+/* ===========================================================
+   屏一 · 落地页首屏
+   结构 = 现站 Landing.tsx：固定顶栏 + 左文右图。
+   硬派只换颜色 / 边框粗细 / 投影 / 工具字族 / 强调手法，
+   不加导航菜单、不加参数条、不动栅格与字号阶梯。
+   =========================================================== */
+.lp{width:1280px;height:840px;background:var(--paper);display:flex;flex-direction:column}
+
+.lp-nav{flex:none;height:80px;display:flex;align-items:center;justify-content:space-between;
+  padding:0 48px}
+.v2 .lp-nav{background:var(--paper);border-bottom:1px solid var(--line)}
+.v1 .lp-nav{background:var(--surf);border-bottom:var(--bw) dashed var(--ink)}
+
+.logo{display:flex}
+.v2 .logo{align-items:baseline;gap:10px}
+.v2 .logo-a{font-family:"Noto Serif SC",serif;font-size:19px;letter-spacing:.14em}
+.v2 .logo-b{font-family:"Inter",sans-serif;font-size:12px;font-weight:500;letter-spacing:.2em;
+  text-transform:uppercase;color:var(--mut2)}
+.v1 .logo{align-items:stretch;border:var(--bw) solid var(--ink)}
+.v1 .logo-a{background:var(--ink);color:#fff;font-family:"Noto Serif SC",serif;font-weight:700;
+  font-size:19px;letter-spacing:.12em;padding:6px 14px}
+.v1 .logo-b{background:var(--pink);color:var(--ink);font-family:"JetBrains Mono",monospace;
+  font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase;padding:6px 13px;
+  display:flex;align-items:center}
+
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:0;
+  line-height:1}
+.btn .icon{width:15px;height:15px}
+.v2 .btn{font-family:"Inter","Noto Sans SC",sans-serif;font-size:14px;
+  border:1px solid var(--btn);background:var(--btn);color:#E5E5E5}
+.v1 .btn{font-family:"JetBrains Mono",monospace;font-weight:700;font-size:13px;letter-spacing:.04em;
+  border:var(--bw) solid var(--ink);background:var(--ink);color:#fff;
+  box-shadow:var(--sh) var(--sh) 0 var(--pink)}
+.btn-cta{height:36px;padding:0 16px}
+.btn-hero{height:48px;padding:0 28px}
+.v2 .btn-hero{font-size:16px}
+.v1 .btn-hero{font-size:15px}
+
+.lp-hero{flex:1;display:grid;grid-template-columns:1.15fr 1fr;gap:56px;align-items:center;
+  padding:0 48px 24px}
+.lp-left{min-width:0}
+
+.eyebrow{font-family:"Inter",sans-serif;font-size:12px;font-weight:500;letter-spacing:.2em;
+  text-transform:uppercase;margin:0}
+.v2 .eyebrow{color:var(--mut2)}
+.v1 .eyebrow{background:var(--ink);color:var(--paper);font-family:"JetBrains Mono",monospace;
+  font-weight:700;padding:7px 14px;display:inline-block}
+
+/* 字号 68px 两版共用：它是结构，不是皮肤。字重与字距归皮肤。 */
+.lp-h1{margin:24px 0 0;font-family:"Noto Serif SC",serif;font-size:68px;line-height:1.05;
+  display:flex;flex-direction:column}
+.v2 .lp-h1{font-weight:600;letter-spacing:-0.02em}   /* 现状原样，含这条负字距 */
+.v1 .lp-h1{font-weight:900;letter-spacing:0}         /* 硬派：中文标题不用负字距 */
+.hollow{align-self:flex-start}
+.v2 .hollow{font-style:italic}
+.v1 .hollow{background:var(--ink);color:var(--paper);padding:.04em .12em .1em;margin-top:.04em}
+
+.lp-lead{margin:28px 0 0}
+.v2 .lp-lead{font-size:20px;line-height:1.75;color:var(--mut);max-width:34ch}
+.v1 .lp-lead{font-family:"JetBrains Mono",monospace;font-size:15px;line-height:1.9;
+  color:var(--mut);max-width:42ch}
+.lp-cta{margin-top:40px}
+
+/* 右栏：现站是一张白板截图。样张里用等尺寸的迷你白板代替，
+   好让两版都能看到「这张图会变成什么样」。槽位与占比未动。 */
+.lp-fig{min-width:0}
+.figbox{overflow:hidden}
+.v2 .figbox{border:1px solid var(--line)}
+.v1 .figbox{border:var(--bw) solid var(--ink);box-shadow:var(--sh) var(--sh) 0 var(--ink)}
+.figcap{margin:14px 0 0;font-size:12px;line-height:1.7}
+.v2 .figcap{color:var(--mut2)}
+.v1 .figcap{font-family:"JetBrains Mono",monospace;color:var(--mut)}
+
+.miniboard{position:relative;height:282px;background:var(--paper);overflow:hidden}
+.v1 .miniboard{background-image:linear-gradient(rgba(0,0,0,.07) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(0,0,0,.07) 1px,transparent 1px);
+  background-size:22px 22px}
+.mn{position:absolute;width:158px;background:var(--surf);padding:9px 10px}
+.v2 .mn{border:1px solid var(--line)}
+.v1 .mn{border:2px solid var(--ink);box-shadow:4px 4px 0 var(--ink)}
+.mn-top{display:flex;justify-content:space-between;align-items:center;font-size:7.5px;
+  letter-spacing:.18em;text-transform:uppercase;margin-bottom:6px}
+.v2 .mn-top{color:var(--mut2);font-family:"Inter",sans-serif}
+.v1 .mn-top{color:var(--mut);font-family:"JetBrains Mono",monospace;font-weight:700}
+.v1 .mn-top .s{background:var(--pink);color:var(--ink);padding:1px 4px;border:1px solid var(--ink)}
+.mn-txt{font-size:9px;line-height:1.75;color:var(--ink)}
+.mn-bot{display:flex;justify-content:space-between;align-items:center;margin-top:8px;padding-top:6px;
+  font-size:8px}
+.v2 .mn-bot{border-top:1px solid var(--line);color:var(--mut2)}
+.v1 .mn-bot{border-top:2px solid var(--ink);color:var(--mut)}
+.mn-bot em{font-family:"Noto Serif SC",serif;font-style:normal;color:var(--ink)}
+.mn-v{padding:1px 5px}
+.v2 .mn-v{border:1px solid var(--line);font-family:"Noto Serif SC",serif;color:var(--ink)}
+.v1 .mn-v{border:1px solid var(--ink);font-family:"JetBrains Mono",monospace;font-weight:700;
+  background:var(--cyan)}
+.m1{left:16px;top:12px}
+.m2{left:206px;top:78px;background:#F3EFE6}
+.m3{left:40px;top:150px;background:#E4EBE3}
+
+/* ===========================================================
+   屏二 / 屏三 · 内页（白板）
+   =========================================================== */
+.bd{width:1280px;height:840px;display:flex;flex-direction:column;background:var(--paper)}
+
+.bd-nav{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:0 20px;height:80px;flex:none}
+.v1 .bd-nav{background:var(--ink);color:#fff;border-bottom:var(--bw) solid var(--ink)}
+.v2 .bd-nav{background:var(--paper);border-bottom:1px solid var(--line)}
+.bd-nav-l{display:flex;align-items:center;gap:16px;min-width:0;flex:1}
+.bd-nav-r{display:flex;align-items:stretch;height:38px}
+
+.ib{display:flex;align-items:center;justify-content:center;width:38px;height:38px;flex:none}
+.v1 .ib{border:2px solid #fff;background:transparent;color:#fff}
+.v2 .ib{border:1px solid var(--line);background:var(--surf);color:var(--ink)}
+.ib .icon{width:16px;height:16px}
+
+.bd-title{min-width:0}
+.eb{margin:0;font-family:"Inter",sans-serif;font-size:10px;letter-spacing:.2em;text-transform:uppercase}
+.v1 .bd-title .eb{color:var(--cyan);font-family:"JetBrains Mono",monospace;font-weight:700}
+.v2 .bd-title .eb{color:var(--mut2)}
+.bd-title h2{margin:3px 0 0;font-family:"Noto Serif SC",serif;font-weight:700;font-size:19px;letter-spacing:0;
+  white-space:nowrap}
+
+.tagbox{display:flex;align-items:stretch;height:36px;flex:none}
+.v1 .tagbox{border:2px solid #fff}
+.v2 .tagbox{border:1px solid var(--line)}
+.tagbox .tk{display:flex;align-items:center;padding:0 10px;font-family:"JetBrains Mono",monospace;
+  font-size:10px;letter-spacing:.18em}
+.v1 .tagbox .tk{background:var(--cyan);color:var(--ink);font-weight:700}
+.v2 .tagbox .tk{color:var(--mut2);border-right:1px solid rgba(71,73,75,.3)}
+.tagbox .tv{display:flex;align-items:center;padding:0 12px;font-family:"Noto Serif SC",serif;font-size:14px}
+
+.segs{display:flex;align-items:stretch;height:36px;flex:none}
+.v1 .segs{border:2px solid #fff}
+.v2 .segs{border:1px solid var(--line)}
+.segs b{display:flex;align-items:center;padding:0 14px;font-size:12px;font-weight:400}
+.v1 .segs b + b{border-left:2px solid #fff}
+.v2 .segs b + b{border-left:1px solid var(--line)}
+.v1 .segs b.on{background:var(--pink);color:var(--ink);font-weight:700}
+.v2 .segs b.on{background:var(--btn);color:#E5E5E5}
+
+.bd-nav-r .seg{display:flex;align-items:center;padding:0 13px;font-size:12px;white-space:nowrap;gap:6px}
+.bd-nav-r .seg .icon{width:14px;height:14px}
+.v1 .bd-nav-r{border:2px solid #fff}
+.v1 .bd-nav-r .seg + .seg{border-left:2px solid #fff}
+.v1 .bd-nav-r .seg-p{background:var(--pink);color:var(--ink);font-weight:700}
+.v2 .bd-nav-r{border:1px solid var(--line)}
+.v2 .bd-nav-r .seg + .seg{border-left:1px solid var(--line)}
+.v2 .bd-nav-r .seg-p{background:var(--btn);color:#E5E5E5}
+
+.bd-main{flex:1;display:flex;min-height:0}
+.bd-canvas{flex:1;position:relative;overflow:hidden;background:var(--paper)}
+.v1 .bd-canvas{background:var(--paper);
+  background-image:linear-gradient(rgba(0,0,0,.07) 1px,transparent 1px),
+                   linear-gradient(90deg,rgba(0,0,0,.07) 1px,transparent 1px);
+  background-size:32px 32px}
+.wm{position:absolute;right:56px;bottom:-96px;font-family:"Noto Serif SC",serif;font-weight:700;
+  font-size:340px;line-height:1;pointer-events:none;user-select:none}
+.v1 .wm{color:rgba(0,0,0,.07)}
+.v2 .wm{color:rgba(0,0,0,.05);right:-20px;bottom:54px;font-size:280px;letter-spacing:-0.04em}
+
+/* 左工具条 */
+.tools{position:absolute;left:22px;top:22px;display:flex;flex-direction:column;background:var(--surf);z-index:3}
+.v1 .tools{border:var(--bw) solid var(--ink);box-shadow:var(--sh) var(--sh) 0 var(--ink)}
+.v2 .tools{border:1px solid var(--line)}
+.tool-add{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px;
+  width:62px;height:62px}
+.v1 .tool-add{background:var(--ink);color:var(--paper)}
+.v2 .tool-add{background:var(--btn);color:#E5E5E5}
+.tool-add .icon{width:20px;height:20px}
+.tool-add span{font-size:10px;letter-spacing:.06em}
+.tool-color{padding:9px 8px 10px;text-align:center}
+.v1 .tool-color{border-top:var(--bw) solid var(--ink)}
+.v2 .tool-color{border-top:1px solid rgba(71,73,75,.25)}
+.tool-color p{margin:0 0 7px;font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.2em;
+  color:var(--mut)}
+.sw{display:grid;grid-template-columns:repeat(2,1fr);gap:4px;justify-items:center}
+.sw i{display:block;width:16px;height:16px;border:1px solid rgba(0,0,0,.35)}
+.sw i.pick{border:2px solid var(--ink)}
+.tool-live{padding:9px 8px 11px;text-align:center}
+.v1 .tool-live{border-top:var(--bw) solid var(--ink)}
+.v2 .tool-live{border-top:1px solid rgba(71,73,75,.25)}
+.tool-live .dot{display:block;width:9px;height:9px;margin:0 auto 6px}
+.v1 .tool-live .dot{background:var(--cyan);border:1px solid var(--ink)}
+.v2 .tool-live .dot{background:var(--mut2)}
+.tool-live p{margin:0;font-family:"JetBrains Mono",monospace;font-size:8px;letter-spacing:.2em;color:var(--mut)}
+
+/* 缩放条 */
+.zoom{position:absolute;left:22px;bottom:22px;display:flex;align-items:stretch;height:36px;
+  background:var(--surf);z-index:3}
+.v1 .zoom{border:var(--bw) solid var(--ink);box-shadow:var(--sh) var(--sh) 0 var(--ink)}
+.v2 .zoom{border:1px solid var(--line)}
+.zoom b,.zoom span{display:flex;align-items:center;justify-content:center;font-weight:400;font-size:12px}
+.zoom b{width:34px}
+.zoom span{padding:0 12px;font-family:"JetBrains Mono",monospace;font-size:11px;
+  font-variant-numeric:tabular-nums}
+.zoom b + span,.zoom span + b,.zoom b + b{border-left:1px solid rgba(0,0,0,.28)}
+.zoom .rst{width:auto;padding:0 12px;font-size:11px}
+
+/* 便签 */
+.note{position:absolute;width:280px;background:var(--surf);z-index:2}
+.v1 .note{border:var(--bw) solid var(--ink);box-shadow:var(--sh) var(--sh) 0 var(--ink)}
+.v2 .note{border:1px solid var(--line)}
+.note-h{display:flex;align-items:center;justify-content:space-between;padding:8px 11px}
+.v1 .note-h{border-bottom:var(--bw) solid var(--ink)}
+.v2 .note-h{border-bottom:1px solid rgba(71,73,75,.2)}
+.note-h .lft{display:flex;align-items:center;gap:9px}
+.idx{font-family:"Noto Serif SC",serif;font-size:12px;color:var(--mut)}
+.st{font-size:10px;letter-spacing:.18em;text-transform:uppercase}
+.v1 .st{font-family:"JetBrains Mono",monospace;font-weight:700;background:var(--pink);color:var(--ink);
+  padding:2px 7px;border:1px solid var(--ink)}
+.v1 .st.done{background:var(--ink);color:var(--paper)}
+.v2 .st{color:var(--mut)}
+.note-acts{display:flex;align-items:stretch;height:26px}
+.note-acts i{display:flex;align-items:center;justify-content:center;width:26px}
+.note-acts .icon{width:13px;height:13px}
+.v1 .note-acts{border:2px solid var(--ink)}
+.v1 .note-acts i + i{border-left:2px solid var(--ink)}
+.v2 .note-acts{border:1px solid rgba(71,73,75,.3)}
+.v2 .note-acts i + i{border-left:1px solid rgba(71,73,75,.3)}
+.note-b{padding:14px 13px;font-size:14px;line-height:1.85}
+.note-f{display:flex;align-items:center;justify-content:space-between;padding:8px 11px;font-size:11.5px;
+  color:var(--mut)}
+.v1 .note-f{border-top:var(--bw) solid var(--ink)}
+.v2 .note-f{border-top:1px solid rgba(71,73,75,.2)}
+.note-f em{font-family:"Noto Serif SC",serif;font-style:normal;color:var(--ink)}
+.vote{display:inline-flex;align-items:center;gap:6px;padding:4px 9px;font-variant-numeric:tabular-nums}
+.vote .icon{width:12px;height:12px}
+.v1 .vote{border:2px solid var(--ink);font-family:"JetBrains Mono",monospace;font-weight:700;color:var(--ink)}
+.v1 .vote.hot{background:var(--cyan)}
+.v2 .vote{border:1px solid rgba(71,73,75,.3);font-family:"Noto Serif SC",serif;color:var(--ink)}
+.v2 .vote.hot{background:var(--btn);color:#E5E5E5;border-color:var(--btn)}
+.note.done .note-b{text-decoration:line-through;color:var(--mut)}
+.v1 .note.done{opacity:.72}
+.v2 .note.done{opacity:.55}
+.n1{left:118px;top:66px}
+.n2{left:452px;top:150px;background:#F3EFE6}
+.n3{left:186px;top:352px;background:#E4EBE3}
+
+/* 右侧说明栏 */
+.bd-side{width:320px;flex:none;display:flex;flex-direction:column;background:var(--paper)}
+.v1 .bd-side{border-left:var(--bw) solid var(--ink);background:#fff}
+.v2 .bd-side{border-left:1px solid var(--line)}
+.side-h{padding:20px 22px 15px}
+.v1 .side-h{border-bottom:var(--bw) solid var(--ink)}
+.v2 .side-h{border-bottom:1px solid rgba(71,73,75,.2)}
+.v1 .side-h .eb{color:var(--mut);font-family:"JetBrains Mono",monospace;font-weight:700}
+.v2 .side-h .eb{color:var(--mut2)}
+.side-h h3{margin:5px 0 0;font-family:"Noto Serif SC",serif;font-weight:700;font-size:23px;letter-spacing:0}
+.side-p{margin:0;padding:16px 22px;font-size:13.5px;line-height:1.85;color:var(--mut)}
+.v1 .side-p{border-bottom:var(--bw) solid var(--ink)}
+.v2 .side-p{border-bottom:1px solid rgba(71,73,75,.2)}
+.side-stats > div{display:flex;align-items:center;justify-content:space-between;padding:11px 22px;font-size:13px}
+.v1 .side-stats > div + div{border-top:2px solid var(--ink)}
+.v2 .side-stats > div + div{border-top:1px solid rgba(71,73,75,.2)}
+.side-stats span{color:var(--mut)}
+.side-stats b{font-variant-numeric:tabular-nums}
+.v1 .side-stats b{font-family:"JetBrains Mono",monospace;font-size:15px}
+.v2 .side-stats b{font-family:"Noto Serif SC",serif;font-size:16px}
+.v1 .side-stats{border-bottom:var(--bw) solid var(--ink)}
+.v2 .side-stats{border-bottom:1px solid rgba(71,73,75,.2)}
+.side-tips{flex:1;margin:0;padding:16px 22px;list-style:none;display:flex;flex-direction:column;gap:11px}
+.side-tips li{display:flex;gap:11px;font-size:12.5px;line-height:1.75;color:var(--mut)}
+.side-tips .n{font-family:"Noto Serif SC",serif;flex:none;color:var(--mut2)}
+.v1 .side-tips .n{font-family:"JetBrains Mono",monospace;font-weight:700;color:var(--ink)}
+.side-foot{padding:16px 22px;font-size:12.5px;line-height:1.8}
+.v1 .side-foot{background:var(--ink);color:var(--paper);border-top:var(--bw) solid var(--ink)}
+.v2 .side-foot{background:var(--btn);color:#E5E5E5}
+
+/* 空状态卡 */
+.empty{position:absolute;left:150px;top:150px;width:480px;background:var(--surf);z-index:2;padding:34px 32px 32px}
+.v1 .empty{border:var(--bw) solid var(--ink);box-shadow:var(--sh) var(--sh) 0 var(--ink)}
+.v2 .empty{border:1px solid var(--line);background:rgba(255,255,255,.4)}
+.v1 .empty .eb{font-family:"JetBrains Mono",monospace;font-weight:700;color:var(--ink);
+  background:var(--cyan);display:inline-block;padding:4px 9px;border:1px solid var(--ink)}
+.v2 .empty .eb{color:var(--mut2)}
+.empty h3{margin:14px 0 0;font-family:"Noto Serif SC",serif;font-weight:700;font-size:34px;
+  letter-spacing:0;line-height:1.3}
+.v1 .empty h3 em{font-style:normal;background:var(--pink);padding:0 .06em}
+.v2 .empty h3 em{font-style:italic}
+.empty p{margin:14px 0 0;font-size:14px;line-height:1.85;color:var(--mut)}
+.empty-btns{display:flex;margin-top:26px}
+.empty-btns .eb1,.empty-btns .eb2{flex:1;display:flex;align-items:center;justify-content:center;gap:8px;
+  height:48px;font-size:14px}
+.empty-btns .icon{width:15px;height:15px}
+.v1 .empty-btns{border:var(--bw) solid var(--ink);box-shadow:var(--sh) var(--sh) 0 var(--pink)}
+.v1 .empty-btns .eb1{background:var(--ink);color:#fff;font-family:"JetBrains Mono",monospace;font-weight:700}
+.v1 .empty-btns .eb2{background:#fff;border-left:var(--bw) solid var(--ink);font-family:"JetBrains Mono",monospace;
+  font-weight:700}
+.v2 .empty-btns{border:1px solid var(--line)}
+.v2 .empty-btns .eb1{background:var(--btn);color:#E5E5E5}
+.v2 .empty-btns .eb2{background:transparent;border-left:1px solid var(--line)}
+</style>
+
+<svg width="0" height="0" aria-hidden="true" style="position:absolute">
+  <symbol id="i-chev" viewBox="0 0 24 24"><path d="M15 18l-6-6 6-6"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+  <symbol id="i-check" viewBox="0 0 24 24"><path d="M20 6L9 17l-5-5"/></symbol>
+  <symbol id="i-pen" viewBox="0 0 24 24"><path d="M12 20h9"/><path d="M16.5 3.5a2.12 2.12 0 013 3L7 19l-4 1 1-4z"/></symbol>
+  <symbol id="i-dots" viewBox="0 0 24 24"><circle cx="5" cy="12" r="1.6"/><circle cx="12" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></symbol>
+  <symbol id="i-thumb" viewBox="0 0 24 24"><path d="M7 22V11l5-9a2.5 2.5 0 012.5 3.2L13.5 9H20a2 2 0 012 2.4l-1.5 8A2 2 0 0118.5 21H7z"/><path d="M7 11H3v11h4"/></symbol>
+  <symbol id="i-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 13.5l6.8 4M15.4 6.5l-6.8 4"/></symbol>
+  <symbol id="i-grid" viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7"/><rect x="14" y="3" width="7" height="7"/><rect x="14" y="14" width="7" height="7"/><rect x="3" y="14" width="7" height="7"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></symbol>
+  <symbol id="i-layer" viewBox="0 0 24 24"><path d="M12 2l9 5-9 5-9-5 9-5z"/><path d="M3 12l9 5 9-5"/></symbol>
+  <symbol id="i-arrow" viewBox="0 0 24 24"><path d="M5 12h14M13 6l6 6-6 6"/></symbol>
+</svg>
+
+<header class="sheet-head">
+  <div class="wrap">
+    <p class="kicker">Liebin · 方向确认 · 2026-08-25</p>
+    <h1>会议白板 —— 现有风格不动，新增一套「硬派」皮肤</h1>
+    <p class="axis">左边是<b>现在</b>（现站 <code>index.css</code> 的值原样搬过来，一个数没改），右边是<b>硬派</b>。两边跑的是<b>同一份 DOM、同一套结构</b>——同样的栅格、1280px 容器、80px 顶栏、320px 侧栏、280px 便签、0.2em 大写字距——只换颜色、边框粗细、投影、工具字族和强调手法。硬派没有新增任何区块：没有导航菜单，没有底部参数条，右栏还是那张白板图的位置。默认是「现在」，硬派手动切。</p>
+  </div>
+</header>
+
+<div class="ctrlbar">
+  <div class="wrap">
+    <div class="controls">
+      <div class="cgroup">
+        <span class="clabel">Screen</span>
+        <div class="cbtns" id="screenTabs">
+          <button aria-pressed="true"  data-s="0">落地页 · 首屏</button>
+          <button aria-pressed="false" data-s="1">内页 · 白板</button>
+          <button aria-pressed="false" data-s="2">内页 · 空状态</button>
+        </div>
+      </div>
+      <div class="cgroup">
+        <span class="clabel">View</span>
+        <div class="cbtns" id="viewTabs">
+          <button aria-pressed="true"  data-v="both">并列对比</button>
+          <button aria-pressed="false" data-v="v2">只看 现在</button>
+          <button aria-pressed="false" data-v="v1">只看 硬派</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="grid" id="grid" data-view="both">
+    <section class="variant" data-v="v2">
+      <div class="vmeta"><span class="vname">现在</span><span class="vtag">基线 · 不改动</span></div>
+      <p class="vdesc">线上这一版，照现站 <code>index.css</code> 渲染：#E5E5E5 底、1px 发丝线、无投影、直角、衬线标题配 Inter。这一列是对照组，不是提案。</p>
+      <div class="frame"><div class="stage v2"></div></div>
+    </section>
+    <section class="variant" data-v="v1">
+      <div class="vmeta"><span class="vname">硬派</span><span class="vtag">新增皮肤 · Hard</span></div>
+      <p class="vdesc">同一份 DOM 换一层皮：酸绿当底、4px 黑框、8px 硬投影、等宽字当工具字体、洋红与青当强调。结构一处没动，切换只改根元素上的 <code>data-theme</code>。</p>
+      <div class="frame"><div class="stage v1"></div></div>
+    </section>
+  </div>
+</div>
+
+<section class="prov">
+  <div class="wrap">
+    <h2>每个数值的出处</h2>
+    <p class="sub">
+      <span class="src src-m">量得</span> 有明确来源（参考页自己印在屏幕上，或仓库里的 token）·
+      <span class="src src-g">看图估的</span> 只有截图，报的是关系不是数 ·
+      <span class="src src-d">我们定的</span> 这次拍板的判断，没有外部依据。
+      参考里的绝对 px 一律先除以字号转成 em 再迁移；容器宽度是唯一保留绝对值的地方。
+    </p>
+    <div class="tscroll">
+      <table class="ptable">
+        <tr><th colspan="4">结构 —— 硬派一处没动</th></tr>
+        <tr><th>项</th><th>现在</th><th>硬派</th><th>出处</th></tr>
+        <tr><td>圆角</td><td><code>0</code></td><td><code>0</code></td>
+            <td><span class="src src-m">量得</span> 现站《设计规范》就是 0；参考页也自报 0px，两边同意</td></tr>
+        <tr><td>主标题字号</td><td><code>clamp(40px,5.4vw,76px)</code></td><td>同左</td>
+            <td><span class="src src-m">量得</span> <code>--fs-display-xl</code></td></tr>
+        <tr><td>字号阶梯</td><td><code>20 / 16 / 14 / 12</code></td><td>同左</td>
+            <td><span class="src src-m">量得</span> <code>--fs-lg / base / sm / xs</code></td></tr>
+        <tr><td>容器</td><td><code>max 1280px · padding 48px</code></td><td>同左</td>
+            <td><span class="src src-m">量得</span> <code>.wrap</code></td></tr>
+        <tr><td>顶栏高</td><td><code>80px</code></td><td>同左</td>
+            <td><span class="src src-m">量得</span> <code>--nav-h</code></td></tr>
+        <tr><td>侧栏宽 / 便签宽</td><td><code>320px / 280px</code></td><td>同左</td>
+            <td><span class="src src-m">量得</span> <code>w-80</code> / <code>w-[280px]</code></td></tr>
+        <tr><td>大写标签字距</td><td><code>0.2em</code></td><td>同左</td>
+            <td><span class="src src-m">量得</span> <code>--ls-widest</code>——它是排版结构，不是装饰</td></tr>
+
+        <tr><th colspan="4">皮肤 —— 硬派换掉的全部</th></tr>
+        <tr><td>页面底色</td><td><code>#E5E5E5</code></td><td><code>#CCF224</code> 满屏</td>
+            <td><span class="src src-m">量得</span> <code>--c-bg</code> / <span class="src src-g">看图估的</span></td></tr>
+        <tr><td>墨色</td><td><code>#1A1A1A</code></td><td><code>#000000</code></td>
+            <td><span class="src src-m">量得</span> <code>--c-ink</code> / <span class="src src-g">看图估的</span>（参考自称 maximum contrast）</td></tr>
+        <tr><td>主按钮</td><td><code>#47494B</code></td><td><code>#000</code> + 洋红硬投影</td>
+            <td><span class="src src-m">量得</span> <code>--c-btn</code> / <span class="src src-d">我们定的</span></td></tr>
+        <tr><td>强调色</td><td>无（主按钮色兼任）</td><td><code>#FF2E7E</code> 洋红 + <code>#35D6F0</code> 青</td>
+            <td><span class="src src-g">看图估的</span></td></tr>
+        <tr><td>结构边框</td><td><code>1px</code> 发丝线 <code>rgba(71,73,75,.2)</code></td><td><code>0.25em</code>（16px 下 4px）纯黑</td>
+            <td><span class="src src-m">量得</span> <code>--c-border-soft</code> / <span class="src src-g">看图估的</span>：参考页「BORDER WIDTH」那格在截图里被裁掉了</td></tr>
+        <tr><td>投影</td><td>无</td><td><code>0.5em 0.5em 0</code> 纯黑</td>
+            <td><span class="src src-m">量得</span> 参考页自报 SHADOW OFFSET 8px</td></tr>
+        <tr><td>工具字族</td><td>Inter</td><td>JetBrains Mono</td>
+            <td><span class="src src-m">量得</span> <code>--font-sans</code> / <span class="src src-g">看图估的</span>：参考正文明显是等宽</td></tr>
+        <tr><td>显示字重</td><td><code>600</code></td><td><code>900</code></td>
+            <td><span class="src src-m">量得</span> <code>.display-xl</code> / <span class="src src-d">我们定的</span></td></tr>
+        <tr><td>中文标题字距</td><td><code>-0.02em</code></td><td><code>0</code></td>
+            <td><span class="src src-m">量得</span> <code>.display-xl</code>——<b>现状这条是个已知问题</b>（中文标题不该用负字距），但你说了别动现有风格，所以只在硬派里改掉</td></tr>
+        <tr><td>正文行高</td><td><code>1.75</code></td><td><code>1.9</code></td>
+            <td><span class="src src-m">量得</span> <code>.lead</code> / <span class="src src-d">我们定的</span>：等宽混排要更松</td></tr>
+        <tr><td>过渡时长</td><td><code>350ms</code></td><td><code>150ms</code></td>
+            <td><span class="src src-m">量得</span> <code>--ease-out</code> / <span class="src src-m">量得</span> 参考页自报</td></tr>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section class="confirm">
+  <div class="wrap">
+    <h2>还差两个答案</h2>
+    <p class="hint">填完点按钮复制，贴回对话里。</p>
+
+    <div class="settled">
+      <p class="settled-k">已定 · 默认主题</p>
+      <p class="settled-v">默认是<b>「现在」</b>（草诀歌风格）。第一次打开、没有本机记录的人看到的就是它；硬派要手动切，选择记在本机。<br>
+      连带解掉一条风险：会议室大屏那台机器只要不主动切，就还是现在这一版——酸绿打到投影幕布上会糊成荧光。</p>
+    </div>
+
+    <div class="q">
+      <label for="reject">1 · 硬派里有什么是你一眼就不想要的？（原话）</label>
+      <p class="why">这一格现在是空的，DESIGN.md 的 Don'ts 也就是空的。别客气：「这片绿刺眼」「投影太重像贴纸」「等宽字排中文很别扭」「洋红太廉价」——这种句子会逐字进文档，我不润色。你要是真的一处都不想改，写「没有」也行，但那等于放弃了这一栏的约束力。</p>
+      <textarea id="reject" placeholder="例：那片绿开一天会眼睛受不了；便签的 8px 黑投影太重，像贴纸不像纸。"></textarea>
+    </div>
+
+    <div class="q">
+      <label for="ctx">2 · 谁会在什么状态下打开它？</label>
+      <p class="why">不是问画面，是问人。什么时间、什么设备、单手还是双手、周围有没有人、情绪是松是紧。它决定 DESIGN.md 开头那句话——现在那一句只写完了产品事实，缺使用状态这一半。</p>
+      <textarea id="ctx" placeholder="例：闭门会现场，二三十人各自掏手机扫码进来，会议室投影同时开着大屏；多数人只看不写，写的人在别人讲话时单手打字。"></textarea>
+    </div>
+
+    <button class="copy" id="copyBtn" type="button">复制我的选择</button><span class="copied" id="tip"></span>
+  </div>
+</section>
+
+<script>
+(function () {
+  var I = function (id) { return '<svg class="icon"><use href="#i-' + id + '"></use></svg>'; };
+
+  var SWATCH = ['#ffffff', '#f3efe6', '#e4ebe3', '#e6eaee', '#f3e8e6', '#f2edd8'];
+
+  function swatches() {
+    return SWATCH.map(function (c, i) {
+      return '<i class="' + (i === 1 ? 'pick' : '') + '" style="background:' + c + '"></i>';
+    }).join('');
+  }
+
+  function boardNav() {
+    return '' +
+      '<div class="bd-nav">' +
+        '<div class="bd-nav-l">' +
+          '<div class="ib">' + I('chev') + '</div>' +
+          '<div class="bd-title"><p class="eb">Board · 白板</p><h2>草诀歌 AI Labs 会议白板</h2></div>' +
+          '<div class="tagbox"><span class="tk">Room</span><span class="tv">草诀歌 AI Labs</span></div>' +
+          '<div class="segs"><b class="on">全部</b><b>未答</b><b>已答</b></div>' +
+        '</div>' +
+        '<div class="bd-nav-r">' +
+          '<span class="seg">韶华</span>' +
+          '<span class="seg">' + I('grid') + '排序</span>' +
+          '<span class="seg">' + I('clock') + '</span>' +
+          '<span class="seg">' + I('layer') + '</span>' +
+          '<span class="seg seg-p">' + I('share') + '</span>' +
+        '</div>' +
+      '</div>';
+  }
+
+  function tools() {
+    return '' +
+      '<div class="tools">' +
+        '<div class="tool-add">' + I('plus') + '<span>提问</span></div>' +
+        '<div class="tool-color"><p>Color</p><div class="sw">' + swatches() + '</div></div>' +
+        '<div class="tool-live"><span class="dot"></span><p>Live</p></div>' +
+      '</div>';
+  }
+
+  function zoom() {
+    return '<div class="zoom"><b>&minus;</b><span>100%</span><b>+</b><b class="rst">重置</b></div>';
+  }
+
+  function note(o) {
+    return '' +
+      '<div class="note ' + o.pos + (o.done ? ' done' : '') + '"' + (o.bg ? ' style="background:' + o.bg + '"' : '') + '>' +
+        '<div class="note-h">' +
+          '<div class="lft"><span class="idx">' + o.idx + '</span>' +
+            '<span class="st' + (o.done ? ' done' : '') + '">' + (o.done ? 'Answered' : 'Open') + '</span></div>' +
+          '<div class="note-acts"><i>' + I('check') + '</i><i>' + I('pen') + '</i><i>' + I('dots') + '</i></div>' +
+        '</div>' +
+        '<div class="note-b">' + o.text + '</div>' +
+        '<div class="note-f"><span>By <em>' + o.by + '</em></span>' +
+          '<span class="vote' + (o.hot ? ' hot' : '') + '">' + I('thumb') + o.votes + '</span></div>' +
+      '</div>';
+  }
+
+  function sidebar(n, open, top) {
+    return '' +
+      '<aside class="bd-side">' +
+        '<div class="side-h"><p class="eb">Guide · 说明</p><h3>白板如何工作？</h3></div>' +
+        '<p class="side-p">完全实时同步的会议收集板。开启同一链接的人，会看到你拖曳的每一次落点与每一次表态。</p>' +
+        '<div class="side-stats">' +
+          '<div><span>便签总计</span><b>' + n + '</b></div>' +
+          '<div><span>未标记解答</span><b>' + open + '</b></div>' +
+          '<div><span>赞数最高</span><b>' + top + '</b></div>' +
+        '</div>' +
+        '<ul class="side-tips">' +
+          '<li><span class="n">01</span><span>点左上角「提问」：新建便签</span></li>' +
+          '<li><span class="n">02</span><span>单指拖空白处：平移画布</span></li>' +
+          '<li><span class="n">03</span><span>点铅笔图标：编辑提问</span></li>' +
+          '<li><span class="n">04</span><span>「更多」里可改色或删除</span></li>' +
+        '</ul>' +
+        '<div class="side-foot">无需登录。复制链接分享给参会者，大家就能一起写入。</div>' +
+      '</aside>';
+  }
+
+  /* ---------- 屏一 · 落地页首屏 ---------- */
+  function mini(o) {
+    return '<div class="mn ' + o.pos + '"' + (o.bg ? ' style="background:' + o.bg + '"' : '') + '>' +
+      '<div class="mn-top"><span class="s">' + (o.done ? 'Answered' : 'Open') + '</span>' +
+        '<span>' + o.idx + '</span></div>' +
+      '<div class="mn-txt">' + o.text + '</div>' +
+      '<div class="mn-bot"><span>By <em>' + o.by + '</em></span>' +
+        '<span class="mn-v">' + o.votes + '</span></div></div>';
+  }
+
+  var LANDING = '' +
+    '<div class="screen lp on">' +
+      '<div class="lp-nav">' +
+        '<div class="logo"><span class="logo-a">草诀歌</span><span class="logo-b">AI Labs</span></div>' +
+        '<div class="btn btn-cta">进入会议间' + I('arrow') + '</div>' +
+      '</div>' +
+      '<div class="lp-hero">' +
+        '<div class="lp-left">' +
+          '<p class="eyebrow">Caojuege AI Labs · Meeting Board</p>' +
+          '<h1 class="lp-h1"><span>在白板上共享</span><span>自由交流和</span>' +
+            '<span class="hollow">思想碰撞</span></h1>' +
+          '<p class="lp-lead">一场会议真正的产出，是那些被说出口的问题。草诀歌 AI Labs 的会议白板把提问、投票与解答放在同一张纸面上——开一个链接，所有人一起写。</p>' +
+          '<div class="lp-cta"><span class="btn btn-hero">进入草诀歌 AI Labs 会议间' + I('arrow') + '</span></div>' +
+        '</div>' +
+        '<div class="lp-fig">' +
+          '<div class="figbox"><div class="miniboard">' +
+            mini({ pos:'m1', idx:'01', by:'看板助手', votes:3,
+              text:'欢迎来到草诀歌 AI Labs 会议白板。大家可以在这里相互提问、投票和拖拽分类。' }) +
+            mini({ pos:'m2', idx:'02', by:'主持人', votes:8, bg:'#F3EFE6',
+              text:'主持人或其他人解答完后，点击便签上的对勾即可标为「已回答」。' }) +
+            mini({ pos:'m3', idx:'03', by:'草诀歌 AI Labs', votes:5, done:true, bg:'#E4EBE3',
+              text:'支持自由拖拽排版。若需整齐网格，可用顶栏「排序」一键对齐。' }) +
+          '</div></div>' +
+          '<p class="figcap">一张便签就是一个问题。右下角是票数，答完的会被划掉并标为「已解答」。</p>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+
+  /* ---------- 屏二 · 内页白板 ---------- */
+  var BOARD = '' +
+    '<div class="screen bd">' + boardNav() +
+      '<div class="bd-main"><div class="bd-canvas">' +
+        '<div class="wm">问</div>' + tools() +
+        note({ pos: 'n1', idx: '01', by: '看板助手', votes: 3,
+          text: '欢迎来到草诀歌 AI Labs 会议白板。大家可以在这里相互提问、投票和拖拽分类。双击空白处可以快速新建一张便签。' }) +
+        note({ pos: 'n2', idx: '02', by: '主持人', votes: 8, hot: true, bg: '#F3EFE6',
+          text: '主持人或其他人解答完后，点击便签上的对勾即可标为「已回答」。' }) +
+        note({ pos: 'n3', idx: '03', by: '草诀歌 AI Labs', votes: 5, done: true, bg: '#E4EBE3',
+          text: '支持自由拖拽排版。若需整齐网格，可用顶栏「排序」一键对齐。' }) +
+        zoom() +
+      '</div>' + sidebar(3, 2, 8) + '</div>' +
+    '</div>';
+
+  /* ---------- 屏三 · 内页空状态 ---------- */
+  var EMPTY = '' +
+    '<div class="screen bd">' + boardNav() +
+      '<div class="bd-main"><div class="bd-canvas">' +
+        '<div class="wm">问</div>' + tools() +
+        '<div class="empty">' +
+          '<p class="eb">Empty · 空板</p>' +
+          '<h3>这间会议室还没有人<em>提问</em></h3>' +
+          '<p>点击左上角「提问」，即可落下一张便签。手机上可单指拖动画布。</p>' +
+          '<div class="empty-btns"><span class="eb1">发布首张便签</span>' +
+            '<span class="eb2">' + I('share') + '分享</span></div>' +
+        '</div>' +
+        zoom() +
+      '</div>' + sidebar(0, 0, 0) + '</div>' +
+    '</div>';
+
+  var SCREENS = LANDING + BOARD + EMPTY;
+  [].forEach.call(document.querySelectorAll('.stage'), function (st) { st.innerHTML = SCREENS; });
+
+  /* ---------- 缩放适配 ---------- */
+  function fit() {
+    [].forEach.call(document.querySelectorAll('.stage'), function (st) {
+      var w = st.parentElement.clientWidth;
+      st.style.transform = 'scale(' + (w / 1280) + ')';
+    });
+  }
+  window.addEventListener('resize', fit);
+  if (document.fonts && document.fonts.ready) { document.fonts.ready.then(fit); }
+  fit();
+
+  /* ---------- 屏切换 ---------- */
+  document.getElementById('screenTabs').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    [].forEach.call(this.children, function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    var i = +b.dataset.s;
+    [].forEach.call(document.querySelectorAll('.stage'), function (st) {
+      [].forEach.call(st.children, function (sc, j) { sc.classList.toggle('on', j === i); });
+    });
+  });
+
+  /* ---------- 风格切换 ---------- */
+  document.getElementById('viewTabs').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b) return;
+    [].forEach.call(this.children, function (x) { x.setAttribute('aria-pressed', String(x === b)); });
+    document.getElementById('grid').dataset.view = b.dataset.v;
+    requestAnimationFrame(fit);
+  });
+
+  /* ---------- 收集判断 ---------- */
+  document.getElementById('copyBtn').addEventListener('click', function () {
+    var rej = document.getElementById('reject').value.trim() || '（没写）';
+    var ctx = document.getElementById('ctx').value.trim() || '（没写）';
+    var out = [
+      '# 列宾 · 硬派皮肤确认（草诀歌 AI Labs 会议白板）',
+      '',
+      '默认主题：已定为「现在」（草诀歌风格）',
+      '',
+      '1 · 硬派里不想要的（原话）：',
+      rej,
+      '',
+      '2 · 谁会在什么状态下打开它：',
+      ctx
+    ].join('\n');
+    var tip = document.getElementById('tip');
+    function done() { tip.textContent = '已复制，贴回对话里就行。'; }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(out).then(done, function () { fallback(out, tip); });
+    } else { fallback(out, tip); }
+  });
+
+  function fallback(text, tip) {
+    var ta = document.createElement('textarea');
+    ta.value = text; ta.style.position = 'fixed'; ta.style.opacity = '0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); tip.textContent = '已复制，贴回对话里就行。'; }
+    catch (err) { tip.textContent = '复制失败，手动选中上面三栏内容即可。'; }
+    document.body.removeChild(ta);
+  }
+})();
+</script>
