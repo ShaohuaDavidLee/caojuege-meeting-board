@@ -110,6 +110,11 @@ body{
 .confirm h2{font-family:"Noto Serif SC",serif;font-size:19px;font-weight:700;margin:0 0 4px}
 .confirm .hint{font-size:13px;color:var(--sheet-mut);margin:0 0 30px}
 .q{margin-bottom:28px}
+.settled{border-left:3px solid var(--sheet-ink);background:#EFEDE6;padding:14px 18px;
+  margin-bottom:30px;max-width:860px}
+.settled-k{margin:0 0 6px;font-family:"JetBrains Mono",ui-monospace,monospace;font-size:10px;
+  letter-spacing:.16em;text-transform:uppercase;color:var(--sheet-mut)}
+.settled-v{margin:0;font-size:14px;line-height:1.8}
 .q label{display:block;font-size:14.5px;font-weight:600;margin-bottom:4px}
 .q .why{font-size:12.5px;color:var(--sheet-mut);margin:0 0 10px;line-height:1.75}
 .q select,.q textarea{
@@ -472,7 +477,12 @@ body{
   <div class="wrap">
     <p class="kicker">Liebin · 方向确认 · 2026-08-25</p>
     <h1>会议白板 —— 现有风格不动，新增一套「硬派」皮肤</h1>
-    <p class="axis">左边是<b>现在</b>（现站 <code>index.css</code> 的值原样搬过来，一个数没改），右边是<b>硬派</b>。两边跑的是<b>同一份 DOM、同一套结构</b>——同样的栅格、同样的 68px 标题、同样的 296px 便签、同样的 308px 侧栏——只换颜色、边框粗细、投影、工具字族和强调手法。硬派没有新增任何区块：没有导航菜单，没有底部参数条，右栏还是那张白板图的位置。</p>
+    <p class="axis">左边是<b>现在</b>（现站 <code>index.css</code> 的值原样搬过来，一个数没改），右边是<b>硬派</b>。两边跑的是<b>同一份 DOM、同一套结构</b>——同样的栅格、1280px 容器、80px 顶栏、320px 侧栏、280px 便签、0.2em 大写字距——只换颜色、边框粗细、投影、工具字族和强调手法。硬派没有新增任何区块：没有导航菜单，没有底部参数条，右栏还是那张白板图的位置。默认是「现在」，硬派手动切。</p>
+  </div>
+</header>
+
+<div class="ctrlbar">
+  <div class="wrap">
     <div class="controls">
       <div class="cgroup">
         <span class="clabel">Screen</span>
@@ -567,30 +577,24 @@ body{
 
 <section class="confirm">
   <div class="wrap">
-    <h2>还差三个答案</h2>
-    <p class="hint">「两套都要」已经定了，硬派也画出来了。剩下这三格空着，空着就没法写完 DESIGN.md。填完点按钮复制，贴回对话里。</p>
+    <h2>还差两个答案</h2>
+    <p class="hint">填完点按钮复制，贴回对话里。</p>
 
-    <div class="q">
-      <label for="pick">1 · 第一次打开的人，默认看到哪一套？</label>
-      <p class="why">这一问连着「会不会上投影」：酸绿打到会议室幕布上会糊成一片荧光，黑字边缘发晕。如果白板经常投大屏，硬派就不该当默认。</p>
-      <select id="pick">
-        <option value="">— 请选择 —</option>
-        <option>现在（硬派要手动切）</option>
-        <option>硬派（现在的风格要手动切）</option>
-        <option>记住每人上次选的，第一次给「现在」</option>
-        <option>记住每人上次选的，第一次给「硬派」</option>
-      </select>
+    <div class="settled">
+      <p class="settled-k">已定 · 默认主题</p>
+      <p class="settled-v">默认是<b>「现在」</b>（草诀歌风格）。第一次打开、没有本机记录的人看到的就是它；硬派要手动切，选择记在本机。<br>
+      连带解掉一条风险：会议室大屏那台机器只要不主动切，就还是现在这一版——酸绿打到投影幕布上会糊成荧光。</p>
     </div>
 
     <div class="q">
-      <label for="reject">2 · 硬派里有什么是你一眼就不想要的？（原话）</label>
+      <label for="reject">1 · 硬派里有什么是你一眼就不想要的？（原话）</label>
       <p class="why">这一格现在是空的，DESIGN.md 的 Don'ts 也就是空的。别客气：「这片绿刺眼」「投影太重像贴纸」「等宽字排中文很别扭」「洋红太廉价」——这种句子会逐字进文档，我不润色。你要是真的一处都不想改，写「没有」也行，但那等于放弃了这一栏的约束力。</p>
       <textarea id="reject" placeholder="例：那片绿开一天会眼睛受不了；便签的 8px 黑投影太重，像贴纸不像纸。"></textarea>
     </div>
 
     <div class="q">
-      <label for="ctx">3 · 谁会在什么状态下打开它？</label>
-      <p class="why">不是问画面，是问人。什么时间、什么设备、单手还是双手、周围有没有人、情绪是松是紧。这一问决定第 1 问的答案，也决定 DESIGN.md 开头那句话。</p>
+      <label for="ctx">2 · 谁会在什么状态下打开它？</label>
+      <p class="why">不是问画面，是问人。什么时间、什么设备、单手还是双手、周围有没有人、情绪是松是紧。它决定 DESIGN.md 开头那句话——现在那一句只写完了产品事实，缺使用状态这一半。</p>
       <textarea id="ctx" placeholder="例：闭门会现场，二三十人各自掏手机扫码进来，会议室投影同时开着大屏；多数人只看不写，写的人在别人讲话时单手打字。"></textarea>
     </div>
 
@@ -779,18 +783,17 @@ body{
 
   /* ---------- 收集判断 ---------- */
   document.getElementById('copyBtn').addEventListener('click', function () {
-    var pick = document.getElementById('pick').value || '（没选）';
     var rej = document.getElementById('reject').value.trim() || '（没写）';
     var ctx = document.getElementById('ctx').value.trim() || '（没写）';
     var out = [
       '# 列宾 · 硬派皮肤确认（草诀歌 AI Labs 会议白板）',
       '',
-      '1 · 默认主题：' + pick,
+      '默认主题：已定为「现在」（草诀歌风格）',
       '',
-      '2 · 硬派里不想要的（原话）：',
+      '1 · 硬派里不想要的（原话）：',
       rej,
       '',
-      '3 · 谁会在什么状态下打开它：',
+      '2 · 谁会在什么状态下打开它：',
       ctx
     ].join('\n');
     var tip = document.getElementById('tip');
