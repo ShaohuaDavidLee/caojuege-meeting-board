@@ -10,6 +10,8 @@ import {
   DEFAULT_ROOM,
   MAX_ROOM_NAME_LENGTH,
 } from "../constants";
+import { ThemeToggle } from "../components/ThemeToggle";
+import { useTheme } from "../hooks/useTheme";
 import { canonicalRoomName, readableRoomUrl } from "../utils/boardHelpers";
 import { readRecentRooms } from "../utils/recentRooms";
 
@@ -72,6 +74,7 @@ export default function Landing({
 }: {
   onEnterRoom: (room: string) => void;
 }) {
+  const { isHard } = useTheme();
   const [roomInput, setRoomInput] = useState("");
   const recentRooms = useMemo(
     () => readRecentRooms().filter((r) => r !== DEFAULT_ROOM),
@@ -89,7 +92,7 @@ export default function Landing({
   return (
     <div className="min-h-dvh bg-[var(--c-bg)] text-[var(--c-ink)] font-sans">
       {/* ---------- 导航：实色 + 底线，不做毛玻璃 ---------- */}
-      <header className="fixed top-0 inset-x-0 z-40 h-20 bg-[var(--c-bg)] border-b border-[var(--c-border-soft)]">
+      <header className="landing-nav fixed top-0 inset-x-0 z-40 h-20 bg-[var(--c-bg)] border-b border-[var(--c-border-soft)]">
         <div className="wrap h-full flex items-center justify-between">
           <a
             href="/"
@@ -101,14 +104,17 @@ export default function Landing({
             <span className="eyebrow">AI Labs</span>
           </a>
 
-          <button
-            type="button"
-            onClick={() => onEnterRoom(DEFAULT_ROOM)}
-            className="btn btn-primary h-9 px-4 shrink-0 whitespace-nowrap group"
-          >
-            进入会议间
-            <ArrowRight className="w-4 h-4 arrow-nudge" />
-          </button>
+          <div className="flex items-center gap-2.5 shrink-0">
+            <ThemeToggle className="h-9 px-3" />
+            <button
+              type="button"
+              onClick={() => onEnterRoom(DEFAULT_ROOM)}
+              className="btn btn-primary h-9 px-4 whitespace-nowrap group"
+            >
+              进入会议间
+              <ArrowRight className="w-4 h-4 arrow-nudge" />
+            </button>
+          </div>
         </div>
       </header>
 
@@ -143,9 +149,9 @@ export default function Landing({
 
             <figure className="min-w-0 rise rise-d2">
               {/* 截图底色与页面底色同为 #e5e5e5，靠一条强分隔线勾出边缘，不做衬边 */}
-              <div className="border border-[var(--c-border)] overflow-x-auto">
+              <div className="fig-frame border border-[var(--c-border)] overflow-x-auto">
                 <img
-                  src="/board-preview.png"
+                  src={isHard ? "/board-preview-hard.png" : "/board-preview.png"}
                   alt="草诀歌 AI Labs 会议间：便签、投票与已解答标记"
                   className="block h-auto w-full min-w-[560px] lg:min-w-0"
                 />

@@ -7,6 +7,7 @@
  */
 
 import { useEffect } from "react";
+import { ThemeProvider } from "./hooks/useTheme";
 import { useRoute } from "./hooks/useRoute";
 import { PRODUCT_NAME } from "./constants";
 import { rememberRoom } from "./utils/recentRooms";
@@ -21,7 +22,13 @@ export default function App() {
     if (room) rememberRoom(room);
   }, [room]);
 
-  if (!room) return <Landing onEnterRoom={enterRoom} />;
-
-  return <Board key={room} room={room} onLeave={leaveRoom} />;
+  return (
+    <ThemeProvider>
+      {room ? (
+        <Board key={room} room={room} onLeave={leaveRoom} />
+      ) : (
+        <Landing onEnterRoom={enterRoom} />
+      )}
+    </ThemeProvider>
+  );
 }

@@ -23,7 +23,7 @@ export function BoardSidebar({
         className="md:hidden fixed inset-0 z-20 bg-[rgba(26,26,26,0.45)] border-0 cursor-pointer"
         onClick={onClose}
       />
-      <aside className="fixed md:static inset-x-0 bottom-0 md:inset-auto z-30 md:z-10 w-full md:w-80 max-h-[85dvh] md:max-h-none md:h-full shrink-0 flex flex-col border-t md:border-t-0 md:border-l border-[var(--c-border-soft)] bg-[var(--c-bg)] overflow-y-auto">
+      <aside className="board-side fixed md:static inset-x-0 bottom-0 md:inset-auto z-30 md:z-10 w-full md:w-80 max-h-[85dvh] md:max-h-none md:h-full shrink-0 flex flex-col border-t md:border-t-0 md:border-l border-[var(--c-border-soft)] bg-[var(--c-bg)] overflow-y-auto">
         <div className="px-6 pt-6 pb-4 border-b border-[var(--c-border-soft)] flex items-start justify-between">
           <div>
             <p className="eyebrow">Guide · 说明</p>

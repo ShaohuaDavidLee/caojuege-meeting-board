@@ -36,6 +36,18 @@
   --c-on-dark: #e5e5e5;
   --c-watermark: rgba(0, 0, 0, 0.05);
 
+  /* ---- 皮肤层 ----
+   * 下面这些的 classic 取值全部等于现状，加它们不改变任何渲染结果。
+   * 换皮（[data-theme="hard"]）只重定义这一组，组件文件不动。 */
+  --c-canvas: var(--c-bg);        /* 白板画布底：可以和页面底分开 */
+  --c-accent: var(--c-btn);       /* 强调色：classic 由主按钮色兼任 */
+  --c-accent-2: var(--c-btn);
+  --c-on-accent: var(--c-on-dark);
+  --bw: 1px;                      /* 结构边框。发丝线另算，仍写死 1px */
+  --sh: none;                     /* 面的投影 */
+  --sh-cta: none;                 /* 主按钮的投影 */
+  --font-util: var(--font-sans);  /* 标签 / 按钮 / 大写小字 */
+
   --font-serif: "Noto Serif SC", "Songti SC", serif;
   --font-sans: "Inter", "PingFang SC", "Microsoft YaHei", sans-serif;
 
@@ -100,7 +112,7 @@ body {
   }
 
   .eyebrow {
-    font-family: var(--font-sans);
+    font-family: var(--font-util);
     font-size: var(--fs-xs);
     font-weight: 500;
     letter-spacing: var(--ls-widest);
@@ -109,7 +121,7 @@ body {
   }
 
   .kicker {
-    font-family: var(--font-sans);
+    font-family: var(--font-util);
     font-size: var(--fs-xs);
     font-weight: 500;
     letter-spacing: var(--ls-widest);
@@ -128,11 +140,11 @@ body {
     align-items: center;
     justify-content: center;
     gap: 0.375rem;
-    font-family: var(--font-sans);
+    font-family: var(--font-util);
     font-size: var(--fs-sm);
     line-height: 1;
     border-radius: 0;
-    border: 1px solid var(--c-border-soft);
+    border: var(--bw) solid var(--c-border-soft);
     cursor: pointer;
     transition: color 0.35s var(--ease-out), background 0.35s var(--ease-out),
       border-color 0.35s var(--ease-out);
@@ -143,6 +155,7 @@ body {
     background: var(--c-btn);
     color: var(--c-on-dark);
     border-color: var(--c-btn);
+    box-shadow: var(--sh-cta);
   }
 
   .btn-primary:hover {
@@ -175,7 +188,7 @@ body {
     padding: 0;
     background: var(--c-surface);
     color: var(--c-ink);
-    border: 1px solid var(--c-border-soft);
+    border: var(--bw) solid var(--c-border-soft);
   }
 
   .btn-icon:hover {
@@ -190,6 +203,22 @@ body {
     border-color: var(--c-btn);
   }
 
+  /* ---------- 分段控件（筛选 / 工具组） ---------- */
+
+  .seg {
+    color: var(--c-muted);
+    transition: color 0.3s var(--ease-out), background 0.3s var(--ease-out);
+  }
+
+  .seg:hover {
+    color: var(--c-ink);
+  }
+
+  .seg.is-on {
+    background: var(--c-btn);
+    color: var(--c-on-dark);
+  }
+
   /* ---------- 输入 ---------- */
 
   .field {
@@ -198,7 +227,7 @@ body {
     font-size: var(--fs-sm);
     color: var(--c-ink);
     background: var(--c-surface);
-    border: 1px solid var(--c-border-soft);
+    border: var(--bw) solid var(--c-border-soft);
     border-radius: 0;
     padding: 0.625rem 0.75rem;
     outline: none;
@@ -218,20 +247,22 @@ body {
 
   .panel {
     background: var(--c-surface);
-    border: 1px solid var(--c-border-soft);
+    border: var(--bw) solid var(--c-border-soft);
     border-radius: 0;
+    box-shadow: var(--sh);
   }
 
   .panel-soft {
     background: var(--c-surface-40);
-    border: 1px solid var(--c-border-soft);
+    border: var(--bw) solid var(--c-border-soft);
     border-radius: 0;
+    box-shadow: var(--sh);
   }
 
   .panel-dark {
     background: var(--c-btn);
     color: var(--c-on-dark);
-    border: 1px solid var(--c-border-on-dark);
+    border: var(--bw) solid var(--c-border-on-dark);
     border-radius: 0;
   }
 
@@ -239,8 +270,9 @@ body {
 
   .sticky-note {
     background: var(--c-surface);
-    border: 1px solid var(--c-border-soft);
+    border: var(--bw) solid var(--c-border-soft);
     border-radius: 0;
+    box-shadow: var(--sh);
     transition: border-color 0.3s var(--ease-out), opacity 0.3s var(--ease-out);
   }
 
@@ -264,7 +296,7 @@ body {
   .toast {
     background: var(--c-btn);
     color: var(--c-on-dark);
-    border: 1px solid var(--c-border-on-dark);
+    border: var(--bw) solid var(--c-border-on-dark);
     border-radius: 0;
     font-size: var(--fs-sm);
   }
@@ -530,4 +562,147 @@ body {
   #whiteboard-stage {
     touch-action: none;
   }
+}
+
+
+/* ============================================================
+ * 硬派皮肤 · [data-theme="hard"]
+ *
+ * 规则：只重定义变量 + 少量够不着的地方做覆盖。不改 DOM、不改类名语义。
+ * 这一整段刻意写在 @layer 外面 —— Tailwind 的工具类在 utilities 层，
+ * 未分层的规则才盖得住 JSX 里那些 bg-[var(--c-bg)] 之类的写法。
+ * 决策与出处见仓库根目录 DESIGN.md。
+ * ============================================================ */
+
+[data-theme="hard"] {
+  --c-bg: #ccf224;                 /* 落地页底：满屏酸绿，看图估的 */
+  --c-canvas: #eaf2c8;             /* 白板画布底：同色系但退到纸面亮度。
+                                    * 原话「会议室背景太绿了」——盯一小时的
+                                    * 工作面不能是满屏酸绿。我们定的。 */
+  --c-surface: #ffffff;
+  --c-surface-40: #ffffff;
+  --c-ink: #000000;
+  --c-ink-pure: #000000;
+  --c-btn: #000000;
+  --c-border: #000000;
+  --c-border-soft: #000000;        /* 硬派没有「软」边框，层次靠粗细和投影 */
+  --c-border-on-dark: rgba(255, 255, 255, 0.35);
+  --c-muted: #3a3a3a;
+  --c-muted-alt: #3a3a3a;
+  --c-on-dark: #ffffff;
+  --c-watermark: rgba(0, 0, 0, 0.07);
+  --c-accent: #ff2e7e;             /* 洋红 · 黑字 5.94:1 */
+  --c-accent-2: #35d6f0;           /* 青   · 黑字 12.0:1 */
+  --c-on-accent: #000000;          /* 强制：三个强调色上永远黑字 */
+  --bw: 4px;                       /* 0.25em @16px */
+  --sh: 8px 8px 0 #000000;         /* 参考页自报 SHADOW OFFSET 8px */
+  --sh-cta: 8px 8px 0 #ff2e7e;
+  --font-util: "JetBrains Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+/* 中文标题不用负字距。现状那条 -0.02em 只在 classic 里留着 */
+[data-theme="hard"] .display-xl,
+[data-theme="hard"] .display-l,
+[data-theme="hard"] .display-m {
+  letter-spacing: 0;
+  font-weight: 700;
+}
+
+/* 情绪落点：中文笔画多，描边空心字会糊死字腔，改用反白色块 */
+[data-theme="hard"] .display-xl em,
+[data-theme="hard"] .display-l em {
+  font-style: normal;
+  background: var(--c-ink-pure);
+  color: var(--c-bg);
+  padding: 0 0.1em 0.06em;
+}
+
+/* ---------- 落地页 ---------- */
+
+[data-theme="hard"] .landing-nav {
+  background: var(--c-surface);
+  border-bottom: var(--bw) dashed var(--c-ink-pure);
+}
+
+[data-theme="hard"] .fig-frame {
+  border-width: var(--bw);
+  box-shadow: var(--sh);
+}
+
+/* ---------- 白板 ---------- */
+
+[data-theme="hard"] #whiteboard-stage {
+  background-image:
+    linear-gradient(rgba(0, 0, 0, 0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.06) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+[data-theme="hard"] .nav-bar {
+  background: var(--c-ink-pure);
+  border-bottom: var(--bw) solid var(--c-ink-pure);
+  color: #ffffff;
+
+  /* 反白不靠一条条改组件，靠在这一层把变量重定义一遍：
+   * JSX 里那些 text-[var(--c-muted-alt)] / border-[var(--c-border-soft)]
+   * 会就近解析到这里，整条顶栏自动跟着翻。 */
+  --c-ink: #ffffff;
+  --c-muted: rgba(255, 255, 255, 0.75);
+  --c-muted-alt: rgba(255, 255, 255, 0.55);
+  --c-border-soft: #ffffff;
+  --c-surface: transparent;
+  --c-btn: var(--c-accent);        /* 主按钮与选中态在黑底上换成洋红 */
+  --c-on-dark: var(--c-on-accent); /* 洋红上永远黑字 */
+  --bw: 2px;                       /* 顶栏里的小控件用 4px 太笨重 */
+}
+
+[data-theme="hard"] .nav-bar .eyebrow {
+  color: var(--c-accent-2);
+}
+
+[data-theme="hard"] .nav-bar .seg.is-on {
+  font-weight: 700;
+}
+
+/* CTA 的洋红硬投影只留给落地页的大按钮：
+ * 挤在工具条 / 顶栏 / 浮层里会直接糊到相邻控件上 */
+[data-theme="hard"] .panel .btn-primary,
+[data-theme="hard"] .panel-soft .btn-primary,
+[data-theme="hard"] .nav-bar .btn-primary,
+[data-theme="hard"] .modal-sheet .btn-primary,
+[data-theme="hard"] .sticky-note .btn-primary {
+  box-shadow: none;
+}
+
+/* hover 的黑底会撞上顶栏里被改成黑色的 --c-on-dark：一悬停按钮就整个消失。
+ * 顶栏内换成青，顶栏外把字色钉死成白。 */
+[data-theme="hard"] .btn-primary:hover {
+  background: var(--c-ink-pure);
+  border-color: var(--c-ink-pure);
+  color: #ffffff;
+}
+
+[data-theme="hard"] .nav-bar .btn-primary:hover {
+  background: var(--c-accent-2);
+  border-color: var(--c-accent-2);
+  color: var(--c-on-accent);
+}
+
+[data-theme="hard"] .board-side {
+  background: var(--c-surface);
+  border-left-width: var(--bw);
+}
+
+/* 便签内部的分隔线是排版，不是边框：保持发丝粗细 */
+[data-theme="hard"] .sticky-note [class*="border-b"],
+[data-theme="hard"] .sticky-note [class*="border-t"] {
+  border-width: 1px;
+}
+
+/* 主题开关 */
+.theme-toggle {
+  font-family: var(--font-util);
+  font-size: 10px;
+  letter-spacing: var(--ls-widest);
+  text-transform: uppercase;
 }

@@ -1,12 +1,13 @@
 # 草诀歌 AI Labs 会议白板 · 架构
 
-> 以产品为笔，和世界对话。视觉真相源：`设计规范.md`。
+> 以产品为笔，和世界对话。视觉真相源：`DESIGN.md`（`设计规范.md` 为历史记录）。
 
 ## 树
 
 ```
 草诀歌会议问题白板/
-├── 设计规范.md
+├── DESIGN.md                     # 设计语言 + 皮肤层（classic / hard）
+├── 设计规范.md                    # 历史记录
 ├── ARCHITECTURE.md
 ├── README.md
 ├── wrangler.toml
@@ -33,6 +34,7 @@
     │   ├── boardHelpers.ts       # 名称归一 / 默认态判断 / 网格对齐 / 分享链
     │   └── recentRooms.ts        # 本机去过的会议间
     ├── hooks/
+    │   ├── useTheme.tsx          # 皮肤：classic（默认）/ hard，存本机
     │   ├── useToast.ts           # 轻提示
     │   ├── useRoute.ts           # 读写 ?room=，旧名归一
     │   ├── useBoardSession.ts    # notes / 标题 / 用户 / 轮询
@@ -40,6 +42,7 @@
     │   ├── useBoardHistory.ts    # 手动 + 自动归档
     │   └── useCanvasGestures.ts  # 平移 / 缩放 / 拖拽
     └── components/
+        ├── ThemeToggle.tsx       # 皮肤开关（落地页顶栏 + 白板顶栏共用）
         ├── Modals.tsx            # 署名 / 提问 / 删除 / 历史浮层
         └── board/
             ├── Toast.tsx
@@ -98,7 +101,26 @@ App ──► useRoute ──► ?room=
 - 主会议间迁移：`loadRoom` 发现主键还空、旧键有内容时，把便签与历史整体认领过来（KV 与本地 `.data/` 两边都做）。
 - 历史：有本地写入后每 15 分钟自动存档；手动打包仍保留；每间最多 20 份。
 
+## 皮肤
+
+两套皮肤跑**同一份 DOM**，差异全在 CSS 变量里：
+
+| | classic（默认） | hard（硬派） |
+|---|---|---|
+| 落地页底 / 画布底 | `#E5E5E5` / 同 | `#CCF224` / `#EAF2C8` |
+| 结构边框 `--bw` | 1px 发丝线 | 4px 纯黑 |
+| 投影 `--sh` | 无 | `8px 8px 0` 硬投影 |
+| 强调色 | 主按钮色兼任 | 洋红 `#FF2E7E` + 青 `#35D6F0` |
+
+- 切换只改根元素的 `data-theme`，不重挂载组件、不发请求。
+- 存 `localStorage`，**不进 KV**：主题是每人的外观偏好，不是会议间的属性。
+- `index.html` 里有一小段前置脚本，在 React 挂载前就把 `data-theme` 打上，硬派用户不会先闪一帧 classic。
+- 硬派的等宽标签字体按需加载，classic 用户不付这个流量。
+- 数值与取舍的依据见 `DESIGN.md`。
+
 ## 变更日志
+
+- 2026-09-01：新增「硬派」皮肤，可在落地页与白板顶栏切换，默认仍是现有风格。`index.css` 抽出皮肤层 token（`--bw` / `--sh` / `--c-canvas` / `--c-accent` / `--font-util`），classic 取值等于现状、渲染不变；筛选按钮的配色从 JSX 收进 `.seg` 语义类。白板画布底色与落地页分开——原话「会议室背景太绿了」。
 
 - 2026-08-25：首屏改左文右图，白板截图进 hero，去掉「白板长什么样？」一节与「草」水印；修掉全仓 38 处以 `--fs-` 变量做字号的 arbitrary value 写法——Tailwind 把它当颜色处理，既没设上字号又把文字色重置成继承色，深色按钮上文字变近黑。
 
