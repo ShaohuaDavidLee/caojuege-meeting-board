@@ -320,9 +320,14 @@ export default function Landing({
 
         <div className="border-t border-[var(--c-border-on-dark)]">
           <div className="wrap py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-[length:var(--fs-xs)]">
-            <p className="on-dark-soft">
-              {BRAND_NAME} —— 面向非技术创作者的中文 vibe coding 社区
-            </p>
+            <div className="flex flex-col gap-2">
+              <p className="on-dark-soft">
+                {BRAND_NAME} —— 面向非技术创作者的中文 vibe coding 社区
+              </p>
+              <p className="on-dark-soft font-serif">
+                灵感来自丁羽翔，感谢她的无私建议
+              </p>
+            </div>
             <p className="on-dark-faint tracking-[var(--ls-widest)] uppercase">
               baiban.caojuege.com
             </p>
