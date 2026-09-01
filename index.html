@@ -12,6 +12,14 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   </head>
   <body>
+    <script>
+      // 先于 React 挂载：硬派用户不该先闪一帧现在的皮肤
+      try {
+        if (localStorage.getItem("caojuege-board-theme") === "hard") {
+          document.documentElement.setAttribute("data-theme", "hard");
+        }
+      } catch (e) {}
+    </script>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>

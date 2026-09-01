@@ -152,6 +152,7 @@ body{margin:0;background:var(--sh-bg);color:var(--sh-ink);
    s0 是基线（现站 index.css 原样），s1/s2/s3 是三个变体。
    =========================================================== */
 .skin{
+  --canvas:var(--paper);   /* 白板画布底：默认跟页面底同色 */
   --font-disp:"Noto Serif SC","Songti SC",serif;
   --font-body:"Inter","Noto Sans SC","PingFang SC",sans-serif;
 }
@@ -170,7 +171,9 @@ body{margin:0;background:var(--sh-bg);color:var(--sh-ink);
 }
 /* ---- s1 · 贴着做：装饰全上，参考照单全收 ---- */
 .s1{
-  --paper:#CCF224; --surf:#FFFFFF; --surf2:#FFFFFF;
+  --paper:#CCF224;         /* 落地页：满屏酸绿 */
+  --canvas:#EAF2C8;        /* 白板：同色系退到纸面亮度——「会议室背景太绿了」 */
+  --surf:#FFFFFF; --surf2:#FFFFFF;
   --ink:#000000; --line:#000000; --hair:rgba(0,0,0,.28);
   --bw:4px; --r:0px; --sh:8px 8px 0 #000000; --sh-cta:8px 8px 0 #FF2E7E;
   --btn:#000000; --on-btn:#FFFFFF; --acc:#FF2E7E; --on-acc:#000000; --acc2:#35D6F0;
@@ -267,7 +270,7 @@ body{margin:0;background:var(--sh-bg);color:var(--sh-ink);
 .figcap{margin:14px 0 0;font-size:12px;line-height:1.7;color:var(--mut2)}
 .s1 .figcap{font-family:var(--font-util);color:var(--mut)}
 
-.miniboard{position:relative;height:282px;background:var(--paper);overflow:hidden}
+.miniboard{position:relative;height:282px;background:var(--canvas);overflow:hidden}
 .s1 .miniboard{background-image:linear-gradient(rgba(0,0,0,.07) 1px,transparent 1px),
   linear-gradient(90deg,rgba(0,0,0,.07) 1px,transparent 1px);background-size:22px 22px}
 .mn{position:absolute;width:158px;padding:9px 10px;background:var(--nc,var(--surf));
@@ -347,7 +350,7 @@ body{margin:0;background:var(--sh-bg);color:var(--sh-ink);
 .s1 .segs b.on{font-weight:700}
 
 .bd-main{flex:1;display:flex;min-height:0}
-.bd-canvas{flex:1;position:relative;overflow:hidden;background:var(--paper)}
+.bd-canvas{flex:1;position:relative;overflow:hidden;background:var(--canvas)}
 .s1 .bd-canvas{background-image:linear-gradient(rgba(0,0,0,.07) 1px,transparent 1px),
   linear-gradient(90deg,rgba(0,0,0,.07) 1px,transparent 1px);background-size:32px 32px}
 .wm{position:absolute;right:-20px;bottom:54px;font-family:"Noto Serif SC",serif;font-weight:700;
@@ -547,7 +550,7 @@ body{margin:0;background:var(--sh-bg);color:var(--sh-ink);
   <div class="grid" id="grid">
     <section class="variant">
       <div class="vmeta"><span class="vname">贴着做</span><span class="vtag">Faithful</span></div>
-      <p class="vdesc">参考照单全收：酸绿满屏当底、4px 纯黑框、8px 硬投影、洋红与青当强调、等宽字当工具字体。装饰一样不减，冲，但它压过品牌现有的灰度语言。</p>
+      <p class="vdesc"><b>已选中，且已上线。</b>参考照单全收：4px 纯黑框、8px 硬投影、洋红与青当强调、等宽字当工具字体。落地页保留满屏酸绿；白板画布按原话「会议室背景太绿了」退到 <code>#EAF2C8</code>。</p>
       <div class="frame" tabindex="0" data-skin="s1" data-name="贴着做">
         <div class="stage skin s1"></div>
       </div>

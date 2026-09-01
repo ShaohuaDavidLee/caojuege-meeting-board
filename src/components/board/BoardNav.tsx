@@ -3,6 +3,7 @@
  */
 
 import { Check, ChevronLeft, Grid, History, Layers, Share2 } from "lucide-react";
+import { ThemeToggle } from "../ThemeToggle";
 import { isDefaultRoom } from "../../utils/boardHelpers";
 import type { NoteFilter } from "../../hooks/useBoardSession";
 
@@ -94,7 +95,7 @@ export function BoardNav({
           )}
         </div>
 
-        <div className="flex items-center border border-[var(--c-border-soft)] h-9 shrink-0 max-w-[46vw] sm:max-w-none">
+        <div className="seg-group flex items-center border border-[var(--c-border-soft)] h-9 shrink-0 max-w-[46vw] sm:max-w-none">
           <span className="hidden sm:inline px-2.5 text-[10px] tracking-[var(--ls-widest)] uppercase text-[var(--c-muted-alt)] border-r border-[var(--c-border-soft)]">
             Room
           </span>
@@ -106,19 +107,15 @@ export function BoardNav({
           </span>
         </div>
 
-        <div className="hidden md:flex items-stretch border border-[var(--c-border-soft)] h-9 shrink-0">
+        <div className="seg-group hidden md:flex items-stretch border border-[var(--c-border-soft)] h-9 shrink-0">
           {FILTERS.map(([key, label], i) => (
             <button
               key={key}
               type="button"
               onClick={() => setFilterType(key)}
-              className={`px-3 text-[11px] tracking-wide transition-colors duration-300 ${
+              className={`seg px-3 text-[11px] tracking-wide ${
                 i > 0 ? "border-l border-[var(--c-border-soft)]" : ""
-              } ${
-                filterType === key
-                  ? "bg-[var(--c-btn)] text-[var(--c-on-dark)]"
-                  : "text-[var(--c-muted)] hover:text-[var(--c-ink)]"
-              }`}
+              } ${filterType === key ? "is-on" : ""}`}
             >
               {label}
             </button>
@@ -126,7 +123,8 @@ export function BoardNav({
         </div>
       </div>
 
-      <div className="flex items-center gap-0 border border-[var(--c-border-soft)] h-9 shrink-0">
+      <div className="seg-group flex items-center gap-0 border border-[var(--c-border-soft)] h-9 shrink-0">
+        <ThemeToggle className="h-full px-2 sm:px-3 border-0 border-r border-[var(--c-border-soft)] hidden sm:inline-flex" />
         <button
           type="button"
           onClick={onEditProfile}

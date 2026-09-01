@@ -149,13 +149,9 @@ export function BoardCanvas({
             key={key}
             type="button"
             onClick={() => setFilterType(key)}
-            className={`px-2.5 text-[11px] transition-colors duration-300 ${
+            className={`seg px-2.5 text-[11px] ${
               i > 0 ? "border-l border-[var(--c-border-soft)]" : ""
-            } ${
-              filterType === key
-                ? "bg-[var(--c-btn)] text-[var(--c-on-dark)]"
-                : "text-[var(--c-muted)]"
-            }`}
+            } ${filterType === key ? "is-on" : ""}`}
           >
             {label}
           </button>
@@ -202,7 +198,7 @@ export function BoardCanvas({
         onTouchStart={onCanvasTouchStart}
         onDoubleClick={onCanvasDoubleClick}
         onWheel={onCanvasWheel}
-        className={`flex-1 overflow-hidden relative bg-[var(--c-bg)] ${
+        className={`flex-1 overflow-hidden relative bg-[var(--c-canvas)] ${
           isPanning ? "cursor-grabbing" : "cursor-grab"
         }`}
       >
