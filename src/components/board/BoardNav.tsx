@@ -4,6 +4,7 @@
 
 import { Check, ChevronLeft, Grid, History, Layers, Share2 } from "lucide-react";
 import { ThemeToggle } from "../ThemeToggle";
+import { useBrand } from "../../brand";
 import { isDefaultRoom } from "../../utils/boardHelpers";
 import type { NoteFilter } from "../../hooks/useBoardSession";
 
@@ -50,6 +51,9 @@ export function BoardNav({
   onToggleSidebar: () => void;
   onCopyLink: () => void;
 }) {
+  const brand = useBrand();
+  /** 主会议间是品牌的属性：classic 的主房和 Faith 的主房不是同一间 */
+  const isMainRoom = room === brand.defaultRoom || isDefaultRoom(room);
   return (
     <header className="nav-bar shrink-0 h-20 px-3 sm:px-4 md:px-8 flex items-center justify-between z-10 bg-[var(--c-bg)] border-b border-[var(--c-border-soft)] gap-2">
       <div className="flex items-center gap-2 sm:gap-5 min-w-0 flex-1">
@@ -101,7 +105,7 @@ export function BoardNav({
           </span>
           <span
             className="font-serif px-2.5 text-[length:var(--fs-sm)] truncate"
-            title={isDefaultRoom(room) ? "草诀歌 AI Labs 主会议间" : `独立会议间「${room}」`}
+            title={isMainRoom ? brand.mainRoomTip : `独立会议间「${room}」`}
           >
             {room}
           </span>

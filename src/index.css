@@ -699,6 +699,132 @@ body {
   border-width: 1px;
 }
 
+/* ============================================================
+ * 礼仪皮肤 · [data-theme="faith"]
+ *
+ * 出自弥撒经（missal）的 rubric 传统：米白纸、墨黑正文，
+ * 唯一的强调色是礼仪红（rubric 本意就是「红字」——规程用红，
+ * 经文用黑）。辨识度不靠任何宗教符号，交给英文经文本身。
+ * 与硬派同一条规则：只重定义变量 + 少量覆盖，不改 DOM。
+ * ============================================================ */
+
+[data-theme="faith"] {
+  --c-bg: #fbf9f4;                 /* 米白纸面 */
+  --c-canvas: #f5f1e8;             /* 画布比页面再沉半度，便签才浮得起来 */
+  --c-surface: #ffffff;
+  --c-surface-40: rgba(255, 255, 255, 0.55);
+  --c-ink: #181510;
+  --c-ink-pure: #181510;
+  --c-btn: #a11f1f;                /* 礼仪红：动作与选中态都归它 */
+  --c-border: #181510;
+  --c-border-soft: rgba(24, 21, 16, 0.18);
+  --c-border-on-dark: rgba(251, 249, 244, 0.28);
+  --c-muted: #7a736a;
+  --c-muted-alt: #9a9288;
+  --c-on-dark: #fbf9f4;
+  --c-watermark: rgba(161, 31, 31, 0.05);
+  --c-accent: #a11f1f;
+  --c-accent-2: #181510;
+  --c-on-accent: #fbf9f4;
+  --bw: 1px;
+  --sh: 0 1px 0 rgba(24, 21, 16, 0.9), 0 10px 30px rgba(24, 21, 16, 0.06);
+  --sh-cta: none;
+  /* 标签与大写小字走 EB Garamond：rubric 的小号大写传统 */
+  --font-util: "EB Garamond", "Noto Serif SC", "Songti SC", serif;
+  --font-serif: "EB Garamond", "Noto Serif SC", "Songti SC", serif;
+}
+
+/* 标题全部回到衬线：这是经书页，不是海报 */
+[data-theme="faith"] .display-xl,
+[data-theme="faith"] .display-l,
+[data-theme="faith"] .display-m {
+  font-family: var(--font-serif);
+  font-weight: 500;
+  letter-spacing: 0.005em;
+}
+
+/* 情绪落点用礼仪红斜体，不做色块 */
+[data-theme="faith"] .display-xl em,
+[data-theme="faith"] .display-l em,
+[data-theme="faith"] .display-m em {
+  color: var(--c-btn);
+}
+
+[data-theme="faith"] .eyebrow,
+[data-theme="faith"] .kicker {
+  color: #a11f1f;
+  font-weight: 600;
+}
+
+[data-theme="faith"] ::selection {
+  background: var(--c-btn);
+  color: var(--c-on-dark);
+}
+
+/* ---------- 落地页 ---------- */
+
+/* 经书页的双线框：1px 实线 + 外沿 3px 双线 */
+[data-theme="faith"] .landing-nav {
+  border-bottom: 1px solid var(--c-ink-pure);
+  box-shadow: 0 4px 0 -2px var(--c-bg), 0 5px 0 -1px var(--c-ink-pure);
+}
+
+[data-theme="faith"] .fig-frame {
+  box-shadow: var(--sh);
+}
+
+/* 经文卡：红 pilcrow + 左侧红规线，黑字经文（rubric 的用色规矩） */
+[data-theme="faith"] .verse-card {
+  border-left: 2px solid var(--c-btn);
+  padding-left: 1.5rem;
+  max-width: 34rem;
+}
+
+[data-theme="faith"] .verse-card .verse-text {
+  font-family: var(--font-serif);
+  font-size: clamp(18px, 1.6vw, 22px);
+  line-height: 1.8;
+  color: var(--c-ink);
+}
+
+[data-theme="faith"] .verse-card .verse-text .pilcrow {
+  color: var(--c-btn);
+  font-size: 1.2em;
+  margin-right: 0.5em;
+}
+
+[data-theme="faith"] .verse-card .verse-cite {
+  display: block;
+  margin-top: 0.875rem;
+  font-family: var(--font-util);
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  letter-spacing: 0.28em;
+  text-transform: uppercase;
+  color: var(--c-btn);
+}
+
+/* ---------- 白板 ---------- */
+
+/* 画布：极淡的红色细点，像纸上的经纬 */
+[data-theme="faith"] #whiteboard-stage {
+  background-image: radial-gradient(
+    rgba(161, 31, 31, 0.09) 1px,
+    transparent 1.4px
+  );
+  background-size: 28px 28px;
+}
+
+[data-theme="faith"] .board-side {
+  background: var(--c-surface);
+}
+
+/* 便签内部的分隔线保持发丝粗细 */
+[data-theme="faith"] .sticky-note [class*="border-b"],
+[data-theme="faith"] .sticky-note [class*="border-t"] {
+  border-width: 1px;
+}
+
 /* 主题开关 */
 .theme-toggle {
   font-family: var(--font-util);

@@ -6,6 +6,7 @@ import { useState, useEffect, useRef, FormEvent, MutableRefObject } from "react"
 import type { BoardHistoryItem, BoardState } from "../types";
 import { AUTO_SNAPSHOT_INTERVAL_MS } from "../constants";
 import * as api from "../api/boardApi";
+import { useBrand } from "../brand";
 import type { ToastType } from "./useToast";
 
 type ShowToast = (message: string, type?: ToastType) => void;
@@ -18,6 +19,8 @@ export function useBoardHistory(opts: {
   onRestore: (board: BoardState) => void;
 }) {
   const { room, username, lastWriteTimeRef, showToast, onRestore } = opts;
+
+  const brand = useBrand();
 
   const [historyList, setHistoryList] = useState<BoardHistoryItem[]>([]);
   const [showHistoryModal, setShowHistoryModal] = useState(false);
@@ -74,7 +77,7 @@ export function useBoardHistory(opts: {
     if (e) e.preventDefault();
     const finalName =
       newSnapshotName.trim() || `快照_${new Date().toLocaleString("zh-CN")}`;
-    const finalCreator = snapshotCreator.trim() || username || "草诀歌神秘听众";
+    const finalCreator = snapshotCreator.trim() || username || brand.anonName;
     try {
       setIsSavingSnapshot(true);
       const data = await api.createHistory(room, {

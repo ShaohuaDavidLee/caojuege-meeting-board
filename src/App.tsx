@@ -9,26 +9,31 @@
 import { useEffect } from "react";
 import { ThemeProvider } from "./hooks/useTheme";
 import { useRoute } from "./hooks/useRoute";
-import { PRODUCT_NAME } from "./constants";
+import { useBrand } from "./brand";
 import { rememberRoom } from "./utils/recentRooms";
 import Landing from "./pages/Landing";
 import Board from "./pages/Board";
 
-export default function App() {
+function Shell() {
   const { room, enterRoom, leaveRoom } = useRoute();
+  const brand = useBrand();
 
   useEffect(() => {
-    document.title = room ? `${room} · ${PRODUCT_NAME}` : PRODUCT_NAME;
+    document.title = room ? `${room} · ${brand.productName}` : brand.productName;
     if (room) rememberRoom(room);
-  }, [room]);
+  }, [room, brand]);
 
+  return room ? (
+    <Board key={room} room={room} onLeave={leaveRoom} />
+  ) : (
+    <Landing onEnterRoom={enterRoom} />
+  );
+}
+
+export default function App() {
   return (
     <ThemeProvider>
-      {room ? (
-        <Board key={room} room={room} onLeave={leaveRoom} />
-      ) : (
-        <Landing onEnterRoom={enterRoom} />
-      )}
+      <Shell />
     </ThemeProvider>
   );
 }

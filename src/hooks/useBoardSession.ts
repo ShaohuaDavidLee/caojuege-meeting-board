@@ -9,6 +9,7 @@ import type { BoardState, StickyNote } from "../types";
 import { DEFAULT_BOARD_TITLE, LEGACY_TITLES } from "../constants";
 import * as api from "../api/boardApi";
 import { isDefaultBoardState, shareRoomUrl } from "../utils/boardHelpers";
+import { useBrand } from "../brand";
 import type { ToastType } from "./useToast";
 
 export type NoteFilter = "all" | "unanswered" | "answered";
@@ -16,7 +17,8 @@ export type NoteFilter = "all" | "unanswered" | "answered";
 type ShowToast = (message: string, type?: ToastType) => void;
 
 export function useBoardSession(room: string, showToast: ShowToast) {
-  const [boardTitle, setBoardTitle] = useState(DEFAULT_BOARD_TITLE);
+  const brand = useBrand();
+  const [boardTitle, setBoardTitle] = useState(brand.boardTitle);
   const [isEditingTitle, setIsEditingTitle] = useState(false);
   const [titleInput, setTitleInput] = useState("");
 
@@ -67,7 +69,7 @@ export function useBoardSession(room: string, showToast: ShowToast) {
         let board: BoardState = data.data;
 
         const localBackupStr = localStorage.getItem(`board_backup_${roomName}`);
-        if (localBackupStr && isDefaultBoardState(board)) {
+        if (localBackupStr && isDefaultBoardState(board, [brand.boardTitle])) {
           try {
             const backupPayload = JSON.parse(localBackupStr);
             if (backupPayload?.board?.notes) {
@@ -75,7 +77,8 @@ export function useBoardSession(room: string, showToast: ShowToast) {
               const hasCustomContent =
                 backupBoard.notes.some((n) => !n.id.startsWith("desc-")) ||
                 (!LEGACY_TITLES.includes(backupBoard.title) &&
-                  backupBoard.title !== DEFAULT_BOARD_TITLE) ||
+                  backupBoard.title !== DEFAULT_BOARD_TITLE &&
+                  backupBoard.title !== brand.boardTitle) ||
                 backupBoard.notes.length !== 3;
 
               if (hasCustomContent && backupBoard.notes.length > 0) {
@@ -91,7 +94,7 @@ export function useBoardSession(room: string, showToast: ShowToast) {
           }
         }
 
-        if (!isDefaultBoardState(board) && board.notes.length > 0) {
+        if (!isDefaultBoardState(board, [brand.boardTitle]) && board.notes.length > 0) {
           localStorage.setItem(
             `board_backup_${roomName}`,
             JSON.stringify({ board, timestamp: Date.now() })

@@ -15,6 +15,7 @@ import type { StickyNote } from "../types";
 import { NOTE_SURFACE } from "../constants";
 import * as api from "../api/boardApi";
 import { alignNotesGrid } from "../utils/boardHelpers";
+import { useBrand } from "../brand";
 import type { ToastType } from "./useToast";
 
 type ShowToast = (message: string, type?: ToastType) => void;
@@ -41,6 +42,8 @@ export function useNoteActions(opts: {
     editingNoteIdRef,
     showToast,
   } = opts;
+
+  const brand = useBrand();
 
   const [showAddModal, setShowAddModal] = useState(false);
   const [newNoteText, setNewNoteText] = useState("");
@@ -82,7 +85,7 @@ export function useNoteActions(opts: {
     markWrite();
 
     const finalName =
-      submitterNameType === "anonymous" ? "草诀歌神秘听众" : username;
+      submitterNameType === "anonymous" ? brand.anonName : username;
     if (!finalName) {
       setIsSettingName(true);
       showToast("请先填入你的名字", "info");

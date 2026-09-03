@@ -35,6 +35,11 @@ export const DEFAULT_BOARD_TITLE = "草诀歌 AI Labs 会议白板";
 /** 主房：与 src/constants.ts 的 DEFAULT_ROOM 保持一致 */
 export const DEFAULT_ROOM = "草诀歌 AI Labs";
 
+/** Faith 主房：白标皮肤的默认会议间，初始内容不带原品牌 */
+export const FAITH_MAIN_ROOM = "Faith 会议室";
+
+export const FAITH_BOARD_TITLE = "Faith 会议白板";
+
 /** 主房改名前用过的房名，按顺序认领 */
 export const LEGACY_ROOM_NAMES = ["共创会", "草诀歌AI Labs"];
 
@@ -57,14 +62,17 @@ function historyKey(roomId: string) {
   return `history:${encodeURIComponent(roomId)}`;
 }
 
-export function createDefaultBoard(): BoardState {
+export function createDefaultBoard(roomId?: string): BoardState {
   const now = new Date().toISOString();
+  const isFaith = roomId === FAITH_MAIN_ROOM;
   return {
-    title: DEFAULT_BOARD_TITLE,
+    title: isFaith ? FAITH_BOARD_TITLE : DEFAULT_BOARD_TITLE,
     notes: [
       {
         id: "desc-1",
-        text: "欢迎来到草诀歌 AI Labs 会议白板。大家可以在这里相互提问、投票和拖拽分类。\n双击空白处可以快速新建一张便签。",
+        text: isFaith
+          ? "欢迎来到 Faith 会议室。大家可以在这里相互提问、投票和拖拽分类。\n双击空白处可以快速新建一张便签。"
+          : "欢迎来到草诀歌 AI Labs 会议白板。大家可以在这里相互提问、投票和拖拽分类。\n双击空白处可以快速新建一张便签。",
         name: "看板助手",
         votes: 3,
         answered: false,
@@ -89,7 +97,7 @@ export function createDefaultBoard(): BoardState {
       {
         id: "desc-3",
         text: "支持自由拖拽排版。若需整齐网格，可用顶栏「排序」一键对齐。",
-        name: "草诀歌 AI Labs",
+        name: isFaith ? "Faith 会议室" : "草诀歌 AI Labs",
         votes: 5,
         answered: false,
         x: 280,
@@ -143,7 +151,7 @@ export async function loadRoom(kv: KVNamespace, roomId: string): Promise<BoardSt
     if (adopted) return adopted;
   }
 
-  const fresh = createDefaultBoard();
+  const fresh = createDefaultBoard(roomId);
   await saveRoom(kv, roomId, fresh);
   return fresh;
 }

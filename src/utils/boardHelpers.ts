@@ -31,12 +31,17 @@ export function isDefaultRoom(room: string): boolean {
   return canonicalRoomName(room) === DEFAULT_ROOM;
 }
 
-export function isDefaultBoardState(b: BoardState): boolean {
+export function isDefaultBoardState(
+  b: BoardState,
+  extraDefaultTitles: string[] = []
+): boolean {
   if (!b || !b.notes) return true;
   if (b.notes.length !== 3) return false;
   const ids = b.notes.map((n) => n.id);
   const titleOk =
-    LEGACY_TITLES.includes(b.title) || b.title === DEFAULT_BOARD_TITLE;
+    LEGACY_TITLES.includes(b.title) ||
+    b.title === DEFAULT_BOARD_TITLE ||
+    extraDefaultTitles.includes(b.title);
   return (
     ids.includes("desc-1") &&
     ids.includes("desc-2") &&

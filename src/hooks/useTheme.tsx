@@ -19,14 +19,25 @@ import {
   type ReactNode,
 } from "react";
 
-export type Theme = "classic" | "hard";
+export type Theme = "classic" | "hard" | "faith";
 
 export const THEME_STORAGE_KEY = "caojuege-board-theme";
 const HARD_FONT_ID = "hard-theme-font";
+const FAITH_FONT_ID = "faith-theme-font";
+
+/** 三套皮肤的轮转顺序：现在 → 硬派 → 礼仪 → 现在 */
+export const THEME_ORDER: readonly Theme[] = ["classic", "hard", "faith"];
+
+export const THEME_LABELS: Record<Theme, string> = {
+  classic: "现在",
+  hard: "硬派",
+  faith: "礼仪",
+};
 
 function readStoredTheme(): Theme {
   try {
-    return localStorage.getItem(THEME_STORAGE_KEY) === "hard" ? "hard" : "classic";
+    const stored = localStorage.getItem(THEME_STORAGE_KEY);
+    return stored === "hard" || stored === "faith" ? stored : "classic";
   } catch {
     return "classic"; // 隐私模式 / 禁用存储：回到默认
   }
@@ -43,9 +54,21 @@ function ensureHardFont() {
   document.head.appendChild(link);
 }
 
+/** 礼仪皮肤的拉丁标题用 EB Garamond：弥撒经双色的另一半 */
+function ensureFaithFont() {
+  if (document.getElementById(FAITH_FONT_ID)) return;
+  const link = document.createElement("link");
+  link.id = FAITH_FONT_ID;
+  link.rel = "stylesheet";
+  link.href =
+    "https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;1,400;1,500&display=swap";
+  document.head.appendChild(link);
+}
+
 interface ThemeValue {
   theme: Theme;
   isHard: boolean;
+  isFaith: boolean;
   toggleTheme: () => void;
 }
 
@@ -59,6 +82,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (theme === "hard") {
       ensureHardFont();
       root.setAttribute("data-theme", "hard");
+    } else if (theme === "faith") {
+      ensureFaithFont();
+      root.setAttribute("data-theme", "faith");
     } else {
       root.removeAttribute("data-theme");
     }
@@ -70,12 +96,16 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, [theme]);
 
   const toggleTheme = useCallback(
-    () => setTheme((t) => (t === "hard" ? "classic" : "hard")),
+    () =>
+      setTheme((t) => {
+        const i = THEME_ORDER.indexOf(t);
+        return THEME_ORDER[(i + 1) % THEME_ORDER.length];
+      }),
     []
   );
 
   const value = useMemo(
-    () => ({ theme, isHard: theme === "hard", toggleTheme }),
+    () => ({ theme, isHard: theme === "hard", isFaith: theme === "faith", toggleTheme }),
     [theme, toggleTheme]
   );
 

@@ -35,6 +35,9 @@ const roomsCache: { [roomId: string]: BoardState } = {};
 /** 主房：与 src/constants.ts 的 DEFAULT_ROOM 保持一致 */
 const DEFAULT_ROOM = "草诀歌 AI Labs";
 
+/** Faith 主房：白标皮肤的默认会议间，初始内容不带原品牌 */
+const FAITH_MAIN_ROOM = "Faith 会议室";
+
 /** 主房改名前用过的房名，按顺序认领 */
 const LEGACY_ROOM_NAMES = ["共创会", "草诀歌AI Labs"];
 
@@ -84,13 +87,16 @@ function loadRoom(roomId: string): BoardState {
     if (adopted) return adopted;
   }
 
-  // Fallback default state —— 文案与色相对齐《设计规范.md》
+  // Fallback default state —— 文案与色相对齐《设计规范.md》；Faith 主房用白标文案
+  const isFaith = roomId === FAITH_MAIN_ROOM;
   const defaultState: BoardState = {
-    title: "草诀歌 AI Labs 会议白板",
+    title: isFaith ? "Faith 会议白板" : "草诀歌 AI Labs 会议白板",
     notes: [
       {
         id: "desc-1",
-        text: "欢迎来到草诀歌 AI Labs 会议白板。大家可以在这里相互提问、投票和拖拽分类。\n双击空白处可以快速新建一张便签。",
+        text: isFaith
+          ? "欢迎来到 Faith 会议室。大家可以在这里相互提问、投票和拖拽分类。\n双击空白处可以快速新建一张便签。"
+          : "欢迎来到草诀歌 AI Labs 会议白板。大家可以在这里相互提问、投票和拖拽分类。\n双击空白处可以快速新建一张便签。",
         name: "看板助手",
         votes: 3,
         answered: false,
@@ -115,7 +121,7 @@ function loadRoom(roomId: string): BoardState {
       {
         id: "desc-3",
         text: "支持自由拖拽排版。若需整齐网格，可用顶栏「排序」一键对齐。",
-        name: "草诀歌 AI Labs",
+        name: isFaith ? "Faith 会议室" : "草诀歌 AI Labs",
         votes: 5,
         answered: false,
         x: 280,
