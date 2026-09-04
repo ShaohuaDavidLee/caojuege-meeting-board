@@ -19,7 +19,7 @@ const resolvedDirname = typeof __dirname !== "undefined"
   : path.dirname(resolvedFilename);
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 3000;
 
 app.use(express.json());
 

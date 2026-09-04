@@ -13,9 +13,11 @@
   </head>
   <body>
     <script>
-      // 先于 React 挂载：换了皮肤的用户不该先闪一帧现在的皮肤
+      // 先于 React 挂载：换了皮肤的用户不该先闪一帧现在的皮肤。
+      // 链接里的 ?theme= 优先于本机记忆（白标分享场景）
       try {
-        var t = localStorage.getItem("caojuege-board-theme");
+        var t = new URLSearchParams(location.search).get("theme") ||
+          localStorage.getItem("caojuege-board-theme");
         if (t === "hard" || t === "faith") {
           document.documentElement.setAttribute("data-theme", t);
         }

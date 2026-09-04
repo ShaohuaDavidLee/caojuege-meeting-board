@@ -36,6 +36,12 @@ export const THEME_LABELS: Record<Theme, string> = {
 
 function readStoredTheme(): Theme {
   try {
+    // 链接里带 ?theme= 时以链接为准：白标皮肤的分享者希望
+    // 收到链接的人打开就是那一套，比如 ?theme=faith
+    const fromUrl = new URLSearchParams(window.location.search).get("theme");
+    if (fromUrl === "hard" || fromUrl === "faith" || fromUrl === "classic") {
+      return fromUrl;
+    }
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
     return stored === "hard" || stored === "faith" ? stored : "classic";
   } catch {
