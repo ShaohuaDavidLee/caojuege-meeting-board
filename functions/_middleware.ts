@@ -19,6 +19,9 @@ const FAITH_MAIN_ROOM = "Faith 会议室";
 const DEFAULT_ROOM = "草诀歌 AI Labs";
 const LEGACY_ROOM_NAMES = ["共创会", "草诀歌AI Labs"];
 
+/** 白标域名：裸访问（不带 room）时分享卡片直接用 Faith 白标 */
+const FAITH_HOSTS = new Set(["baiban.asone.ing"]);
+
 interface OgCard {
   title: string;
   description: string;
@@ -74,8 +77,11 @@ export async function onRequest(context: PagesContext): Promise<Response> {
     return response;
   }
 
-  const room = new URL(request.url).searchParams.get("room");
-  const card = cardForRoom(room);
+  const url = new URL(request.url);
+  const room = url.searchParams.get("room");
+  const card = !room && FAITH_HOSTS.has(url.hostname)
+    ? FAITH_CARD
+    : cardForRoom(room);
 
   return new HTMLRewriter()
     .on("title", {

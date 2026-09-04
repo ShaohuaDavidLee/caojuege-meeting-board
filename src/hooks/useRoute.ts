@@ -5,11 +5,16 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { canonicalRoomName, roomPath } from "../utils/boardHelpers";
+import { FAITH_BRAND } from "../brand";
+import { isFaithHost } from "./useTheme";
 
 function readRoomFromUrl(): string {
   if (typeof window === "undefined") return "";
   const raw = new URLSearchParams(window.location.search).get("room") || "";
-  return canonicalRoomName(raw);
+  const canonical = canonicalRoomName(raw);
+  // 白标域名裸访问：直接进 Faith 主会议间，整条链路不出现原品牌
+  if (!canonical && isFaithHost()) return FAITH_BRAND.defaultRoom;
+  return canonical;
 }
 
 export function useRoute() {
@@ -19,7 +24,7 @@ export function useRoute() {
   useEffect(() => {
     const raw = new URLSearchParams(window.location.search).get("room") || "";
     const canonical = canonicalRoomName(raw);
-    if (canonical && raw !== canonical) {
+    if (raw && canonical && raw !== canonical) {
       window.history.replaceState(null, "", roomPath(canonical));
     }
   }, []);

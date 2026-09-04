@@ -19,7 +19,10 @@ function Shell() {
   const brand = useBrand();
 
   useEffect(() => {
-    document.title = room ? `${room} · ${brand.productName}` : brand.productName;
+    document.title =
+      room && room !== brand.defaultRoom
+        ? `${room} · ${brand.productName}`
+        : brand.productName;
     if (room) rememberRoom(room);
   }, [room, brand]);
 

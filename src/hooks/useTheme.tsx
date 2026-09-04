@@ -34,6 +34,17 @@ export const THEME_LABELS: Record<Theme, string> = {
   faith: "礼仪",
 };
 
+/** 白标域名：这些主机名上默认礼仪皮（?theme= 与手动切换仍可覆盖） */
+export const FAITH_HOSTS = ["baiban.asone.ing"];
+
+export function isFaithHost(): boolean {
+  try {
+    return FAITH_HOSTS.includes(window.location.hostname);
+  } catch {
+    return false;
+  }
+}
+
 function readStoredTheme(): Theme {
   try {
     // 链接里带 ?theme= 时以链接为准：白标皮肤的分享者希望
@@ -43,7 +54,9 @@ function readStoredTheme(): Theme {
       return fromUrl;
     }
     const stored = localStorage.getItem(THEME_STORAGE_KEY);
-    return stored === "hard" || stored === "faith" ? stored : "classic";
+    if (stored === "hard" || stored === "faith") return stored;
+    // 白标域名上的访客大多没存过偏好：默认礼仪皮，不出现原品牌
+    return isFaithHost() ? "faith" : "classic";
   } catch {
     return "classic"; // 隐私模式 / 禁用存储：回到默认
   }
