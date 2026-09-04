@@ -19,7 +19,24 @@ const resolvedDirname = typeof __dirname !== "undefined"
   : path.dirname(resolvedFilename);
 
 const app = express();
-const PORT = Number(process.env.PORT) || 3000;
+
+/** 端口优先级：--port / -p 命令行参数 > PORT 环境变量 > 3000 */
+function resolvePort(): number {
+  const argv = process.argv.slice(2);
+  const flagIndex = argv.findIndex((a) => a === "--port" || a === "-p");
+  const fromFlag =
+    flagIndex >= 0 ? Number(argv[flagIndex + 1]) : Number.NaN;
+  return fromFlag || Number(process.env.PORT) || 3000;
+}
+
+function resolveHost(): string {
+  const argv = process.argv.slice(2);
+  const flagIndex = argv.findIndex((a) => a === "--host" || a === "-h");
+  return (flagIndex >= 0 && argv[flagIndex + 1]) || "0.0.0.0";
+}
+
+const PORT = resolvePort();
+const HOST = resolveHost();
 
 app.use(express.json());
 
@@ -456,8 +473,8 @@ async function startServer() {
     });
   }
 
-  app.listen(PORT, "0.0.0.0", () => {
-    console.log(`Server starting on port ${PORT}`);
+  app.listen(PORT, HOST, () => {
+    console.log(`Server starting on ${HOST}:${PORT}`);
   });
 }
 
