@@ -75,7 +75,12 @@ export function alignNotesGrid(notes: StickyNote[]): StickyNote[] {
 }
 
 export function roomPath(room: string): string {
-  return `${window.location.pathname}?room=${encodeURIComponent(room)}`;
+  const base = `${window.location.pathname}?room=${encodeURIComponent(room)}`;
+  // 链接里带来的皮肤随房间跳转一起传：白标分享链进房间后不掉皮
+  const theme = new URLSearchParams(window.location.search).get("theme");
+  return theme === "hard" || theme === "faith" || theme === "classic"
+    ? `${base}&theme=${theme}`
+    : base;
 }
 
 export function shareRoomUrl(room: string): string {

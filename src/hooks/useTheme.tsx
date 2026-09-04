@@ -95,7 +95,12 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
       root.removeAttribute("data-theme");
     }
     try {
-      localStorage.setItem(THEME_STORAGE_KEY, theme);
+      // URL 参数带来的皮肤只服务这一次访问，不写进本机记忆——
+      // 不然谁点开一次 ?theme=faith，他自己的默认皮肤就被换掉了。
+      // 手动切换（地址栏没有 theme 参数）才值得记住。
+      if (!new URLSearchParams(window.location.search).get("theme")) {
+        localStorage.setItem(THEME_STORAGE_KEY, theme);
+      }
     } catch {
       /* 存不下就只在这一次会话里生效 */
     }
