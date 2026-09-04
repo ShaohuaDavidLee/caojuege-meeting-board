@@ -9,8 +9,6 @@ import { useBoardSession } from "../hooks/useBoardSession";
 import { useNoteActions } from "../hooks/useNoteActions";
 import { useBoardHistory } from "../hooks/useBoardHistory";
 import { useCanvasGestures } from "../hooks/useCanvasGestures";
-import { useTheme } from "../hooks/useTheme";
-import { FAITH_VERSE } from "../brand";
 import { Toast } from "../components/board/Toast";
 import { BoardNav } from "../components/board/BoardNav";
 import { BoardCanvas } from "../components/board/BoardCanvas";
@@ -30,7 +28,6 @@ export default function Board({
   onLeave: () => void;
 }) {
   const { notification, showToast } = useToast();
-  const { isFaith } = useTheme();
   const board = useBoardSession(room, showToast);
   const noteActions = useNoteActions({
     room: board.room,
@@ -147,15 +144,6 @@ export default function Board({
           />
         )}
       </div>
-
-      {/* 礼仪皮：白板底部一行经文，压得很低，认得的人自然会心一笑 */}
-      {isFaith && (
-        <footer className="verse-bar shrink-0 border-t border-[var(--c-border-soft)] bg-[var(--c-bg)] px-4 h-9 flex items-center justify-center gap-3 select-text">
-          <span className="pilcrow">¶</span>
-          <span className="verse-line">{FAITH_VERSE.text}</span>
-          <span className="verse-ref">{FAITH_VERSE.cite}</span>
-        </footer>
-      )}
 
       {board.isSettingName && (
         <NameModal
