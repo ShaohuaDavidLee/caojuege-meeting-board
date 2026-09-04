@@ -1,15 +1,15 @@
 /**
- * 落地页 —— 草诀歌 AI Labs 会议白板的正门
+ * 落地页 —— 会议白板的正门
  * 严格对齐《设计规范.md》：灰度 / 发丝线 / 绝对平面 / 衬线层级 / 英文 eyebrow + 中文反问句
+ *
+ * 品牌与首屏文案随皮肤走（见 src/brand.ts）：
+ * 「礼仪」皮是一套白标——借白板开聚会的人，看到的只有 Faith 会议室。
  */
 
 import { useMemo, useState, type FormEvent } from "react";
 import { ArrowRight } from "lucide-react";
-import {
-  BRAND_NAME,
-  DEFAULT_ROOM,
-  MAX_ROOM_NAME_LENGTH,
-} from "../constants";
+import { MAX_ROOM_NAME_LENGTH } from "../constants";
+import { useBrand, FAITH_VERSE } from "../brand";
 import { ThemeToggle } from "../components/ThemeToggle";
 import { useTheme } from "../hooks/useTheme";
 import { canonicalRoomName, readableRoomUrl } from "../utils/boardHelpers";
@@ -18,19 +18,21 @@ import { readRecentRooms } from "../utils/recentRooms";
 const STEPS = [
   {
     title: "打开会议间",
-    body: "主会议间是「草诀歌 AI Labs」，闭门会与共创会都落在这里。链接长期有效，进来就能看到上一场留下的问题。",
+    body: (room: string) =>
+      `主会议间是「${room}」，闭门会与共创会都落在这里。链接长期有效，进来就能看到上一场留下的问题。`,
   },
   {
     title: "把链接发出去",
-    body: "不用登录，不用安装。拿到链接的人打开就能落便签，署名或匿名都行。",
+    body: () => "不用登录，不用安装。拿到链接的人打开就能落便签，署名或匿名都行。",
   },
   {
     title: "一起提问与表态",
-    body: "便签能拖、能投票、能改色分类。答完的问题点一下对勾，现场就知道还剩什么没聊。",
+    body: () =>
+      "便签能拖、能投票、能改色分类。答完的问题点一下对勾，现场就知道还剩什么没聊。",
   },
   {
     title: "散会带得走",
-    body: "有改动时每 15 分钟自动存档，最近 20 份留着。会散了，问题还在。",
+    body: () => "有改动时每 15 分钟自动存档，最近 20 份留着。会散了，问题还在。",
   },
 ];
 
@@ -74,11 +76,12 @@ export default function Landing({
 }: {
   onEnterRoom: (room: string) => void;
 }) {
-  const { isHard } = useTheme();
+  const { isHard, isFaith } = useTheme();
+  const brand = useBrand();
   const [roomInput, setRoomInput] = useState("");
   const recentRooms = useMemo(
-    () => readRecentRooms().filter((r) => r !== DEFAULT_ROOM),
-    []
+    () => readRecentRooms().filter((r) => r !== brand.defaultRoom),
+    [brand]
   );
 
   const pendingRoom = canonicalRoomName(roomInput);
@@ -98,17 +101,28 @@ export default function Landing({
             href="/"
             className="flex items-baseline gap-2.5 shrink-0 whitespace-nowrap no-underline text-[var(--c-ink)]"
           >
-            <span className="font-serif text-[17px] sm:text-[19px] tracking-[0.14em]">
-              草诀歌
-            </span>
-            <span className="eyebrow">AI Labs</span>
+            {isFaith ? (
+              <>
+                <span className="font-serif text-[19px] sm:text-[21px] font-semibold tracking-[0.04em]">
+                  Faith
+                </span>
+                <span className="eyebrow">会议室</span>
+              </>
+            ) : (
+              <>
+                <span className="font-serif text-[17px] sm:text-[19px] tracking-[0.14em]">
+                  草诀歌
+                </span>
+                <span className="eyebrow">AI Labs</span>
+              </>
+            )}
           </a>
 
           <div className="flex items-center gap-2.5 shrink-0">
             <ThemeToggle className="h-9 px-3" />
             <button
               type="button"
-              onClick={() => onEnterRoom(DEFAULT_ROOM)}
+              onClick={() => onEnterRoom(brand.defaultRoom)}
               className="btn btn-primary h-9 px-4 whitespace-nowrap group"
             >
               进入会议间
@@ -123,25 +137,53 @@ export default function Landing({
         <div className="wrap">
           <div className="grid lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] gap-14 lg:gap-16 items-center min-h-[85vh] py-20">
             <div>
-              <p className="eyebrow rise">Caojuege AI Labs · Meeting Board</p>
-
-              {/* 断成三行：情绪落点「思想碰撞」独占一行，窄屏也不会掉孤字 */}
-              <h1 className="display-xl mt-6 rise rise-d1">
-                在白板上共享<br />自由交流和<br /><em className="font-serif italic">思想碰撞</em>
-              </h1>
-
-              <p className="lead mt-8 rise rise-d2">
-                一场会议真正的产出，是那些被说出口的问题。草诀歌 AI Labs
-                的会议白板把提问、投票与解答放在同一张纸面上——开一个链接，所有人一起写。
+              <p className="eyebrow rise">
+                {isFaith
+                  ? "A Meeting Board · 两三个人，一间会议室"
+                  : "Caojuege AI Labs · Meeting Board"}
               </p>
+
+              {isFaith ? (
+                <>
+                  {/* 礼仪皮：标题就是那句英文，辨识度交给认得它的人 */}
+                  <h1 className="display-xl mt-6 rise rise-d1">
+                    Where two or three<br />gather,{" "}
+                    <em className="font-serif italic">there am I with them.</em>
+                  </h1>
+
+                  <div className="verse-card mt-10 rise rise-d2">
+                    <p className="verse-text">
+                      <span className="pilcrow">¶</span>
+                      {FAITH_VERSE.text}
+                    </p>
+                    <span className="verse-cite">{FAITH_VERSE.cite}</span>
+                  </div>
+
+                  <p className="lead mt-8 rise rise-d2">
+                    开一个链接，所有人一起写。提问、投票与回应，落在同一张纸面上。
+                  </p>
+                </>
+              ) : (
+                <>
+                  {/* 断成三行：情绪落点「思想碰撞」独占一行，窄屏也不会掉孤字 */}
+                  <h1 className="display-xl mt-6 rise rise-d1">
+                    在白板上共享<br />自由交流和<br /><em className="font-serif italic">思想碰撞</em>
+                  </h1>
+
+                  <p className="lead mt-8 rise rise-d2">
+                    一场会议真正的产出，是那些被说出口的问题。草诀歌 AI Labs
+                    的会议白板把提问、投票与解答放在同一张纸面上——开一个链接，所有人一起写。
+                  </p>
+                </>
+              )}
 
               <div className="mt-12 rise rise-d3">
                 <button
                   type="button"
-                  onClick={() => onEnterRoom(DEFAULT_ROOM)}
+                  onClick={() => onEnterRoom(brand.defaultRoom)}
                   className="btn btn-primary h-12 px-7 text-[length:var(--fs-base)] group"
                 >
-                  进入草诀歌 AI Labs 会议间
+                  {isFaith ? "进入 Faith 会议室" : "进入草诀歌 AI Labs 会议间"}
                   <ArrowRight className="w-4 h-4 arrow-nudge" />
                 </button>
               </div>
@@ -151,8 +193,14 @@ export default function Landing({
               {/* 截图底色与页面底色同为 #e5e5e5，靠一条强分隔线勾出边缘，不做衬边 */}
               <div className="fig-frame border border-[var(--c-border)] overflow-x-auto">
                 <img
-                  src={isHard ? "/board-preview-hard.png" : "/board-preview.png"}
-                  alt="草诀歌 AI Labs 会议间：便签、投票与已解答标记"
+                  src={
+                    isHard
+                      ? "/board-preview-hard.png"
+                      : isFaith
+                        ? "/board-preview-faith.png"
+                        : "/board-preview.png"
+                  }
+                  alt={`${brand.defaultRoom}：便签、投票与已解答标记`}
                   className="block h-auto w-full min-w-[560px] lg:min-w-0"
                 />
               </div>
@@ -182,7 +230,7 @@ export default function Landing({
                   {item.title}
                 </h3>
                 <p className="mt-4 text-[length:var(--fs-sm)] leading-loose text-[var(--c-muted)]">
-                  {item.body}
+                  {item.body(brand.defaultRoom)}
                 </p>
               </div>
             ))}
@@ -222,17 +270,19 @@ export default function Landing({
           />
 
           <div className="grid-frame grid">
-            {/* 主角：草诀歌 AI Labs 会议间 */}
+            {/* 主角：品牌的主会议间 */}
             <div className="cell">
               <p className="eyebrow">Main Room · 主会议间</p>
-              <h3 className="display-l mt-4">{DEFAULT_ROOM}</h3>
+              <h3 className="display-l mt-4">{brand.defaultRoom}</h3>
               <p className="lead mt-6 max-w-2xl">
-                闭门会、共创会与日常提问都落在这一间。它是社区自己的场子，链接长期有效，进来就能看到上一场留下的问题。
+                {isFaith
+                  ? "日常聚会与提问都落在这一间。链接长期有效，进来就能看到上一场留下的问题。"
+                  : "闭门会、共创会与日常提问都落在这一间。它是社区自己的场子，链接长期有效，进来就能看到上一场留下的问题。"}
               </p>
               <div className="mt-10">
                 <button
                   type="button"
-                  onClick={() => onEnterRoom(DEFAULT_ROOM)}
+                  onClick={() => onEnterRoom(brand.defaultRoom)}
                   className="btn btn-primary h-12 px-7 text-[length:var(--fs-base)] group"
                 >
                   进入会议间
@@ -304,16 +354,23 @@ export default function Landing({
         <div className="wrap py-24 flex flex-col lg:flex-row lg:items-end lg:justify-between gap-10">
           <div>
             <p className="eyebrow is-on-dark">Start Here</p>
-            <p className="display-l mt-4">
-              以产品为笔，<em className="font-serif italic">和世界对话</em>。
-            </p>
+            {isFaith ? (
+              <p className="display-l mt-4">
+                Where two or three gather,{" "}
+                <em className="font-serif italic">there am I with them.</em>
+              </p>
+            ) : (
+              <p className="display-l mt-4">
+                以产品为笔，<em className="font-serif italic">和世界对话</em>。
+              </p>
+            )}
           </div>
           <button
             type="button"
-            onClick={() => onEnterRoom(DEFAULT_ROOM)}
+            onClick={() => onEnterRoom(brand.defaultRoom)}
             className="btn btn-on-dark h-12 px-7 text-[length:var(--fs-base)] shrink-0 self-start lg:self-auto group"
           >
-            进入草诀歌 AI Labs
+            {isFaith ? "进入 Faith 会议室" : "进入草诀歌 AI Labs"}
             <ArrowRight className="w-4 h-4 arrow-nudge" />
           </button>
         </div>
@@ -321,15 +378,28 @@ export default function Landing({
         <div className="border-t border-[var(--c-border-on-dark)]">
           <div className="wrap py-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 text-[length:var(--fs-xs)]">
             <div className="flex flex-col gap-2">
-              <p className="on-dark-soft">
-                {BRAND_NAME} —— 面向非技术创作者的中文 vibe coding 社区
-              </p>
-              <p className="on-dark-soft font-serif">
-                灵感来自丁羽翔，感谢她的无私建议
-              </p>
+              {isFaith ? (
+                <>
+                  <p className="on-dark-soft">
+                    {brand.brandName} —— 两三个人，一间会议室
+                  </p>
+                  <p className="on-dark-soft font-serif italic">
+                    {FAITH_VERSE.short}
+                  </p>
+                </>
+              ) : (
+                <>
+                  <p className="on-dark-soft">
+                    {brand.brandName} —— 面向非技术创作者的中文 vibe coding 社区
+                  </p>
+                  <p className="on-dark-soft font-serif">
+                    灵感来自丁羽翔，感谢她的无私建议
+                  </p>
+                </>
+              )}
             </div>
             <p className="on-dark-faint tracking-[var(--ls-widest)] uppercase">
-              baiban.caojuege.com
+              {isFaith ? "Faith Board · A Meeting Board" : "baiban.caojuege.com"}
             </p>
           </div>
         </div>
