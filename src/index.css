@@ -825,6 +825,34 @@ body {
   border-width: 1px;
 }
 
+/* 白板底部经文栏：斜体黑字 + 红 pilcrow + 红色出处，rubric 规矩 */
+[data-theme="faith"] .verse-bar {
+  font-family: var(--font-serif);
+  font-size: var(--fs-xs);
+  color: var(--c-muted);
+  letter-spacing: 0.02em;
+}
+
+[data-theme="faith"] .verse-bar .pilcrow {
+  color: var(--c-btn);
+  font-size: 1.15em;
+}
+
+[data-theme="faith"] .verse-bar .verse-line {
+  font-style: italic;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+[data-theme="faith"] .verse-bar .verse-ref {
+  color: var(--c-btn);
+  font-weight: 600;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+
 /* 主题开关 */
 .theme-toggle {
   font-family: var(--font-util);
