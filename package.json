@@ -11,7 +11,7 @@
     "lint": "tsc --noEmit",
     "deploy": "npm run build && wrangler pages deploy",
     "cf:kv": "wrangler kv namespace create BOARD_KV",
-    "cf:dev": "npm run build && wrangler pages dev dist --kv BOARD_KV",
+    "cf:dev": "npm run build && wrangler pages dev dist",
     "clean": "rm -rf dist .wrangler"
   },
   "dependencies": {

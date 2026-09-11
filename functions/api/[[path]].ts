@@ -1,11 +1,17 @@
 /**
  * Cloudflare Pages Function —— /api/*
- * 绑定 KV: BOARD_KV
+ * 绑定 D1: BOARD_DB（热状态）；KV: BOARD_KV（旧数据认领）
  */
 
 import {
   loadRoom,
   saveRoom,
+  setTitle,
+  insertNote,
+  patchNote,
+  voteNote,
+  deleteNote,
+  clearAnswered,
   loadHistory,
   saveHistory,
   pruneHistory,
@@ -16,7 +22,8 @@ import {
 } from "../_lib/board";
 
 interface Env {
-  BOARD_KV: KVNamespace;
+  BOARD_DB: D1Database;
+  BOARD_KV?: KVNamespace;
 }
 
 interface PagesContext {
@@ -39,13 +46,14 @@ export async function onRequestOptions(): Promise<Response> {
 
 export async function onRequest(context: PagesContext): Promise<Response> {
   const { request, env, params } = context;
+  const db = env.BOARD_DB;
   const kv = env.BOARD_KV;
 
-  if (!kv) {
+  if (!db) {
     return json(
       {
         success: false,
-        error: "BOARD_KV 未绑定。请在 Cloudflare 项目设置中绑定 KV namespace。",
+        error: "BOARD_DB 未绑定。请在 Cloudflare 项目设置中绑定 D1 数据库。",
       },
       500
     );
@@ -71,7 +79,7 @@ export async function onRequest(context: PagesContext): Promise<Response> {
 
   try {
     if (rest.length === 0 && method === "GET") {
-      const state = await loadRoom(kv, room);
+      const state = await loadRoom(db, room, kv);
       return json({ success: true, data: state });
     }
 
@@ -80,9 +88,8 @@ export async function onRequest(context: PagesContext): Promise<Response> {
       if (typeof body.title !== "string") {
         return json({ success: false, error: "Invalid title" }, 400);
       }
-      const state = await loadRoom(kv, room);
-      state.title = body.title;
-      await saveRoom(kv, room, state);
+      await loadRoom(db, room, kv);
+      const state = await setTitle(db, room, body.title);
       return json({ success: true, data: state });
     }
 
@@ -91,17 +98,15 @@ export async function onRequest(context: PagesContext): Promise<Response> {
       if (typeof body.title !== "string" || !Array.isArray(body.notes)) {
         return json({ success: false, error: "Invalid board state payload" }, 400);
       }
-      const state = await loadRoom(kv, room);
-      state.title = body.title;
-      state.notes = body.notes as StickyNote[];
-      await saveRoom(kv, room, state);
+      await loadRoom(db, room, kv);
+      const state = { title: body.title, notes: body.notes as StickyNote[] };
+      await saveRoom(db, room, state);
       return json({ success: true, data: state });
     }
 
     if (rest[0] === "clear-answered" && method === "POST") {
-      const state = await loadRoom(kv, room);
-      state.notes = state.notes.filter((n) => !n.answered);
-      await saveRoom(kv, room, state);
+      await loadRoom(db, room, kv);
+      const state = await clearAnswered(db, room);
       return json({ success: true, data: state });
     }
 
@@ -110,7 +115,7 @@ export async function onRequest(context: PagesContext): Promise<Response> {
       if (!body.text) {
         return json({ success: false, error: "Text is required" }, 400);
       }
-      const state = await loadRoom(kv, room);
+      await loadRoom(db, room, kv);
       const newNote: StickyNote = {
         id: "note_" + Math.random().toString(36).substring(2, 11),
         text: String(body.text).trim(),
@@ -123,28 +128,24 @@ export async function onRequest(context: PagesContext): Promise<Response> {
         rotate: typeof body.rotate === "number" ? body.rotate : 0,
         createdAt: new Date().toISOString(),
       };
-      state.notes.push(newNote);
-      await saveRoom(kv, room, state);
+      await insertNote(db, room, newNote);
       return json({ success: true, data: newNote });
     }
 
     if (rest[0] === "note" && rest[1] && rest.length === 2 && method === "PUT") {
       const id = rest[1];
       const body = await readBody(request);
-      const state = await loadRoom(kv, room);
-      const note = state.notes.find((n) => n.id === id);
+      await loadRoom(db, room, kv);
+      const note = await patchNote(db, room, id, {
+        text: body.text !== undefined ? String(body.text) : undefined,
+        name: body.name !== undefined ? String(body.name) : undefined,
+        answered: body.answered !== undefined ? Boolean(body.answered) : undefined,
+        x: typeof body.x === "number" ? body.x : undefined,
+        y: typeof body.y === "number" ? body.y : undefined,
+        color: body.color !== undefined ? String(body.color) : undefined,
+        votes: typeof body.votes === "number" ? body.votes : undefined,
+      });
       if (!note) return json({ success: false, error: "Note not found" }, 404);
-
-      if (body.text !== undefined) note.text = String(body.text);
-      if (body.name !== undefined)
-        note.name = String(body.name || "匿名").trim() || "匿名";
-      if (body.answered !== undefined) note.answered = Boolean(body.answered);
-      if (typeof body.x === "number") note.x = Math.round(body.x);
-      if (typeof body.y === "number") note.y = Math.round(body.y);
-      if (body.color !== undefined) note.color = String(body.color);
-      if (typeof body.votes === "number") note.votes = body.votes;
-
-      await saveRoom(kv, room, state);
       return json({ success: true, data: note });
     }
 
@@ -156,34 +157,34 @@ export async function onRequest(context: PagesContext): Promise<Response> {
     ) {
       const id = rest[1];
       const body = await readBody(request);
-      const state = await loadRoom(kv, room);
-      const note = state.notes.find((n) => n.id === id);
+      await loadRoom(db, room, kv);
+      const note = await voteNote(
+        db,
+        room,
+        id,
+        body.increment === false ? -1 : 1
+      );
       if (!note) return json({ success: false, error: "Note not found" }, 404);
-      const delta = body.increment === false ? -1 : 1;
-      note.votes = Math.max(0, note.votes + delta);
-      await saveRoom(kv, room, state);
       return json({ success: true, data: note });
     }
 
     if (rest[0] === "note" && rest[1] && rest.length === 2 && method === "DELETE") {
       const id = rest[1];
-      const state = await loadRoom(kv, room);
-      const idx = state.notes.findIndex((n) => n.id === id);
-      if (idx === -1) return json({ success: false, error: "Note not found" }, 404);
-      state.notes.splice(idx, 1);
-      await saveRoom(kv, room, state);
+      await loadRoom(db, room, kv);
+      const ok = await deleteNote(db, room, id);
+      if (!ok) return json({ success: false, error: "Note not found" }, 404);
       return json({ success: true });
     }
 
     if (rest[0] === "history" && rest.length === 1 && method === "GET") {
-      const history = await loadHistory(kv, room);
+      const history = await loadHistory(db, room, kv);
       return json({ success: true, data: history });
     }
 
     if (rest[0] === "history" && rest.length === 1 && method === "POST") {
       const body = await readBody(request);
-      const state = await loadRoom(kv, room);
-      const history = await loadHistory(kv, room);
+      const state = await loadRoom(db, room, kv);
+      const history = await loadHistory(db, room, kv);
       const kind = body.kind === "auto" ? "auto" : "manual";
       const newItem: BoardHistoryItem = {
         id: "hist_" + Math.random().toString(36).substring(2, 11) + "_" + Date.now(),
@@ -195,7 +196,7 @@ export async function onRequest(context: PagesContext): Promise<Response> {
         kind,
       };
       history.unshift(newItem);
-      await saveHistory(kv, room, pruneHistory(history));
+      await saveHistory(db, room, pruneHistory(history));
       return json({ success: true, data: newItem });
     }
 
@@ -206,25 +207,27 @@ export async function onRequest(context: PagesContext): Promise<Response> {
       method === "POST"
     ) {
       const id = rest[1];
-      const history = await loadHistory(kv, room);
+      const history = await loadHistory(db, room, kv);
       const version = history.find((item) => item.id === id);
       if (!version) {
         return json({ success: false, error: "History version not found" }, 404);
       }
-      const state = JSON.parse(JSON.stringify(version.board));
-      await saveRoom(kv, room, state);
+      const state = JSON.parse(JSON.stringify(version.board)) as {
+        title: string;
+        notes: StickyNote[];
+      };
+      await saveRoom(db, room, state);
       return json({ success: true, data: state });
     }
 
     if (rest[0] === "history" && rest[1] && rest.length === 2 && method === "DELETE") {
       const id = rest[1];
-      let history = await loadHistory(kv, room);
-      const before = history.length;
-      history = history.filter((item) => item.id !== id);
-      if (history.length === before) {
+      const history = await loadHistory(db, room, kv);
+      const next = history.filter((item) => item.id !== id);
+      if (next.length === history.length) {
         return json({ success: false, error: "History version not found" }, 404);
       }
-      await saveHistory(kv, room, history);
+      await saveHistory(db, room, next);
       return json({ success: true });
     }
 

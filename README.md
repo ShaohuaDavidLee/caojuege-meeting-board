@@ -38,11 +38,12 @@ npm run dev
 npm run build
 ```
 
-静态资源输出到 `dist/`；Cloudflare Pages Functions 位于 `functions/`，数据落在 KV。
+静态资源输出到 `dist/`；Cloudflare Pages Functions 位于 `functions/`。线上热状态落在 D1（一张便签一行）；KV 只在某间第一次被打开时把旧整板认领过来。
 
 ## 线上地址
 
-- **https://baiban.caojuege.com**
+- **https://baiban.caojuege.com** — 草诀歌入口，首屏落地页，默认 classic
+- **https://baiban.asone.ing** — Faith 白板，裸访问进「Faith 会议室」，默认礼仪皮
 - 备用：https://caojuege-meeting-board.pages.dev
 
 ## 部署（Cloudflare Pages）
@@ -59,10 +60,15 @@ DNS（`caojuege.com` zone）：
 |---|---|---|---|
 | CNAME | `baiban` | `caojuege-meeting-board.pages.dev` | 已代理 |
 
-KV 绑定名：`BOARD_KV`（见 `wrangler.toml`）。
+绑定（见 `wrangler.toml`）：
+
+| 绑定 | 资源 | 用途 |
+|---|---|---|
+| `BOARD_DB` | D1 `caojuege-meeting-board` | 当前白板：按便签写入 |
+| `BOARD_KV` | KV `BOARD_KV` | 旧数据认领，不再当真相源 |
 
 ## 技术栈
 
 - React + Vite + Tailwind
 - 本地：Express + `.data/` JSON
-- 线上：Cloudflare Pages + Functions + KV
+- 线上：Cloudflare Pages + Functions + D1（KV 仅认领旧数据）

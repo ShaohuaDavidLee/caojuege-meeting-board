@@ -39,6 +39,10 @@ const PORT = resolvePort();
 const HOST = resolveHost();
 
 app.use(express.json());
+app.use((req, res, next) => {
+  if (req.path.startsWith("/api/")) res.setHeader("Cache-Control", "no-store");
+  next();
+});
 
 // Path to persist room board files
 const DATA_DIR = path.join(process.cwd(), ".data");

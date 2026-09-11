@@ -12,13 +12,17 @@ async function readJson(res: Response) {
   return res.json();
 }
 
+function apiFetch(url: string, init?: RequestInit) {
+  return fetch(url, { cache: "no-store", ...init });
+}
+
 export async function fetchBoard(room: string) {
-  return readJson(await fetch(boardBase(room)));
+  return readJson(await apiFetch(boardBase(room)));
 }
 
 export async function syncFullBoard(room: string, board: BoardState) {
   return readJson(
-    await fetch(`${boardBase(room)}/sync-full`, {
+    await apiFetch(`${boardBase(room)}/sync-full`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title: board.title, notes: board.notes }),
@@ -28,7 +32,7 @@ export async function syncFullBoard(room: string, board: BoardState) {
 
 export async function updateTitle(room: string, title: string) {
   return readJson(
-    await fetch(`${boardBase(room)}/title`, {
+    await apiFetch(`${boardBase(room)}/title`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title }),
@@ -41,7 +45,7 @@ export async function createNote(
   payload: Partial<StickyNote> & { text: string; name: string }
 ) {
   return readJson(
-    await fetch(`${boardBase(room)}/note`, {
+    await apiFetch(`${boardBase(room)}/note`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -55,7 +59,7 @@ export async function updateNote(
   patch: Partial<StickyNote>
 ) {
   return readJson(
-    await fetch(`${boardBase(room)}/note/${encodeURIComponent(id)}`, {
+    await apiFetch(`${boardBase(room)}/note/${encodeURIComponent(id)}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(patch),
@@ -65,7 +69,7 @@ export async function updateNote(
 
 export async function deleteNote(room: string, id: string) {
   return readJson(
-    await fetch(`${boardBase(room)}/note/${encodeURIComponent(id)}`, {
+    await apiFetch(`${boardBase(room)}/note/${encodeURIComponent(id)}`, {
       method: "DELETE",
     })
   );
@@ -73,7 +77,7 @@ export async function deleteNote(room: string, id: string) {
 
 export async function voteNote(room: string, id: string, increment: boolean) {
   return readJson(
-    await fetch(`${boardBase(room)}/note/${encodeURIComponent(id)}/vote`, {
+    await apiFetch(`${boardBase(room)}/note/${encodeURIComponent(id)}/vote`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ increment }),
@@ -82,7 +86,7 @@ export async function voteNote(room: string, id: string, increment: boolean) {
 }
 
 export async function fetchHistory(room: string) {
-  return readJson(await fetch(`${boardBase(room)}/history`));
+  return readJson(await apiFetch(`${boardBase(room)}/history`));
 }
 
 export async function createHistory(
@@ -90,7 +94,7 @@ export async function createHistory(
   payload: { name: string; creator: string; kind: "auto" | "manual" }
 ) {
   return readJson(
-    await fetch(`${boardBase(room)}/history`, {
+    await apiFetch(`${boardBase(room)}/history`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -100,7 +104,7 @@ export async function createHistory(
 
 export async function restoreHistory(room: string, id: string) {
   return readJson(
-    await fetch(`${boardBase(room)}/history/${encodeURIComponent(id)}/restore`, {
+    await apiFetch(`${boardBase(room)}/history/${encodeURIComponent(id)}/restore`, {
       method: "POST",
     })
   );
@@ -108,7 +112,7 @@ export async function restoreHistory(room: string, id: string) {
 
 export async function deleteHistory(room: string, id: string) {
   return readJson(
-    await fetch(`${boardBase(room)}/history/${encodeURIComponent(id)}`, {
+    await apiFetch(`${boardBase(room)}/history/${encodeURIComponent(id)}`, {
       method: "DELETE",
     })
   );

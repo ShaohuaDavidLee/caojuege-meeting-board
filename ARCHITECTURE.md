@@ -17,10 +17,13 @@
 │   ├── _redirects
 │   └── board-preview.png         # 落地页用的白板截图
 ├── functions/
-│   ├── _lib/board.ts             # KV 读写 + 默认板 + 历史裁剪
+│   ├── _middleware.ts            # 爬虫 OG：按域名 / 会议间换分享卡片
+│   ├── _lib/schema.sql           # D1 表结构（便签一行一条）
+│   ├── _lib/board.ts             # D1 读写 + KV 认领旧板 + 历史裁剪
 │   └── api/[[path]].ts           # 线上 /api/*
 └── src/
     ├── main.tsx
+    ├── brand.ts                  # 草诀歌 / Faith 两套名字，随皮肤走
     ├── App.tsx                   # 路由层：有没有 ?room= 决定进哪一页
     ├── index.css
     ├── types.ts
@@ -34,9 +37,9 @@
     │   ├── boardHelpers.ts       # 名称归一 / 默认态判断 / 网格对齐 / 分享链
     │   └── recentRooms.ts        # 本机去过的会议间
     ├── hooks/
-    │   ├── useTheme.tsx          # 皮肤：classic（默认）/ hard，存本机
+    │   ├── useTheme.tsx          # 皮肤：classic / hard / faith；asone.ing 默认礼仪
     │   ├── useToast.ts           # 轻提示
-    │   ├── useRoute.ts           # 读写 ?room=，旧名归一
+    │   ├── useRoute.ts           # 读写 ?room=；asone.ing 裸访问进 Faith 会议室
     │   ├── useBoardSession.ts    # notes / 标题 / 用户 / 轮询
     │   ├── useNoteActions.ts     # 便签增删改 / 投票 / 对齐
     │   ├── useBoardHistory.ts    # 手动 + 自动归档
@@ -69,9 +72,11 @@
 | 环境 | 前端 | API | 持久化 |
 |---|---|---|---|
 | 本地 `npm run dev` | Vite middleware | Express `server.ts` | `.data/*.json` |
-| 线上 Cloudflare | Pages 静态 `dist/` | Pages Functions | KV `BOARD_KV` |
+| 线上 Cloudflare | Pages 静态 `dist/` | Pages Functions | D1 `BOARD_DB`（热状态）；KV `BOARD_KV`（首次打开时认领旧整板） |
 
 API 路径形状一致，前端无分支。
+
+线上不再把整板当一个 KV value 覆盖。改一张便签只 UPDATE 那一行；同便签后写覆盖（允许这一点误差），不同便签互不影响。客户端仍 1.5 秒轮询一次，D1 读你的写立刻可见。
 
 ## 依赖方向
 
@@ -89,16 +94,27 @@ App ──► useRoute ──► ?room=
              └──► api/boardApi ──► /api/board/:room...
 ```
 
-浏览器 → `/api/board/:room...`
+浏览器 → `/api/board/:room...`（`Cache-Control: no-store`，前端 `cache: 'no-store'`）
 - 本地 → Express → `.data/`
-- 线上 → Functions → `BOARD_KV`
+- 线上 → Functions → D1 便签行；空房才回头读 KV 认领
+
+## 白标域名
+
+同一份前端，认主机名不认参数：
+
+| 入口 | 裸访问 | 默认皮肤 |
+|---|---|---|
+| `baiban.asone.ing` | 直接进「Faith 会议室」 | 礼仪（faith） |
+| `baiban.caojuege.com` | 落地页 | 现在（classic） |
+
+主题仍可手动切换，记在本机，不进数据库。
 
 ## 会议间与归档
 
 - 主会议间 `草诀歌 AI Labs`（`DEFAULT_ROOM`）：社区自己的场子，链接长期有效。
 - 需要单独一场时可在落地页另开一间：名称即地址，便签 / 投票 / 历史按间隔离。
 - 名称归一：`LEGACY_ROOM_ALIASES` 里的旧写法进来即换成正名，老链接不失效。
-- 主会议间迁移：`loadRoom` 发现主键还空、旧键有内容时，把便签与历史整体认领过来（KV 与本地 `.data/` 两边都做）。
+- 主会议间迁移：D1 还空时，`loadRoom` 从 KV（含旧房名）把便签与历史认领进 D1；本地 Express 仍从 `.data/` 认领。
 - 历史：有本地写入后每 15 分钟自动存档；手动打包仍保留；每间最多 20 份。
 
 ## 皮肤
@@ -120,6 +136,7 @@ App ──► useRoute ──► ?room=
 
 ## 变更日志
 
+- 2026-09-11：线上热状态从 KV 整板覆盖改到 D1 按便签写入。KV 最终一致会让轮询空转约一分钟，两人改不同便签还会互相盖掉；D1 后轮询才能真的秒级看见。同便签后写覆盖仍可接受。白标分流不动：`asone.ing` 默认 Faith / 礼仪，草诀歌入口默认 classic。
 - 2026-09-01：新增「硬派」皮肤，可在落地页与白板顶栏切换，默认仍是现有风格。`index.css` 抽出皮肤层 token（`--bw` / `--sh` / `--c-canvas` / `--c-accent` / `--font-util`），classic 取值等于现状、渲染不变；筛选按钮的配色从 JSX 收进 `.seg` 语义类。白板画布底色与落地页分开——原话「会议室背景太绿了」。
 
 - 2026-08-25：首屏改左文右图，白板截图进 hero，去掉「白板长什么样？」一节与「草」水印；修掉全仓 38 处以 `--fs-` 变量做字号的 arbitrary value 写法——Tailwind 把它当颜色处理，既没设上字号又把文字色重置成继承色，深色按钮上文字变近黑。

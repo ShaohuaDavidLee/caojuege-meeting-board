@@ -3,6 +3,14 @@ name = "caojuege-meeting-board"
 compatibility_date = "2025-03-01"
 pages_build_output_dir = "dist"
 
+# 热状态：按便签写入，读你的写立刻可见
+[[d1_databases]]
+binding = "BOARD_DB"
+database_name = "caojuege-meeting-board"
+database_id = "d779961d-809b-4ffe-b14d-4239c99b24ab"
+preview_database_id = "d779961d-809b-4ffe-b14d-4239c99b24ab"
+
+# 旧整板：第一次打开某间时认领进 D1，之后不再当真相源
 [[kv_namespaces]]
 binding = "BOARD_KV"
 id = "f94a8c57450b484a9b20f6a786a6203d"
