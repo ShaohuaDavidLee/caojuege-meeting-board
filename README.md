@@ -1,10 +1,29 @@
-# 草诀歌 AI Labs 会议白板
+# 兰亭白板
 
 以产品为笔，和世界对话。
 
-实时协同的会议提问场：落便签、投票、标记已答、分享链接、历史快照（有改动时每 15 分钟自动存档）。
+实时协同的会议白板：落便签、投票、标记已答、分享链接、历史快照（有改动时每 15 分钟自动存档）。
 
 视觉遵循仓库内 [`DESIGN.md`](./DESIGN.md)（[`设计规范.md`](./设计规范.md) 留作历史记录）。
+
+## 名字
+
+| 名字 | 是什么 | 改不改得动 |
+|---|---|---|
+| **兰亭白板**（Lanting Board） | 产品名 | 改要同步 `src/brand.ts` |
+| **草诀歌 AI Labs** | 出品方 | 同上 |
+| `草诀歌 AI Labs` | 主会议间的房名 | **不能改**，见下 |
+
+永和九年，四十二个人坐在曲水边，各写各的，散场合成一册《兰亭集》——多人同场、各自发声、散会带走一份合集，这正是这块板在做的事。草诀歌本身是一部草书歌诀，根在书法；兰亭是书法史的圣地，同源。
+
+名字里留着「白板」是一次明确的取舍：「兰亭」两个字要讲一段典故才立得住，「白板」两个字让第一次看到的人零解释就知道这是什么。代价是这个品类词并不精确——这里没有自由画布，有的是提问、投票、标记已答，和一份能带走的清单。介绍时用「开一个链接，所有人一起写」把差异补上，别让人进来先找画笔。
+
+「兰亭白板」是场地，「草诀歌 AI Labs」是在里面开会的那群人——所以产品改名时，主会议间的房名没有跟着改，而且不该跟着改。
+
+两个数据陷阱，改名前先看：
+
+- `DEFAULT_ROOM`（`src/constants.ts`、`server.ts`、`functions/_lib/board.ts`、`functions/_middleware.ts` 各一份）是 D1 的数据键，便签按房名落行。改这个字符串等于把现存便签全丢了。
+- `LEGACY_TITLES`（`src/constants.ts`）：`isDefaultBoardState()` 靠标题判断一块板还没被人动过。每改一次 `DEFAULT_BOARD_TITLE`，旧值都必须补进 `LEGACY_TITLES`，否则线上所有还挂着旧标题的板会被当成「已改动」。
 
 ## 两套皮肤
 
@@ -14,7 +33,7 @@
 
 | 地址 | 是什么 |
 |---|---|
-| `/` | 落地页。讲清白板是什么，同时是会议间入口 |
+| `/` | 落地页。讲清兰亭白板是什么，同时是会议间入口 |
 | `/?room=<会议间名称>` | 那一间的白板 |
 
 ## 会议间
@@ -43,7 +62,9 @@ npm run build
 ## 线上地址
 
 - **https://baiban.caojuege.com** — 草诀歌入口，首屏落地页，默认 classic
-- **https://baiban.asone.ing** — Faith 白板，裸访问进「Faith 会议室」，默认礼仪皮
+  - 改名后建议加 `lanting.caojuege.com` 指向同一个 Pages 项目；`baiban.*` 一直留着不撤。
+    老链接不失效是这个仓库一贯的做法（见会议间旧名归一），域名也照办。DNS 见下表。
+- **https://baiban.asone.ing** — Faith 白标，裸访问进「Faith 会议室」，默认礼仪皮
 - 备用：https://caojuege-meeting-board.pages.dev
 
 ## 部署（Cloudflare Pages）
@@ -59,6 +80,7 @@ DNS（`caojuege.com` zone）：
 | 类型 | 名称 | 目标 | 代理 |
 |---|---|---|---|
 | CNAME | `baiban` | `caojuege-meeting-board.pages.dev` | 已代理 |
+| CNAME | `lanting` | `caojuege-meeting-board.pages.dev` | 待加 · 改名后的新入口 |
 
 绑定（见 `wrangler.toml`）：
 

@@ -1,12 +1,26 @@
 /**
- * 草诀歌 AI Labs 会议白板 —— 常量
+ * 兰亭白板 —— 常量
  */
 
-export const PRODUCT_NAME = "草诀歌 AI Labs 会议白板";
+export const PRODUCT_NAME = "兰亭白板";
 
-export const BRAND_NAME = "草诀歌 AI Labs";
+/**
+ * 产品名。名字里留着「白板」是一次取舍：兰亭两个字要讲典故才立得住，
+ * 白板两个字让第一次看到的人零解释就知道这是什么。代价是品类词不精确
+ * ——这里没有自由画布——介绍时用「开一个链接，所有人一起写」补上。
+ */
+export const BRAND_NAME = "兰亭白板";
 
-/** 主会议间：草诀歌 AI Labs 自己的场子。需要单独一场时可另开一间 */
+/** 出品方。兰亭是产品，草诀歌是出品方 —— 两者不是一回事 */
+export const VENDOR_NAME = "草诀歌 AI Labs";
+
+/**
+ * 主会议间：草诀歌 AI Labs 自己的场子。需要单独一场时可另开一间。
+ *
+ * 这同时是数据键 —— D1 按房名存便签，改这个字符串等于把现存便签全丢了。
+ * 产品改名叫兰亭白板时它没跟着改，而且不该跟着改：兰亭白板是场地，
+ * 草诀歌 AI Labs 是在里面开会的那群人。
+ */
 export const DEFAULT_ROOM = "草诀歌 AI Labs";
 
 /** 旧名 / 少空格写法：进来后归一到 DEFAULT_ROOM，老链接不失效 */
@@ -38,6 +52,11 @@ export const DEFAULT_BOARD_TITLE = "草诀歌 AI Labs 会议白板";
 
 export const LEGACY_DEFAULT_TITLE = "协作会议问题看板 🥳";
 
+/**
+ * 旧的默认标题。isDefaultBoardState() 靠标题判断一块板是不是还没人动过，
+ * 所以每次改 DEFAULT_BOARD_TITLE，旧值都必须落到这里 ——
+ * 否则线上所有还挂着旧标题的板会被当成「已改动」。
+ */
 export const LEGACY_TITLES = [
   LEGACY_DEFAULT_TITLE,
   "协作会议问题看板",

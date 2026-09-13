@@ -68,7 +68,7 @@ export function BoardNav({
         </button>
 
         <div className="flex flex-col min-w-0 flex-1">
-          <p className="eyebrow">Board · 白板</p>
+          <p className="eyebrow">Lanting · 兰亭白板</p>
           {isEditingTitle ? (
             <div className="flex items-center gap-1 mt-0.5">
               <input
@@ -160,7 +160,7 @@ export function BoardNav({
           className={`btn h-full px-2 sm:px-3 text-[11px] border-0 border-r border-[var(--c-border-soft)] ${
             showSidebar ? "btn-primary" : "btn-ghost"
           }`}
-          title={showSidebar ? "隐藏说明" : "白板说明"}
+          title={showSidebar ? "隐藏说明" : "使用说明"}
         >
           <Layers className="w-3.5 h-3.5" />
         </button>

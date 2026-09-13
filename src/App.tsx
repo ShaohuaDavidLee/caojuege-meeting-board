@@ -2,8 +2,8 @@
  * @license
  * SPDX-License-Identifier: Apache-2.0
  *
- * 草诀歌 AI Labs 会议白板 —— 路由层
- * 只有两页：无 ?room= 进落地页，有 ?room= 进那一间白板
+ * 兰亭白板 —— 路由层
+ * 只有两页：无 ?room= 进落地页，有 ?room= 进那一间
  */
 
 import { useEffect } from "react";
