@@ -1,4 +1,4 @@
-# 草诀歌 AI Labs 会议白板 —— Cloudflare Pages
+# 兰亭白板 —— Cloudflare Pages
 name = "caojuege-meeting-board"
 compatibility_date = "2025-03-01"
 pages_build_output_dir = "dist"

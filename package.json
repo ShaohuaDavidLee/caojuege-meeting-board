@@ -3,7 +3,7 @@
   "private": true,
   "version": "1.0.0",
   "type": "module",
-  "description": "草诀歌 AI Labs 会议白板",
+  "description": "兰亭白板（草诀歌 AI Labs 出品）",
   "scripts": {
     "dev": "tsx server.ts",
     "build": "vite build",

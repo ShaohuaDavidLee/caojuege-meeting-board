@@ -1,9 +1,9 @@
 /**
- * 落地页 —— 会议白板的正门
+ * 落地页 —— 兰亭白板的正门
  * 严格对齐《设计规范.md》：灰度 / 发丝线 / 绝对平面 / 衬线层级 / 英文 eyebrow + 中文反问句
  *
  * 品牌与首屏文案随皮肤走（见 src/brand.ts）：
- * 「礼仪」皮是一套白标——借白板开聚会的人，看到的只有 Faith 会议室。
+ * 「礼仪」皮是一套白标——借兰亭白板开聚会的人，看到的只有 Faith 会议室。
  */
 
 import { useMemo, useState, type FormEvent } from "react";
@@ -104,16 +104,22 @@ export default function Landing({
             {isFaith ? (
               <>
                 <span className="font-serif text-[19px] sm:text-[21px] font-semibold tracking-[0.04em]">
-                  Faith
+                  {brand.brandName}
                 </span>
-                <span className="eyebrow">会议室</span>
+                {/* 窄屏收起出品方：四字产品名 + 皮肤开关 + 进门按钮已经顶满一行 */}
+                <span className="eyebrow max-[480px]:hidden">
+                  {brand.vendorName}
+                </span>
               </>
             ) : (
               <>
                 <span className="font-serif text-[17px] sm:text-[19px] tracking-[0.14em]">
-                  草诀歌
+                  {brand.brandName}
                 </span>
-                <span className="eyebrow">AI Labs</span>
+                {/* 窄屏收起出品方：四字产品名 + 皮肤开关 + 进门按钮已经顶满一行 */}
+                <span className="eyebrow max-[480px]:hidden">
+                  {brand.vendorName}
+                </span>
               </>
             )}
           </a>
@@ -140,7 +146,7 @@ export default function Landing({
               <p className="eyebrow rise">
                 {isFaith
                   ? "A Meeting Board · 两三个人，一间会议室"
-                  : "Caojuege AI Labs · Meeting Board"}
+                  : "Lanting Board · 兰亭白板"}
               </p>
 
               {isFaith ? (
@@ -167,12 +173,12 @@ export default function Landing({
                 <>
                   {/* 断成三行：情绪落点「思想碰撞」独占一行，窄屏也不会掉孤字 */}
                   <h1 className="display-xl mt-6 rise rise-d1">
-                    在白板上共享<br />自由交流和<br /><em className="font-serif italic">思想碰撞</em>
+                    让会议里的<br />每一个问题<br /><em className="font-serif italic">都被看见</em>
                   </h1>
 
+                  {/* 整句不折行：JSX 会把汉字之间的换行折成一个空格，肉眼可见 */}
                   <p className="lead mt-8 rise rise-d2">
-                    一场会议真正的产出，是那些被说出口的问题。草诀歌 AI Labs
-                    的会议白板把提问、投票与解答放在同一张纸面上——开一个链接，所有人一起写。
+                    一场会议真正的产出，是那些被说出口的问题。兰亭白板把提问、投票与解答放在同一张纸面上——开一个链接，所有人一起写，散场时带走一份问题清单。
                   </p>
                 </>
               )}
@@ -213,12 +219,12 @@ export default function Landing({
         </div>
       </section>
 
-      {/* ---------- 白板怎么用？ ---------- */}
+      {/* ---------- 兰亭白板怎么用？ ---------- */}
       <section className="section border-b border-[var(--c-border-soft)]">
         <div className="wrap">
           <SectionHead
             eyebrow="How It Works"
-            title="白板"
+            title={brand.brandName}
             emphasis="怎么用？"
           />
 
@@ -380,9 +386,7 @@ export default function Landing({
             <div className="flex flex-col gap-2">
               {isFaith ? (
                 <>
-                  <p className="on-dark-soft">
-                    {brand.brandName} —— 两三个人，一间会议室
-                  </p>
+                  <p className="on-dark-soft">{brand.vendorLine}</p>
                   <p className="on-dark-soft font-serif italic">
                     {FAITH_VERSE.short}
                   </p>
@@ -390,8 +394,9 @@ export default function Landing({
               ) : (
                 <>
                   <p className="on-dark-soft">
-                    {brand.brandName} —— 面向非技术创作者的中文 vibe coding 社区
+                    {brand.brandName} · {brand.vendorName}
                   </p>
+                  <p className="on-dark-soft">{brand.vendorLine}</p>
                   <p className="on-dark-soft font-serif">
                     灵感来自丁羽翔，感谢她的无私建议
                   </p>

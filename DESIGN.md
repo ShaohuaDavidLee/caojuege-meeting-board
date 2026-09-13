@@ -1,12 +1,12 @@
 ---
-# 草诀歌 AI Labs 会议白板 · DESIGN.md
+# 兰亭白板 · DESIGN.md
 # 规范：Google Labs design.md（Apache-2.0）· 八节固定顺序
 #
 # 这份文档只描述一件事：在现有风格之上，新增一套名为「硬派」的皮肤。
 # 现有风格（classic）是基线，不改。凡是没有 hard- 前缀的 token 都是
 # 从 src/index.css 抄过来的现状记录，不是提案——改它们要另开一次决策。
 
-name: 草诀歌 AI Labs 会议白板
+name: 兰亭白板
 version: 0.2.0
 status: shipped               # 已实现并上线。变体「贴着做」= 本文档的 hard 皮肤
 source_ref: https://www.stylekit.top/styles/neo-brutalist/showcase

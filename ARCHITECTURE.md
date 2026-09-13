@@ -1,11 +1,11 @@
-# 草诀歌 AI Labs 会议白板 · 架构
+# 兰亭白板 · 架构
 
 > 以产品为笔，和世界对话。视觉真相源：`DESIGN.md`（`设计规范.md` 为历史记录）。
 
 ## 树
 
 ```
-草诀歌会议问题白板/
+兰亭白板/
 ├── DESIGN.md                     # 设计语言 + 皮肤层（classic / hard）
 ├── 设计规范.md                    # 历史记录
 ├── ARCHITECTURE.md
@@ -23,7 +23,7 @@
 │   └── api/[[path]].ts           # 线上 /api/*
 └── src/
     ├── main.tsx
-    ├── brand.ts                  # 草诀歌 / Faith 两套名字，随皮肤走
+    ├── brand.ts                  # 兰亭白板 / Faith 两套名字，随皮肤走
     ├── App.tsx                   # 路由层：有没有 ?room= 决定进哪一页
     ├── index.css
     ├── types.ts
@@ -136,6 +136,7 @@ App ──► useRoute ──► ?room=
 
 ## 变更日志
 
+- 2026-09-13：定名「兰亭白板」（Lanting Board）。产品 = 兰亭白板，出品方 = 草诀歌 AI Labs，主会议间仍叫「草诀歌 AI Labs」——兰亭白板是场地，草诀歌是在里面开会的那群人，三个名字各有各的位置。名字里留着「白板」是取舍：兰亭要讲典故才立得住，白板零解释；代价是品类词不精确，靠文案补。`brand.ts` 因此多了 `vendorName` / `vendorLine`：页脚那句「面向非技术创作者的中文 vibe coding 社区」说的是出品方而不是产品，之前借 `brandName` 用会串味；导航左上角的名字也收进 `brand.ts`。主会议间房名、`DEFAULT_BOARD_TITLE`、`THEME_STORAGE_KEY` 等键一律没动——房名是 D1 的数据键，改了现存便签全丢；标题若要改，旧值必须补进 `LEGACY_TITLES`，否则 `isDefaultBoardState()` 会把线上挂着旧标题的板当成「已改动」。域名 `baiban.*` 不撤，`lanting.*` 待加。
 - 2026-09-11：线上热状态从 KV 整板覆盖改到 D1 按便签写入。KV 最终一致会让轮询空转约一分钟，两人改不同便签还会互相盖掉；D1 后轮询才能真的秒级看见。同便签后写覆盖仍可接受。白标分流不动：`asone.ing` 默认 Faith / 礼仪，草诀歌入口默认 classic。
 - 2026-09-01：新增「硬派」皮肤，可在落地页与白板顶栏切换，默认仍是现有风格。`index.css` 抽出皮肤层 token（`--bw` / `--sh` / `--c-canvas` / `--c-accent` / `--font-util`），classic 取值等于现状、渲染不变；筛选按钮的配色从 JSX 收进 `.seg` 语义类。白板画布底色与落地页分开——原话「会议室背景太绿了」。
 

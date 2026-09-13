@@ -1,5 +1,5 @@
 /**
- * 白板浮层 —— 署名 / 提问 / 删除 / 历史版本
+ * 兰亭白板浮层 —— 署名 / 提问 / 删除 / 历史版本
  * 视觉：直角、发丝线、深色主按钮，无阴影无圆角
  */
 
@@ -63,7 +63,7 @@ export function NameModal({
             </button>
           ) : null}
           <button type="button" onClick={onSave} className="btn btn-primary flex-1 h-11 border-0 group">
-            进入白板
+            进入会议间
             <ArrowRight className="w-3.5 h-3.5 arrow-nudge" />
           </button>
         </div>

@@ -1,4 +1,4 @@
--- 会议白板：按便签落行。同便签后写覆盖；不同便签互不影响。
+-- 兰亭白板：按便签落行。同便签后写覆盖；不同便签互不影响。
 CREATE TABLE IF NOT EXISTS boards (
   room TEXT PRIMARY KEY,
   title TEXT NOT NULL
