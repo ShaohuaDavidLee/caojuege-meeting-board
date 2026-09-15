@@ -28,7 +28,7 @@ export function BoardSidebar({
           <div>
             <p className="eyebrow">Guide · 说明</p>
             <h2 className="font-serif text-[22px] tracking-[-0.02em] mt-1 leading-tight">
-              兰亭白板如何<em className="font-serif italic">工作</em>？
+              会议白板如何<em className="font-serif italic">工作</em>？
             </h2>
           </div>
           <button type="button" onClick={onClose} className="btn btn-icon" title="收起">
