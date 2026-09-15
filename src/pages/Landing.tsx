@@ -404,7 +404,7 @@ export default function Landing({
               )}
             </div>
             <p className="on-dark-faint tracking-[var(--ls-widest)] uppercase">
-              {isFaith ? "Faith Board · A Meeting Board" : "baiban.caojuege.com"}
+              {isFaith ? "Faith Board · A Meeting Board" : "lanting.caojuege.com"}
             </p>
           </div>
         </div>
