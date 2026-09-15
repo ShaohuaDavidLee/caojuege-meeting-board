@@ -68,7 +68,7 @@ export function BoardNav({
         </button>
 
         <div className="flex flex-col min-w-0 flex-1">
-          <p className="eyebrow">Lanting · 兰亭白板</p>
+          {brand.navEyebrow ? <p className="eyebrow">{brand.navEyebrow}</p> : null}
           {isEditingTitle ? (
             <div className="flex items-center gap-1 mt-0.5">
               <input

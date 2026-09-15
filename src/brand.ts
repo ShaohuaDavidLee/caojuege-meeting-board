@@ -22,6 +22,11 @@ export interface Brand {
   productName: string;
   /** 导航左上角的产品名 */
   brandName: string;
+  /**
+   * 顶栏板名上方那行小字。白标皮下留空：借场地开自己聚会的人，
+   * 屏幕上不该出现场地的牌子，顶栏左上角的身份由旁边的 Room 芯片交代。
+   */
+  navEyebrow: string;
   /** 产品名后面跟的小字：谁出品的 */
   vendorName: string;
   /** 页脚那句「出品方是做什么的」 */
@@ -39,6 +44,7 @@ export interface Brand {
 export const CLASSIC_BRAND: Brand = {
   productName: "兰亭白板",
   brandName: "兰亭白板",
+  navEyebrow: "Lanting · 兰亭白板",
   vendorName: "草诀歌出品",
   vendorLine: "草诀歌 AI Labs —— 面向非技术创作者的中文 vibe coding 社区",
   defaultRoom: "草诀歌 AI Labs",
@@ -50,6 +56,7 @@ export const CLASSIC_BRAND: Brand = {
 export const FAITH_BRAND: Brand = {
   productName: "Faith 会议室 · 会议白板",
   brandName: "Faith",
+  navEyebrow: "",
   vendorName: "会议室",
   vendorLine: "Faith 会议室 —— 两三个人，一间会议室",
   defaultRoom: "Faith 会议室",
