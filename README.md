@@ -61,9 +61,9 @@ npm run build
 
 ## 线上地址
 
-- **https://baiban.caojuege.com** — 草诀歌入口，首屏落地页，默认 classic
-  - 改名后建议加 `lanting.caojuege.com` 指向同一个 Pages 项目；`baiban.*` 一直留着不撤。
-    老链接不失效是这个仓库一贯的做法（见会议间旧名归一），域名也照办。DNS 见下表。
+- **https://lanting.caojuege.com** — 兰亭白板正门，首屏落地页，默认 classic
+- **https://baiban.caojuege.com** — 改名前的旧入口，指向同一个 Pages 项目，**长期保留不撤**。
+  老链接不失效是这个仓库一贯的做法（见会议间旧名归一），域名也照办。
 - **https://baiban.asone.ing** — Faith 白标，裸访问进「Faith 会议室」，默认礼仪皮
 - 备用：https://caojuege-meeting-board.pages.dev
 
@@ -79,8 +79,8 @@ DNS（`caojuege.com` zone）：
 
 | 类型 | 名称 | 目标 | 代理 |
 |---|---|---|---|
-| CNAME | `baiban` | `caojuege-meeting-board.pages.dev` | 已代理 |
-| CNAME | `lanting` | `caojuege-meeting-board.pages.dev` | 待加 · 改名后的新入口 |
+| CNAME | `baiban` | `caojuege-meeting-board.pages.dev` | 已代理 · 旧入口，保留 |
+| CNAME | `lanting` | `caojuege-meeting-board.pages.dev` | 已代理 · 正门 |
 
 绑定（见 `wrangler.toml`）：
 
