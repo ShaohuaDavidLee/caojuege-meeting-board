@@ -43,7 +43,8 @@
     │   ├── useBoardSession.ts    # notes / 标题 / 用户 / 轮询
     │   ├── useNoteActions.ts     # 便签增删改 / 投票 / 对齐
     │   ├── useBoardHistory.ts    # 手动 + 自动归档
-    │   └── useCanvasGestures.ts  # 平移 / 缩放 / 拖拽
+    │   ├── useCanvasGestures.ts  # 平移 / 缩放 / 拖拽
+    │   └── useNarrowScreen.ts    # ≤767px 切手机竖排
     └── components/
         ├── ThemeToggle.tsx       # 皮肤开关（落地页顶栏 + 白板顶栏共用）
         ├── Modals.tsx            # 署名 / 提问 / 删除 / 历史浮层
@@ -51,6 +52,7 @@
             ├── Toast.tsx
             ├── BoardNav.tsx
             ├── BoardCanvas.tsx
+            ├── BoardNoteStack.tsx    # 手机：同一张便签上下排
             ├── StickyNoteCard.tsx
             └── BoardSidebar.tsx
 ```
@@ -66,6 +68,18 @@
 
 `useRoute` 负责读写这个参数：进来先把旧名归一成正名（`共创会` / `草诀歌AI Labs` → `草诀歌 AI Labs`），
 再 pushState 切页，`App` 用 `key={room}` 让换间时整块白板重挂载。
+
+## 会议室怎么呈现
+
+同一份 `notes`，两种落点：
+
+| | 桌面（>767px） | 手机（≤767px） |
+|---|---|---|
+| 形状 | 无限画布，便签用 x/y | 便签全宽竖排，原生滚动 |
+| 坐标 | 拖拽会写回 D1 | 不改 x/y；新贴落在现有便签下方，桌面仍看得到 |
+| 顶栏 | 房间 / 筛选 / 工具一条排开 | 返回 + 标题 + 更多 + 分享；筛选自己占一行 |
+
+手机不再把桌面地图缩小。投票、解答、编辑、提问还是那张便签。
 
 ## 双运行时
 
@@ -136,6 +150,7 @@ App ──► useRoute ──► ?room=
 
 ## 变更日志
 
+- 2026-09-16：手机会议室改成便利贴竖排。落地页本来就是文档所以窄屏能用；会议室是无限画布，再叠 CSS 只会让便签互相打架。≤767px 换 `BoardNoteStack`：同一张便签、筛选和提问占自己的行，不改 x/y。桌面画布不动。品牌与 asone.ing 白标不动。
 - 2026-09-13：定名「兰亭白板」（Lanting Board）。产品 = 兰亭白板，出品方 = 草诀歌 AI Labs，主会议间仍叫「草诀歌 AI Labs」——兰亭白板是场地，草诀歌是在里面开会的那群人，三个名字各有各的位置。名字里留着「白板」是取舍：兰亭要讲典故才立得住，白板零解释；代价是品类词不精确，靠文案补。`brand.ts` 因此多了 `vendorName` / `vendorLine`：页脚那句「面向非技术创作者的中文 vibe coding 社区」说的是出品方而不是产品，之前借 `brandName` 用会串味；导航左上角的名字也收进 `brand.ts`。主会议间房名、`DEFAULT_BOARD_TITLE`、`THEME_STORAGE_KEY` 等键一律没动——房名是 D1 的数据键，改了现存便签全丢；标题若要改，旧值必须补进 `LEGACY_TITLES`，否则 `isDefaultBoardState()` 会把线上挂着旧标题的板当成「已改动」。域名 `baiban.*` 不撤，`lanting.*` 待加。
 - 2026-09-11：线上热状态从 KV 整板覆盖改到 D1 按便签写入。KV 最终一致会让轮询空转约一分钟，两人改不同便签还会互相盖掉；D1 后轮询才能真的秒级看见。同便签后写覆盖仍可接受。白标分流不动：`asone.ing` 默认 Faith / 礼仪，草诀歌入口默认 classic。
 - 2026-09-01：新增「硬派」皮肤，可在落地页与白板顶栏切换，默认仍是现有风格。`index.css` 抽出皮肤层 token（`--bw` / `--sh` / `--c-canvas` / `--c-accent` / `--font-util`），classic 取值等于现状、渲染不变；筛选按钮的配色从 JSX 收进 `.seg` 语义类。白板画布底色与落地页分开——原话「会议室背景太绿了」。

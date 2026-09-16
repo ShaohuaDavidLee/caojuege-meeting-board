@@ -24,8 +24,9 @@ export interface StickyNoteCardProps {
   activeMenuNoteId: string | null;
   setActiveMenuNoteId: (id: string | null) => void;
   setDeleteConfirmNoteId: (id: string | null) => void;
-  onMouseDown: (e: MouseEvent<HTMLDivElement>, note: StickyNote) => void;
-  onTouchStart: (e: TouchEvent<HTMLDivElement>, note: StickyNote) => void;
+  layout?: "canvas" | "stack";
+  onMouseDown?: (e: MouseEvent<HTMLDivElement>, note: StickyNote) => void;
+  onTouchStart?: (e: TouchEvent<HTMLDivElement>, note: StickyNote) => void;
   onToggleAnswered: (note: StickyNote) => void;
   onStartEditing: (note: StickyNote) => void;
   onSaveText: (id: string) => void;
@@ -44,6 +45,7 @@ export function StickyNoteCard({
   activeMenuNoteId,
   setActiveMenuNoteId,
   setDeleteConfirmNoteId,
+  layout = "canvas",
   onMouseDown,
   onTouchStart,
   onToggleAnswered,
@@ -52,20 +54,25 @@ export function StickyNoteCard({
   onChangeColor,
   onUpvote,
 }: StickyNoteCardProps) {
+  const stacked = layout === "stack";
+  const rest = stacked
+    ? "opacity 0.3s ease, border-color 0.3s ease"
+    : "left 0.4s cubic-bezier(0.16, 1, 0.3, 1), top 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, border-color 0.3s ease";
+
   return (
     <div
-      onMouseDown={(e) => onMouseDown(e, note)}
-      onTouchStart={(e) => onTouchStart(e, note)}
-      className={`absolute sticky-note w-[280px] min-h-[168px] p-0 flex flex-col cursor-move ${
-        note.answered ? "is-answered" : ""
-      } ${isBeingDragged ? "is-dragging" : ""}`}
+      onMouseDown={onMouseDown ? (e) => onMouseDown(e, note) : undefined}
+      onTouchStart={onTouchStart ? (e) => onTouchStart(e, note) : undefined}
+      className={`sticky-note p-0 flex flex-col ${
+        stacked
+          ? "relative w-full shrink-0"
+          : "absolute w-[280px] min-h-[168px] cursor-move"
+      } ${note.answered ? "is-answered" : ""} ${isBeingDragged ? "is-dragging" : ""}`}
       style={{
-        left: `${note.x}px`,
-        top: `${note.y}px`,
+        left: stacked ? undefined : `${note.x}px`,
+        top: stacked ? undefined : `${note.y}px`,
         backgroundColor: note.color || NOTE_SURFACE,
-        transition: isBeingDragged
-          ? "none"
-          : "left 0.4s cubic-bezier(0.16, 1, 0.3, 1), top 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, border-color 0.3s ease",
+        transition: isBeingDragged ? "none" : rest,
       }}
     >
       <div className="flex items-center justify-between px-3.5 py-2.5 border-b border-[var(--c-border-soft)]">

@@ -9,6 +9,8 @@ import { useBoardSession } from "../hooks/useBoardSession";
 import { useNoteActions } from "../hooks/useNoteActions";
 import { useBoardHistory } from "../hooks/useBoardHistory";
 import { useCanvasGestures } from "../hooks/useCanvasGestures";
+import { useNarrowScreen } from "../hooks/useNarrowScreen";
+import { nextNotePoint } from "../utils/boardHelpers";
 import { Toast } from "../components/board/Toast";
 import { BoardNav } from "../components/board/BoardNav";
 import { BoardCanvas } from "../components/board/BoardCanvas";
@@ -41,6 +43,7 @@ export default function Board({
     showToast,
   });
   const [showSidebar, setShowSidebar] = useState(false);
+  const stacked = useNarrowScreen();
 
   const history = useBoardHistory({
     room: board.room,
@@ -104,8 +107,11 @@ export default function Board({
           setFilterType={board.setFilterType}
           newNoteColor={noteActions.newNoteColor}
           setNewNoteColor={noteActions.setNewNoteColor}
+          stacked={stacked}
           onOpenAdd={() => {
-            noteActions.setNoteCreationCoords(null);
+            noteActions.setNoteCreationCoords(
+              stacked ? nextNotePoint(board.notes) : null
+            );
             noteActions.setShowAddModal(true);
           }}
           onOpenAddDefault={() => {
@@ -140,6 +146,7 @@ export default function Board({
             notesCount={board.notes.length}
             unansweredCount={board.unansweredCount}
             maxVotes={board.maxVotes}
+            stacked={stacked}
             onClose={() => setShowSidebar(false)}
           />
         )}

@@ -8,11 +8,13 @@ export function BoardSidebar({
   notesCount,
   unansweredCount,
   maxVotes,
+  stacked = false,
   onClose,
 }: {
   notesCount: number;
   unansweredCount: number;
   maxVotes: number;
+  stacked?: boolean;
   onClose: () => void;
 }) {
   return (
@@ -59,12 +61,20 @@ export function BoardSidebar({
         </div>
 
         <div className="px-6 py-5 flex-1 text-[length:var(--fs-xs)] text-[var(--c-muted)] space-y-3">
-          {[
-            "点左上角「提问」：新建便签",
-            "单指拖空白处：平移画布",
-            "点铅笔图标：编辑提问",
-            "「更多」里可改色或删除",
-          ].map((tip, i) => (
+          {(stacked
+            ? [
+                "点底部「提问」：新建便签",
+                "上下滑动：浏览全部问题",
+                "点铅笔图标：编辑提问",
+                "「更多」里可改色或删除",
+              ]
+            : [
+                "点左上角「提问」：新建便签",
+                "单指拖空白处：平移画布",
+                "点铅笔图标：编辑提问",
+                "「更多」里可改色或删除",
+              ]
+          ).map((tip, i) => (
             <div key={tip} className="flex gap-3">
               <span className="font-serif text-[var(--c-muted-alt)] shrink-0">
                 {String(i + 1).padStart(2, "0")}

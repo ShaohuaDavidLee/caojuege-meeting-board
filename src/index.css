@@ -519,21 +519,15 @@ body {
 
   .nav-bar {
     height: auto !important;
-    min-height: 64px;
-    padding-top: max(10px, env(safe-area-inset-top));
-    padding-bottom: 10px;
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  .sticky-note {
-    width: min(280px, 78vw) !important;
+    min-height: 56px;
+    padding-top: max(8px, env(safe-area-inset-top));
+    padding-bottom: 8px;
+    flex-wrap: nowrap;
+    gap: 8px;
   }
 
   .canvas-watermark {
-    font-size: 96px;
-    right: -8%;
-    bottom: 18%;
+    display: none;
   }
 
   .modal-scrim {

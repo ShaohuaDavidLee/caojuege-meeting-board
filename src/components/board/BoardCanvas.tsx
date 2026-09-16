@@ -14,12 +14,7 @@ import type { StickyNote } from "../../types";
 import { COLOR_PALETTE } from "../../constants";
 import type { NoteFilter } from "../../hooks/useBoardSession";
 import { StickyNoteCard } from "./StickyNoteCard";
-
-const FILTERS = [
-  ["all", "全部"],
-  ["unanswered", "未答"],
-  ["answered", "已答"],
-] as const;
+import { BoardNoteStack } from "./BoardNoteStack";
 
 export interface BoardCanvasProps {
   loading: boolean;
@@ -57,6 +52,7 @@ export interface BoardCanvasProps {
   onSaveText: (id: string) => void;
   onChangeColor: (id: string, color: string) => void;
   onUpvote: (id: string) => void;
+  stacked?: boolean;
 }
 
 export function BoardCanvas({
@@ -95,7 +91,34 @@ export function BoardCanvas({
   onSaveText,
   onChangeColor,
   onUpvote,
+  stacked = false,
 }: BoardCanvasProps) {
+  if (stacked) {
+    return (
+      <BoardNoteStack
+        loading={loading}
+        notesCount={notesCount}
+        filteredNotes={filteredNotes}
+        filterType={filterType}
+        setFilterType={setFilterType}
+        onOpenAdd={onOpenAdd}
+        onCopyLink={onCopyLink}
+        upvotedNotes={upvotedNotes}
+        editingNoteId={editingNoteId}
+        editingText={editingText}
+        setEditingText={setEditingText}
+        activeMenuNoteId={activeMenuNoteId}
+        setActiveMenuNoteId={setActiveMenuNoteId}
+        setDeleteConfirmNoteId={setDeleteConfirmNoteId}
+        onToggleAnswered={onToggleAnswered}
+        onStartEditing={onStartEditing}
+        onSaveText={onSaveText}
+        onChangeColor={onChangeColor}
+        onUpvote={onUpvote}
+      />
+    );
+  }
+
   return (
     <>
       <div className="mobile-toolbar absolute top-3 left-3 sm:top-4 sm:left-4 z-10 panel flex flex-col rise">
@@ -141,21 +164,6 @@ export function BoardCanvas({
             Live
           </span>
         </div>
-      </div>
-
-      <div className="md:hidden absolute top-3 right-3 z-10 panel flex items-stretch h-9 rise">
-        {FILTERS.map(([key, label], i) => (
-          <button
-            key={key}
-            type="button"
-            onClick={() => setFilterType(key)}
-            className={`seg px-2.5 text-[11px] ${
-              i > 0 ? "border-l border-[var(--c-border-soft)]" : ""
-            } ${filterType === key ? "is-on" : ""}`}
-          >
-            {label}
-          </button>
-        ))}
       </div>
 
       <div className="zoom-bar absolute bottom-3 left-3 sm:bottom-4 sm:left-4 z-10 panel flex items-center text-[10px] text-[var(--c-muted)] rise rise-d1 mb-[env(safe-area-inset-bottom)]">
@@ -220,7 +228,7 @@ export function BoardCanvas({
                 这间会议室还没有人<em className="font-serif italic">提问</em>
               </h3>
               <p className="mt-3 text-[length:var(--fs-sm)] text-[var(--c-muted)] leading-relaxed">
-                点击左上角「提问」，即可落下一张便签。手机上可单指拖动画布。
+                点击左上角「提问」，即可落下一张便签。
               </p>
               <div className="mt-6 flex flex-col sm:flex-row border border-[var(--c-border-soft)]">
                 <button

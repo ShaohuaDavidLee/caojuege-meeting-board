@@ -50,11 +50,25 @@ export function isDefaultBoardState(
   );
 }
 
-export function alignNotesGrid(notes: StickyNote[]): StickyNote[] {
-  const sorted = [...notes].sort((a, b) => {
+/** 手机竖排：未答在前、票高在前；xy 只作平局，不改数据 */
+export function stackNotes(notes: StickyNote[]): StickyNote[] {
+  return [...notes].sort((a, b) => {
     if (a.answered !== b.answered) return a.answered ? 1 : -1;
-    return b.votes - a.votes;
+    if (b.votes !== a.votes) return b.votes - a.votes;
+    if (a.y !== b.y) return a.y - b.y;
+    return a.x - b.x;
   });
+}
+
+/** 手机上新贴的落点：给桌面画布看，贴在现有便签下方 */
+export function nextNotePoint(notes: StickyNote[]): { x: number; y: number } {
+  if (notes.length === 0) return { x: 80, y: 120 };
+  const maxY = Math.max(...notes.map((n) => n.y));
+  return { x: 80, y: maxY + 220 };
+}
+
+export function alignNotesGrid(notes: StickyNote[]): StickyNote[] {
+  const sorted = stackNotes(notes);
 
   const COLUMNS = 3;
   const START_X = 120;
