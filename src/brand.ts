@@ -39,6 +39,11 @@ export interface Brand {
   anonName: string;
   /** 顶栏主会议间的悬浮提示 */
   mainRoomTip: string;
+  /**
+   * 页脚外链。白标皮留空：借这块场地开会的人，
+   * 屏幕上不该出现出品方官网，也不该出现开发者主页。
+   */
+  links: { label: string; href: string }[];
 }
 
 export const CLASSIC_BRAND: Brand = {
@@ -51,6 +56,10 @@ export const CLASSIC_BRAND: Brand = {
   boardTitle: "草诀歌 AI Labs 会议白板",
   anonName: "兰亭神秘听众",
   mainRoomTip: "草诀歌 AI Labs 主会议间",
+  links: [
+    { label: "草诀歌 Labs 官网", href: "https://www.caojuege.com/" },
+    { label: "开发者 David", href: "https://www.caojuege.com/davidli" },
+  ],
 };
 
 export const FAITH_BRAND: Brand = {
@@ -63,6 +72,7 @@ export const FAITH_BRAND: Brand = {
   boardTitle: "Faith 会议白板",
   anonName: "Faith 神秘听众",
   mainRoomTip: "Faith 主会议间",
+  links: [],
 };
 
 /** 落地页首屏的经文卡：马太福音 18:20（英文，克制处理） */

@@ -397,6 +397,21 @@ export default function Landing({
                     {brand.brandName} · {brand.vendorName}
                   </p>
                   <p className="on-dark-soft">{brand.vendorLine}</p>
+                  {brand.links.length > 0 && (
+                    <nav aria-label="出品方" className="flex flex-wrap gap-x-5 gap-y-1">
+                      {brand.links.map((link) => (
+                        <a
+                          key={link.href}
+                          href={link.href}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="link-on-dark"
+                        >
+                          {link.label}
+                        </a>
+                      ))}
+                    </nav>
+                  )}
                   <p className="on-dark-soft font-serif">
                     灵感来自丁羽翔，感谢她的无私建议
                   </p>

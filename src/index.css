@@ -485,6 +485,21 @@ body {
     color: rgba(229, 229, 229, 0.5);
   }
 
+  .link-on-dark {
+    color: inherit;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    text-decoration-color: rgba(229, 229, 229, 0.35);
+    transition:
+      color 0.35s var(--ease-out),
+      text-decoration-color 0.35s var(--ease-out);
+  }
+
+  .link-on-dark:hover {
+    color: var(--c-on-dark);
+    text-decoration-color: var(--c-on-dark);
+  }
+
   .link-quiet {
     color: var(--c-muted);
     text-decoration: none;
